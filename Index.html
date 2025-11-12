@@ -2,17 +2,25 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<title>Interrogazioni Classe</title>
+<title>Interrogazioni Classe - Dashboard</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide/dist/lucide.js"></script>
+<style>
+    /* Animazioni leggere e gradienti */
+    .fade-in { animation: fadeIn 0.5s ease-in-out; }
+    @keyframes fadeIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
+    .italiano { background: #e0c3fc; border-left: 4px solid #9b5de5; }
+    .storia { background: #ffdac1; border-left: 4px solid #ff7b00; }
+</style>
 </head>
-<body class="bg-gradient-to-r from-purple-100 to-pink-100 min-h-screen p-6 font-sans">
+<body class="bg-gradient-to-r from-purple-100 via-pink-100 to-yellow-100 min-h-screen p-6 font-sans">
 
-<div class="max-w-xl mx-auto bg-white shadow-lg rounded-xl p-6">
-    <h1 class="text-2xl font-bold text-center mb-6 text-purple-700">Interrogazioni Classe</h1>
+<div class="max-w-5xl mx-auto">
+    <h1 class="text-4xl font-bold text-center mb-8 text-purple-700 drop-shadow-lg">📚 Interrogazioni Classe</h1>
 
-    <div class="flex flex-col sm:flex-row gap-2 mb-4">
-        <input id="name" type="text" placeholder="Nome"
+    <!-- Form aggiungi studente -->
+    <div class="bg-white p-6 rounded-xl shadow-lg mb-8 flex flex-col sm:flex-row gap-2 items-center">
+        <input id="name" type="text" placeholder="Nome studente"
             class="flex-1 p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400">
         <input id="date" type="date"
             class="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400">
@@ -25,30 +33,54 @@
         </button>
     </div>
 
-    <h2 class="text-xl font-semibold text-purple-600 mb-2">Lista studenti:</h2>
-    <ul id="studentList" class="space-y-2"></ul>
+    <!-- Dashboard materie -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+            <h2 class="text-2xl font-semibold text-purple-700 mb-4 flex items-center gap-2">
+                <i data-lucide="book-open"></i> Italiano
+            </h2>
+            <ul id="italianoList" class="space-y-2"></ul>
+        </div>
+        <div>
+            <h2 class="text-2xl font-semibold text-orange-700 mb-4 flex items-center gap-2">
+                <i data-lucide="book"></i> Storia
+            </h2>
+            <ul id="storiaList" class="space-y-2"></ul>
+        </div>
+    </div>
 </div>
 
 <script>
+// Utility per formattare la data senza orario
+function formatDate(dateString) {
+    const d = new Date(dateString);
+    return d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// Fetch studenti dal server
 async function fetchStudents() {
     const res = await fetch('/.netlify/functions/get-students');
     const students = await res.json();
-    const list = document.getElementById('studentList');
-    list.innerHTML = '';
+    const italianoList = document.getElementById('italianoList');
+    const storiaList = document.getElementById('storiaList');
+    italianoList.innerHTML = '';
+    storiaList.innerHTML = '';
     students.forEach(s => {
         const li = document.createElement('li');
-        li.className = "flex justify-between items-center bg-purple-50 p-3 rounded-lg shadow-sm hover:bg-purple-100 transition";
+        li.className = `flex justify-between items-center p-3 rounded-lg shadow-sm fade-in ${s.subject.toLowerCase()}`;
         li.innerHTML = `
-            <span><span class="font-bold text-purple-700">${s.subject}</span> - ${s.name} (${s.last_interrogation})</span>
+            <span>${s.name} - ${formatDate(s.last_interrogation)}</span>
             <button onclick="deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 flex items-center gap-1">
                 <i data-lucide="trash-2"></i> Cancella
             </button>
         `;
-        list.appendChild(li);
+        if(s.subject === "Italiano") italianoList.appendChild(li);
+        else if(s.subject === "Storia") storiaList.appendChild(li);
     });
     lucide.replace(); // aggiorna icone
 }
 
+// Aggiungi studente
 async function addStudent() {
     const name = document.getElementById('name').value;
     const date = document.getElementById('date').value;
@@ -63,6 +95,7 @@ async function addStudent() {
     fetchStudents();
 }
 
+// Cancella studente
 async function deleteStudent(id) {
     if(!confirm("Sei sicuro di voler cancellare questo studente?")) return;
     await fetch('/.netlify/functions/delete-student', {
@@ -72,7 +105,12 @@ async function deleteStudent(id) {
     fetchStudents();
 }
 
+// Fetch iniziale
 fetchStudents();
+
+// Aggiorna automaticamente ogni 30 secondi
+setInterval(fetchStudents, 30000);
+
 </script>
 
 </body>
