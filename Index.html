@@ -3,33 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <title>Interrogazioni Classe</title>
-<style>
-    body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; padding: 30px; }
-    h1 { color: #333; }
-    input, select, button { padding: 10px; margin: 5px; border-radius: 8px; border: 1px solid #ccc; }
-    button { cursor: pointer; background-color: #4CAF50; color: white; border: none; }
-    button:hover { background-color: #45a049; }
-    ul { list-style-type: none; padding: 0; }
-    li { background: white; margin: 5px 0; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);}
-    .subject { font-weight: bold; margin-right: 10px; }
-</style>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide/dist/lucide.js"></script>
 </head>
-<body>
+<body class="bg-gradient-to-r from-purple-100 to-pink-100 min-h-screen p-6 font-sans">
 
-<h1>Interrogazioni Classe</h1>
+<div class="max-w-xl mx-auto bg-white shadow-lg rounded-xl p-6">
+    <h1 class="text-2xl font-bold text-center mb-6 text-purple-700">Interrogazioni Classe</h1>
 
-<div>
-    <input type="text" id="name" placeholder="Nome">
-    <input type="date" id="date">
-    <select id="subject">
-        <option value="Italiano">Italiano</option>
-        <option value="Storia">Storia</option>
-    </select>
-    <button onclick="addStudent()">Salva</button>
+    <div class="flex flex-col sm:flex-row gap-2 mb-4">
+        <input id="name" type="text" placeholder="Nome"
+            class="flex-1 p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400">
+        <input id="date" type="date"
+            class="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400">
+        <select id="subject" class="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400">
+            <option value="Italiano">Italiano</option>
+            <option value="Storia">Storia</option>
+        </select>
+        <button onclick="addStudent()" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 flex items-center gap-1">
+            <i data-lucide="plus-circle"></i> Salva
+        </button>
+    </div>
+
+    <h2 class="text-xl font-semibold text-purple-600 mb-2">Lista studenti:</h2>
+    <ul id="studentList" class="space-y-2"></ul>
 </div>
-
-<h2>Lista studenti:</h2>
-<ul id="studentList"></ul>
 
 <script>
 async function fetchStudents() {
@@ -39,10 +37,16 @@ async function fetchStudents() {
     list.innerHTML = '';
     students.forEach(s => {
         const li = document.createElement('li');
-        li.innerHTML = `<span><span class="subject">${s.subject}</span>${s.name} - ${s.last_interrogation}</span>
-                        <button onclick="deleteStudent(${s.id})" style="background:#f44336;">Cancella</button>`;
+        li.className = "flex justify-between items-center bg-purple-50 p-3 rounded-lg shadow-sm hover:bg-purple-100 transition";
+        li.innerHTML = `
+            <span><span class="font-bold text-purple-700">${s.subject}</span> - ${s.name} (${s.last_interrogation})</span>
+            <button onclick="deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 flex items-center gap-1">
+                <i data-lucide="trash-2"></i> Cancella
+            </button>
+        `;
         list.appendChild(li);
     });
+    lucide.replace(); // aggiorna icone
 }
 
 async function addStudent() {
@@ -60,6 +64,7 @@ async function addStudent() {
 }
 
 async function deleteStudent(id) {
+    if(!confirm("Sei sicuro di voler cancellare questo studente?")) return;
     await fetch('/.netlify/functions/delete-student', {
         method: 'POST',
         body: JSON.stringify({ id })
