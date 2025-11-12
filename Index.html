@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interrogazioni Classe</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        input, button { padding: 8px; margin: 5px 0; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>Interrogazioni Classe</h1>
+
+    <input type="text" id="name" placeholder="Nome">
+    <input type="date" id="date">
+    <button onclick="addStudent()">Salva</button>
+
+    <h2>Lista studenti:</h2>
+    <ul id="studentList"></ul>
+
+    <script>
+        async function fetchStudents() {
+            const res = await fetch('/.netlify/functions/get-students');
+            const students = await res.json();
+            const list = document.getElementById('studentList');
+            list.innerHTML = '';
+            students.forEach(s => {
+                const li = document.createElement('li');
+                li.textContent = `${s.name} - ${s.last_interrogation}`;
+                list.appendChild(li);
+            });
+        }
+
+        async function addStudent() {
+            const name = document.getElementById('name').value;
+            const date = document.getElementById('date').value;
+            if (!name || !date) return alert("Compila nome e data!");
+            await fetch('/.netlify/functions/add-student', {
+                method: 'POST',
+                body: JSON.stringify({ name, last_interrogation: date })
+            });
+            document.getElementById('name').value = '';
+            document.getElementById('date').value = '';
+            fetchStudents();
+        }
+
+        fetchStudents();
+    </script>
+</body>
+</html>
