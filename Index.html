@@ -128,22 +128,46 @@ function hexToRgb(hex) {
 async function loadSubjects() {
     try {
         const res = await fetch('/.netlify/functions/get-subjects');
+        
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
         const subjects = await res.json();
         
         subjectColors = {};
         const select = document.getElementById('subjectSelect');
         select.innerHTML = '<option value="">Seleziona materia...</option>';
         
-        subjects.forEach(s => {
+        if (subjects && subjects.length > 0) {
+            subjects.forEach(s => {
+                subjectColors[s.name] = s.color;
+                const option = document.createElement('option');
+                option.value = s.name;
+                option.textContent = s.name;
+                select.appendChild(option);
+            });
+        } else {
+            console.warn('Nessuna materia trovata nel database');
+        }
+        
+    } catch (error) {
+        console.error('Errore caricamento materie:', error);
+        // Fallback: aggiungi alcune materie base
+        const fallbackSubjects = [
+            {name: 'Italiano', color: '#9b5de5'},
+            {name: 'Storia', color: '#ff7b00'},
+            {name: 'Matematica', color: '#06d6a0'}
+        ];
+        const select = document.getElementById('subjectSelect');
+        select.innerHTML = '<option value="">Seleziona materia...</option>';
+        fallbackSubjects.forEach(s => {
             subjectColors[s.name] = s.color;
             const option = document.createElement('option');
             option.value = s.name;
             option.textContent = s.name;
             select.appendChild(option);
         });
-        
-    } catch (error) {
-        console.error('Errore caricamento materie:', error);
     }
 }
 
@@ -290,26 +314,28 @@ async function addStudent() {
         document.getElementById('name').focus();
         return;
     }
-    if(!date) {
-        alert("Seleziona una data!");
-        document.getElementById('date').focus();
-        return;
-    }
     if(!subject) {
         alert("Seleziona una materia!");
         document.getElementById('subjectSelect').focus();
         return;
     }
     
+    // Se non c'è data, usa una data segnaposto nel futuro
+    const finalDate = date || '9999-12-31';
+    
     try {
         await fetch('/.netlify/functions/add-student', {
             method: 'POST',
-            body: JSON.stringify({ name, last_interrogation: date, subject })
+            body: JSON.stringify({ name, last_interrogation: finalDate, subject })
         });
         
         document.getElementById('name').value = '';
+        document.getElementById('date').value = '';
         document.getElementById('subjectSelect').value = '';
         document.getElementById('name').focus();
+        
+        // Reset data a oggi
+        setToday();
         
         await fetchStudents();
     } catch (error) {
