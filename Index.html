@@ -4,94 +4,189 @@
 <meta charset="UTF-8">
 <title>Interrogazioni Classe - Dashboard</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide/dist/lucide.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 <style>
-    /* Animazioni leggere e gradienti */
     .fade-in { animation: fadeIn 0.5s ease-in-out; }
     @keyframes fadeIn { from {opacity:0; transform: translateY(10px);} to {opacity:1; transform: translateY(0);} }
-    .italiano { background: #e0c3fc; border-left: 4px solid #9b5de5; }
-    .storia { background: #ffdac1; border-left: 4px solid #ff7b00; }
+    
+    .pulse-alert { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
 </style>
 </head>
 <body class="bg-gradient-to-r from-purple-100 via-pink-100 to-yellow-100 min-h-screen p-6 font-sans">
 
-<div class="max-w-5xl mx-auto">
+<div class="max-w-6xl mx-auto">
     <h1 class="text-4xl font-bold text-center mb-8 text-purple-700 drop-shadow-lg">📚 Interrogazioni Classe</h1>
 
     <!-- Form aggiungi studente -->
-    <div class="bg-white p-6 rounded-xl shadow-lg mb-8 flex flex-col sm:flex-row gap-2 items-center">
+    <div class="bg-white p-6 rounded-xl shadow-lg mb-6 flex flex-col sm:flex-row gap-2 items-center">
         <input id="name" type="text" placeholder="Nome studente"
             class="flex-1 p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400">
         <input id="date" type="date"
             class="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400">
-        <select id="subject" class="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400">
-            <option value="Italiano">Italiano</option>
-            <option value="Storia">Storia</option>
-        </select>
+        <input id="subjectInput" type="text" placeholder="Materia"
+            class="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400"
+            list="subjectsList">
+        <datalist id="subjectsList"></datalist>
+        <input id="colorInput" type="color" value="#9b5de5"
+            class="w-12 h-10 rounded-lg border border-gray-300 cursor-pointer"
+            title="Colore materia">
         <button onclick="addStudent()" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 flex items-center gap-1">
             <i data-lucide="plus-circle"></i> Salva
         </button>
     </div>
 
-    <!-- Dashboard materie -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div>
-            <h2 class="text-2xl font-semibold text-purple-700 mb-4 flex items-center gap-2">
-                <i data-lucide="book-open"></i> Italiano
-            </h2>
-            <ul id="italianoList" class="space-y-2"></ul>
-        </div>
-        <div>
-            <h2 class="text-2xl font-semibold text-orange-700 mb-4 flex items-center gap-2">
-                <i data-lucide="book"></i> Storia
-            </h2>
-            <ul id="storiaList" class="space-y-2"></ul>
-        </div>
+    <!-- Dashboard materie dinamiche -->
+    <div id="subjectsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
     </div>
 </div>
 
 <script>
-// Utility per formattare la data senza orario
+// Colori predefiniti per materie
+const subjectColors = {
+    'Italiano': '#9b5de5',
+    'Storia': '#ff7b00',
+    'Matematica': '#00b4d8',
+    'Inglese': '#ef476f',
+    'Scienze': '#06d6a0'
+};
+
+// Utility per formattare la data
 function formatDate(dateString) {
     const d = new Date(dateString);
     return d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// Calcola giorni dall'ultima interrogazione
+function daysSince(dateString) {
+    const then = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - then);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+}
+
+// Genera colore casuale per nuove materie
+function getRandomColor() {
+    const hue = Math.floor(Math.random() * 360);
+    return `hsl(${hue}, 70%, 60%)`;
+}
+
+// Hex to RGB
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
 }
 
 // Fetch studenti dal server
 async function fetchStudents() {
     const res = await fetch('/.netlify/functions/get-students');
     const students = await res.json();
-    const italianoList = document.getElementById('italianoList');
-    const storiaList = document.getElementById('storiaList');
-    italianoList.innerHTML = '';
-    storiaList.innerHTML = '';
+    
+    // Raggruppa per materia
+    const bySubject = {};
     students.forEach(s => {
-        const li = document.createElement('li');
-        li.className = `flex justify-between items-center p-3 rounded-lg shadow-sm fade-in ${s.subject.toLowerCase()}`;
-        li.innerHTML = `
-            <span>${s.name} - ${formatDate(s.last_interrogation)}</span>
-            <button onclick="deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 flex items-center gap-1">
-                <i data-lucide="trash-2"></i> Cancella
-            </button>
-        `;
-        if(s.subject === "Italiano") italianoList.appendChild(li);
-        else if(s.subject === "Storia") storiaList.appendChild(li);
+        if (!bySubject[s.subject]) {
+            bySubject[s.subject] = [];
+        }
+        bySubject[s.subject].push(s);
     });
-    lucide.replace(); // aggiorna icone
+    
+    // Aggiorna datalist delle materie
+    const datalist = document.getElementById('subjectsList');
+    datalist.innerHTML = Object.keys(bySubject).map(subj => 
+        `<option value="${subj}">`
+    ).join('');
+    
+    // Render materie
+    const container = document.getElementById('subjectsContainer');
+    container.innerHTML = '';
+    
+    Object.keys(bySubject).sort().forEach(subject => {
+        const color = subjectColors[subject] || getRandomColor();
+        if (!subjectColors[subject]) subjectColors[subject] = color;
+        
+        const rgb = hexToRgb(color);
+        const lightColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
+        
+        const div = document.createElement('div');
+        div.className = 'fade-in';
+        div.innerHTML = `
+            <h2 class="text-2xl font-semibold mb-4 flex items-center gap-2" style="color: ${color}">
+                <i data-lucide="book-open"></i> ${subject}
+            </h2>
+            <ul class="space-y-2" id="list-${subject}"></ul>
+        `;
+        container.appendChild(div);
+        
+        const list = document.getElementById(`list-${subject}`);
+        bySubject[subject].forEach(s => {
+            const days = daysSince(s.last_interrogation);
+            const isOld = days > 14;
+            const isVeryOld = days > 30;
+            
+            const li = document.createElement('li');
+            li.className = `flex justify-between items-center p-3 rounded-lg shadow-sm fade-in ${isVeryOld ? 'pulse-alert' : ''}`;
+            li.style.background = lightColor;
+            li.style.borderLeft = `4px solid ${color}`;
+            
+            let badge = '';
+            if (isVeryOld) {
+                badge = `<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">🔥 ${days}g</span>`;
+            } else if (isOld) {
+                badge = `<span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ ${days}g</span>`;
+            } else {
+                badge = `<span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">${days}g</span>`;
+            }
+            
+            li.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="font-medium">${s.name}</span>
+                    <span class="text-sm text-gray-600">${formatDate(s.last_interrogation)}</span>
+                    ${badge}
+                </div>
+                <button onclick="deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 flex items-center gap-1">
+                    <i data-lucide="trash-2"></i>
+                </button>
+            `;
+            list.appendChild(li);
+        });
+    });
+    
+    lucide.createIcons();
 }
 
 // Aggiungi studente
 async function addStudent() {
     const name = document.getElementById('name').value;
     const date = document.getElementById('date').value;
-    const subject = document.getElementById('subject').value;
+    const subject = document.getElementById('subjectInput').value;
+    const color = document.getElementById('colorInput').value;
+    
     if(!name || !date || !subject) return alert("Compila tutti i campi!");
+    
+    // Salva colore per la materia
+    if (!subjectColors[subject]) {
+        subjectColors[subject] = color;
+    }
+    
     await fetch('/.netlify/functions/add-student', {
         method: 'POST',
         body: JSON.stringify({ name, last_interrogation: date, subject })
     });
+    
     document.getElementById('name').value = '';
     document.getElementById('date').value = '';
+    document.getElementById('subjectInput').value = '';
+    document.getElementById('colorInput').value = '#9b5de5';
+    
     fetchStudents();
 }
 
@@ -104,6 +199,9 @@ async function deleteStudent(id) {
     });
     fetchStudents();
 }
+
+// Imposta data di oggi come default
+document.getElementById('date').valueAsDate = new Date();
 
 // Fetch iniziale
 fetchStudents();
