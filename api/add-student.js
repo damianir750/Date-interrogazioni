@@ -12,7 +12,15 @@ export default async function handler(request, response) {
     }
 
     try {
-        const { name, last_interrogation, subject } = request.body;
+        let body = request.body;
+        if (typeof body === 'string') {
+            try {
+                body = JSON.parse(body);
+            } catch (e) {
+                return response.status(400).json({ error: "Invalid JSON" });
+            }
+        }
+        const { name, last_interrogation, subject } = body;
 
         if (!name || !last_interrogation || !subject) {
             return response.status(400).json({ error: "Compila tutti i campi" });

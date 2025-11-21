@@ -12,7 +12,15 @@ export default async function handler(request, response) {
     }
 
     try {
-        const { id } = request.body;
+        let body = request.body;
+        if (typeof body === 'string') {
+            try {
+                body = JSON.parse(body);
+            } catch (e) {
+                return response.status(400).json({ error: "Invalid JSON" });
+            }
+        }
+        const { id } = body;
         if (!id) return response.status(400).json({ error: "ID mancante" });
 
         await sql`DELETE FROM students WHERE id = ${id}`;

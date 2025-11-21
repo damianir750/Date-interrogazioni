@@ -12,7 +12,15 @@ export default async function handler(request, response) {
     }
 
     try {
-        const { name } = request.body;
+        let body = request.body;
+        if (typeof body === 'string') {
+            try {
+                body = JSON.parse(body);
+            } catch (e) {
+                return response.status(400).json({ error: "Invalid JSON" });
+            }
+        }
+        const { name } = body;
 
         if (!name) {
             return response.status(400).json({ error: "Nome materia richiesto" });

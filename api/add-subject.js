@@ -12,7 +12,15 @@ export default async function handler(request, response) {
     }
 
     try {
-        const { name, color } = request.body;
+        let body = request.body;
+        if (typeof body === 'string') {
+            try {
+                body = JSON.parse(body);
+            } catch (e) {
+                return response.status(400).json({ error: "Invalid JSON" });
+            }
+        }
+        const { name, color } = body;
 
         if (!name || !color) {
             return response.status(400).json({ error: "Nome e colore richiesti" });
