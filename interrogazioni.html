@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interrogazioni Classe - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pulse-alert {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        class="flex-1 p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none"><input id="dateInput" type="date"
+        class="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none"><select id="subjectSelect" class="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none"><option value="">Seleziona materia...</option></select><button onclick="app.addStudent()" class="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 font-medium"><i data-lucide="plus-circle" class="w-5 h-5"></i><span>Salva</span></button></div>< !-- Quick actions --><div class="flex gap-2 flex-wrap items-center"><button onclick="app.setToday()" class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full hover:bg-purple-200 transition">Oggi </button><button onclick="app.setYesterday()" class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full hover:bg-purple-200 transition">Ieri </button><button onclick="app.setLastWeek()" class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full hover:bg-purple-200 transition">Settimana scorsa </button><div class="flex-1"></div><button onclick="app.openSubjectsModal()" class="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full hover:bg-blue-200 transition flex items-center gap-1 font-medium"><i data-lucide="settings" class="w-3 h-3"></i>Gestisci Materie </button></div></div>< !-- Stats --><div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6"><div class="bg-white p-4 rounded-lg shadow text-center"><div class="text-2xl font-bold text-purple-600" id="totalStudents">0</div><div class="text-xs text-gray-600">Studenti totali</div></div><div class="bg-white p-4 rounded-lg shadow text-center"><div class="text-2xl font-bold text-orange-600" id="alertCount">0</div><div class="text-xs text-gray-600">Da interrogare</div></div><div class="bg-white p-4 rounded-lg shadow text-center"><div class="text-2xl font-bold text-green-600" id="recentCount">0</div><div class="text-xs text-gray-600">Recenti (&lt; 14g)</div></div><div class="bg-white p-4 rounded-lg shadow text-center"><div class="text-2xl font-bold text-blue-600" id="subjectCount">0</div><div class="text-xs text-gray-600">Materie attive</div></div></div>< !-- Dashboard materie --><div id="subjectsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>< !-- Empty state --><div id="emptyState" class="text-center py-12 hidden"><div class="text-6xl mb-4">📖</div><h3 class="text-xl font-semibold text-gray-700 mb-2">Nessuno studente ancora</h3><p class="text-gray-500">Aggiungi il primo studente per iniziare !</p></div></div>< !-- Modal Gestione Materie --><div id="subjectsModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4"><div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"><div class="p-6 border-b border-gray-200"><div class="flex items-center justify-between"><h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2"><i data-lucide="book-open" class="w-6 h-6 text-purple-600"></i>Gestisci Materie </h2><button onclick="app.closeSubjectsModal()" class="text-gray-400 hover:text-gray-600 transition"><i data-lucide="x" class="w-6 h-6"></i></button></div></div><div class="p-6 overflow-y-auto flex-1">< !-- Form nuova materia --><div class="bg-purple-50 p-4 rounded-lg mb-4"><h3 class="font-semibold text-gray-700 mb-3 flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i>Aggiungi Nuova Materia </h3><div class="flex gap-2 items-center"><input id="newSubjectName" type="text" placeholder="Nome materia"
+        class="flex-1 p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none"><input id="newSubjectColor" type="color" value="#9b5de5"
+        class="w-16 h-10 rounded-lg border border-gray-300 cursor-pointer" title="Scegli colore"><button onclick="app.addNewSubject()" class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition">Aggiungi </button></div></div>< !-- Lista materie --><div id="subjectsList" class="space-y-2"></div></div></div></div><script> // =====================================================
+
+        // APP STATE & UTILITIES
+        // =====================================================
+        const app= {
+            state: {
+
+                students: [],
+                subjects: [],
+                subjectColors: {}
+            }
+
+            ,
+
+            // Utility: Formatta data
+            formatDate(dateString) {
+                if (dateString==='9999-12-31') return 'DATA MANCANTE';
+                const d=new Date(dateString);
+
+                return d.toLocaleDateString('it-IT', {
+                    day: '2-digit', month: '2-digit', year: 'numeric'
+                });
+        }
+
+        ,
+
+        // Utility: Calcola giorni
+        daysSince(dateString) {
+            if (dateString==='9999-12-31') return -1;
+            const then=new Date(dateString);
+            const now=new Date();
+            then.setHours(0, 0, 0, 0);
+            now.setHours(0, 0, 0, 0);
+            return Math.floor((now - then) / (1000 * 60 * 60 * 24));
+        }
+
+        ,
+
+        // Utility: Hex to RGB
+        hexToRgb(hex) {
+            const result=/^#?([a-f\d] {
+                    2
+
+                })([a-f\d] {
+                    2
+
+                })([a-f\d] {
+                    2
+                })$/i.exec(hex);
+
+            return result ? {
+                r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+            }
+
+            : null;
+        }
+
+        ,
+        console.error('Errore caricamento studenti:', error);
+        }
+        }
+
+        ,
+
+        async addStudent() {
+            const name=document.getElementById('nameInput').value.trim();
+            const date=document.getElementById('dateInput').value;
+            const subject=document.getElementById('subjectSelect').value;
+
+            if ( !name) {
+                alert("Inserisci il nome dello studente!");
+                document.getElementById('nameInput').focus();
+                return;
+            }
+
+            if ( !subject) {
+                alert("Seleziona una materia!");
+                return;
+            }
+
+            const finalDate=date || '9999-12-31';
+
+            try {
+                await fetch('/api/add-student', {
+
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name, last_interrogation: finalDate, subject
+                    })
+            });
+
+        document.getElementById('nameInput').value='';
+        document.getElementById('dateInput').value='';
+        document.getElementById('subjectSelect').value='';
+        document.getElementById('nameInput').focus();
+        this.setToday();
+
+        await this.loadStudents();
+        }
+
+        catch (error) {
+            alert('Errore durante il salvataggio!');
+            console.error(error);
+        }
+        }
+
+        ,
+
+        async deleteStudent(id) {
+            if ( !confirm("Sei sicuro di voler cancellare questo studente?")) return;
+
+            try {
+                await fetch('/api/delete-student', {
+
+                    method: 'POST',
+                    body: JSON.stringify({
+                        id
+                    })
+            });
+        await this.loadStudents();
+        }
+
+        catch (error) {
+            alert('Errore durante la cancellazione!');
+            console.error(error);
+        }
+        }
+
+        ,
+
+        async addNewSubject() {
+            const name=document.getElementById('newSubjectName').value.trim();
+            const color=document.getElementById('newSubjectColor').value;
+
+            if ( !name) {
+                alert("Inserisci il nome della materia!");
+                return;
+            }
+
+            try {
+                await fetch('/api/add-subject', {
+
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name, color
+                    })
+            });
+
+        document.getElementById('newSubjectName').value='';
+        document.getElementById('newSubjectColor').value='#9b5de5';
+
+        await this.loadSubjects();
+        this.renderSubjectsList();
+        }
+
+        catch (error) {
+            alert('Errore durante il salvataggio della materia!');
+            console.error(error);
+        }
+        }
+
+        ,
+
+        async deleteSubject(name) {
+            // Controlla se ci sono studenti con questa materia
+            const hasStudents=this.state.students.some(s=> s.subject===name);
+
+            if (hasStudents) {
+                alert(`Non puoi eliminare "${name}" perché ci sono ancora studenti associati !`);
+                return;
+            }
+
+            if ( !confirm(`Sei sicuro di voler eliminare la materia "${name}" ?`)) return;
+
+            try {
+                await fetch('/api/delete-subject', {
+
+                    method: 'POST',
+                    body: JSON.stringify({
+                        name
+                    })
+            });
+
+        await this.loadSubjects();
+        this.renderSubjectsList();
+        }
+
+        catch (error) {
+            alert('Errore durante la cancellazione!');
+            console.error(error);
+        }
+        }
+
+        ,
+
+        // =====================================================
+        // UI HELPERS
+        // =====================================================
+        setToday() {
+            document.getElementById('dateInput').valueAsDate=new Date();
+        }
+
+        ,
+
+        setYesterday() {
+            const yesterday=new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            document.getElementById('dateInput').valueAsDate=yesterday;
+        }
+
+        ,
+
+        setLastWeek() {
+            const lastWeek=new Date();
+            lastWeek.setDate(lastWeek.getDate() - 7);
+            document.getElementById('dateInput').valueAsDate=lastWeek;
+        }
+
+        ,
+
+        openSubjectsModal() {
+            document.getElementById('subjectsModal').classList.remove('hidden');
+            document.getElementById('subjectsModal').classList.add('flex');
+            this.renderSubjectsList();
+        }
+
+        ,
+
+        closeSubjectsModal() {
+            document.getElementById('subjectsModal').classList.add('hidden');
+            document.getElementById('subjectsModal').classList.remove('flex');
+        }
+
+        ,
+
+        // =====================================================
+        // RENDERING
+        // =====================================================
+        updateStats() {
+            const total=this.state.students.length;
+            const alerts=this.state.students.filter(s=> this.daysSince(s.last_interrogation) > 14).length;
+
+            const recent=this.state.students.filter(s=> {
+                    const days=this.daysSince(s.last_interrogation);
+                    return days >=0 && days <=14;
+                }).length;
+            const subjects=new Set(this.state.students.map(s=> s.subject)).size;
+
+            document.getElementById('totalStudents').textContent=total;
+            document.getElementById('alertCount').textContent=alerts;
+            document.getElementById('recentCount').textContent=recent;
+            document.getElementById('subjectCount').textContent=subjects;
+
+            const now=new Date();
+
+            document.getElementById('lastUpdate').textContent=`Ultimo aggiornamento: $ {
+                now.toLocaleTimeString('it-IT')
+            }
+
+            `;
+        }
+
+        ,
+
+        renderSubjectsList() {
+            const container=document.getElementById('subjectsList');
+            container.innerHTML='';
+
+            if (this.state.subjects.length===0) {
+                container.innerHTML='<p class="text-gray-500 text-center py-4">Nessuna materia disponibile</p>';
+                return;
+            }
+
+            this.state.subjects.forEach(subject=> {
+                    const studentCount=this.state.students.filter(s=> s.subject===subject.name).length;
+
+                    const div=document.createElement('div');
+                    div.className='flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition';
+
+                    div.innerHTML=` <div class="flex items-center gap-3" > <div class="w-8 h-8 rounded-full" style="background: ${subject.color}" ></div> <div> <div class="font-semibold text-gray-800" >$ {
+                        subject.name
+                    }
+
+                    </div> <div class="text-xs text-gray-500" >$ {
+                        studentCount
+                    }
+
+                    studenti</div> </div> </div> <button onclick="app.deleteSubject('${subject.name}')"
+                    class="text-red-500 hover:text-red-700 transition ${studentCount > 0 ? 'opacity-50 cursor-not-allowed' : ''}"
+                    title="${studentCount > 0 ? 'Non puoi eliminare materie con studenti' : 'Elimina materia'}" > <i data-lucide="trash-2" class="w-4 h-4" ></i> </button> `;
+                    container.appendChild(div);
+                });
+
+            lucide.createIcons();
+        }
+
+        ,
+
+        render() {
+            const container=document.getElementById('subjectsContainer');
+            const emptyState=document.getElementById('emptyState');
+
+            if (this.state.students.length===0) {
+                emptyState.classList.remove('hidden');
+                container.innerHTML='';
+                this.updateStats();
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            // Raggruppa per materia
+            const bySubject= {}
+
+            ;
+
+            this.state.students.forEach(s=> {
+                    if ( !bySubject[s.subject]) bySubject[s.subject]=[];
+                    bySubject[s.subject].push(s);
+                });
+
+            // Ordina per giorni
+            Object.keys(bySubject).forEach(subject=> {
+                    bySubject[subject].sort((a, b)=> this.daysSince(b.last_interrogation) - this.daysSince(a.last_interrogation));
+                });
+
+            container.innerHTML='';
+
+            Object.keys(bySubject).sort().forEach(subject=> {
+                    const color=this.state.subjectColors[subject] || '#6b7280';
+                    const rgb=this.hexToRgb(color);
+
+                    const lightColor=`rgba($ {
+                            rgb.r
+                        }
+
+                        , $ {
+                            rgb.g
+                        }
+
+                        , $ {
+                            rgb.b
+                        }
+
+                        , 0.15)`;
+                    const students=bySubject[subject];
+                    const urgentCount=students.filter(s=> this.daysSince(s.last_interrogation) > 30).length;
+
+                    const div=document.createElement('div');
+                    div.className='fade-in';
+
+                    div.innerHTML=` <div class="bg-white rounded-xl shadow-lg p-4 h-full" > <div class="flex items-center justify-between mb-3" > <h2 class="text-xl sm:text-2xl font-semibold flex items-center gap-2" style="color: ${color}" > <i data-lucide="book-open" class="w-5 h-5" ></i> <span>$ {
+                        subject
+                    }
+
+                    </span> </h2> <span class="text-sm font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-700" >$ {
+                        students.length
+                    }
+
+                    </span> </div> $ {
+                        urgentCount > 0 ? ` <div class="bg-red-50 border border-red-200 text-red-700 text-xs px-3 py-1 rounded-lg mb-3 flex items-center gap-1" > <i data-lucide="alert-triangle" class="w-3 h-3" ></i> $ {
+                            urgentCount
+                        }
+
+                        da interrogare urgentemente </div> ` : ''
+                    }
+
+                    <ul class="space-y-2" id="list-${subject}" ></ul> </div> `;
+                    container.appendChild(div);
+
+                    const list=document.getElementById(`list-$ {
+                            subject
+                        }
+
+                        `);
+
+                    students.forEach((s, i)=> {
+                            const days=this.daysSince(s.last_interrogation);
+                            const li=document.createElement('li');
+                            li.className='flex justify-between items-center p-3 rounded-lg shadow-sm slide-in';
+
+                            li.style.animationDelay=`$ {
+                                i * 0.05
+                            }
+
+                            s`;
+
+                            if (days===-1) {
+                                li.className +=' pulse-alert';
+                                li.style.background='rgba(255, 193, 7, 0.2)';
+                                li.style.borderLeft='4px solid #ffc107';
+
+                                li.innerHTML=` <div class="flex items-center gap-2 flex-wrap" > <span class="font-medium text-sm sm:text-base" >$ {
+                                    s.name
+                                }
+
+                                </span> <span class="text-xs text-amber-700 font-semibold" >📅 DATA MANCANTE</span> <span class="bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-bold" >⚠️ Da aggiornare</span> </div> <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina" > <i data-lucide="trash-2" class="w-4 h-4" ></i> </button> `;
+                            }
+
+                            else {
+                                const isVeryOld=days > 30;
+                                const isOld=days > 14;
+
+                                if (isVeryOld) li.className +=' pulse-alert';
+                                li.style.background=lightColor;
+
+                                li.style.borderLeft=`4px solid $ {
+                                    color
+                                }
+
+                                `;
+
+                                let badge='';
+
+                                if (isVeryOld) badge=`<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold" >🔥 $ {
+                                    days
+                                }
+
+                                g</span>`;
+
+                                else if (isOld) badge=`<span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold" >⚠️ $ {
+                                    days
+                                }
+
+                                g</span>`;
+
+                                else badge=`<span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full" >$ {
+                                    days
+                                }
+
+                                g</span>`;
+
+                                li.innerHTML=` <div class="flex items-center gap-2 flex-wrap" > <span class="font-medium text-sm sm:text-base" >$ {
+                                    s.name
+                                }
+
+                                </span> <span class="text-xs text-gray-600" >$ {
+                                    this.formatDate(s.last_interrogation)
+                                }
+
+                                </span> $ {
+                                    badge
+                                }
+
+                                </div> <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina" > <i data-lucide="trash-2" class="w-4 h-4" ></i> </button> `;
+                            }
+
+                            list.appendChild(li);
+                        });
+                });
+
+            lucide.createIcons();
+            this.updateStats();
+        }
+
+        ,
+
+        // =====================================================
+        // INIT
+        // =====================================================
+        async init() {
+            this.setToday();
+
+            // Enter key handler
+            document.getElementById('nameInput').addEventListener('keypress', (e)=> {
+                    if (e.key==='Enter') this.addStudent();
+                });
+
+            // Close modal on backdrop click
+            document.getElementById('subjectsModal').addEventListener('click', (e)=> {
+                    if (e.target.id==='subjectsModal') this.closeSubjectsModal();
+                });
+
+            await this.loadSubjects();
+            await this.loadStudents();
+
+            // Auto-refresh ogni 30 secondi
+            setInterval(()=> this.loadStudents(), 30000);
+        }
+        }
+
+        ;
+
+        // Start app
+        app.init();
+        </script></body></html>

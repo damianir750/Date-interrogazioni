@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archivio Documenti</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+
+<body class="bg-gray-50 min-h-screen font-sans">
+
+    <!-- Navbar -->
+    <nav
+        class="bg-white shadow-sm border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="bg-pink-100 p-2 rounded-lg text-pink-600">
+                <i data-lucide="folder-archive" class="w-6 h-6"></i>
+            </div>
+            <h1 class="text-xl font-bold text-gray-800">Archivio</h1>
+        </div>
+        <a href="index.html" class="text-gray-500 hover:text-gray-800 transition flex items-center gap-2 font-medium">
+            <i data-lucide="home" class="w-4 h-4"></i> Home
+        </a>
+    </nav>
+
+    <div class="max-w-5xl mx-auto p-6">
+
+        <!-- Upload Area -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8 text-center border-2 border-dashed border-gray-300 hover:border-pink-400 transition-colors cursor-pointer"
+            id="dropZone">
+            <input type="file" id="fileInput" class="hidden" multiple>
+            <div class="bg-pink-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-pink-500">
+                <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Carica i tuoi file</h2>
+            <p class="text-gray-500 mb-6">Trascina qui i file o clicca per selezionarli</p>
+            <button onclick="document.getElementById('fileInput').click()"
+                class="bg-pink-600 text-white px-6 py-2.5 rounded-xl hover:bg-pink-700 transition font-medium shadow-lg shadow-pink-200">
+                Seleziona File
+            </button>
+        </div>
+
+        <!-- File List -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <i data-lucide="files" class="w-5 h-5 text-gray-400"></i>
+                    I tuoi documenti
+                </h3>
+                <span class="text-sm text-gray-500" id="fileCount">0 file</span>
+            </div>
+
+            <div id="fileList" class="divide-y divide-gray-100">
+                <!-- Files will be injected here -->
+                <div class="p-12 text-center text-gray-400" id="emptyState">
+                    <i data-lucide="ghost" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                    <p>Nessun file archiviato</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const emptyState = document.getElementById('emptyState');
+        const fileCount = document.getElementById('fileCount');
+        const dropZone = document.getElementById('dropZone');
+
+        // Load files from LocalStorage
+        let files = JSON.parse(localStorage.getItem('archivedFiles') || '[]');
+
+        function formatSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function renderFiles() {
+            if (files.length === 0) {
+                emptyState.style.display = 'block';
+                fileList.innerHTML = '';
+                fileList.appendChild(emptyState);
+            } else {
+                emptyState.style.display = 'none';
+                fileList.innerHTML = '';
+
+                files.forEach((file, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'p-4 hover:bg-gray-50 transition flex items-center justify-between group';
+                    div.innerHTML = `
+                        <div class="flex items-center gap-4">
+                            <div class="bg-gray-100 p-3 rounded-lg text-gray-500">
+                                <i data-lucide="file-text" class="w-6 h-6"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-800">${file.name}</div>
+                                <div class="text-xs text-gray-500">${formatSize(file.size)} • ${file.date}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
+                            <button onclick="deleteFile(${index})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition" title="Elimina">
+                                <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            </button>
+                        </div>
+                    `;
+                    fileList.appendChild(div);
+                });
+            }
+            fileCount.textContent = `${files.length} file`;
+            lucide.createIcons();
+        }
+
+        function addFiles(newFiles) {
+            Array.from(newFiles).forEach(file => {
+                files.unshift({
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    date: new Date().toLocaleDateString('it-IT')
+                });
+            });
+            localStorage.setItem('archivedFiles', JSON.stringify(files));
+            renderFiles();
+        }
+
+        function deleteFile(index) {
+            if (confirm('Vuoi davvero eliminare questo file?')) {
+                files.splice(index, 1);
+                localStorage.setItem('archivedFiles', JSON.stringify(files));
+                renderFiles();
+            }
+        }
+
+        // Event Listeners
+        fileInput.addEventListener('change', (e) => addFiles(e.target.files));
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-pink-500', 'bg-pink-50');
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-pink-500', 'bg-pink-50');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-pink-500', 'bg-pink-50');
+            addFiles(e.dataTransfer.files);
+        });
+
+        // Init
+        renderFiles();
+    </script>
+</body>
+
+</html>

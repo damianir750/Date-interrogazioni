@@ -19,6 +19,6 @@
   },
   "homepage": "https://github.com/damianir750/Date-interrogazioni#readme",
   "dependencies": {
-    "@netlify/neon": "^0.1.0"
+    "@neondatabase/serverless": "^0.6.0"
   }
 }
