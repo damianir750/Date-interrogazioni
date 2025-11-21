@@ -22,7 +22,7 @@ export default async function handler(request, response) {
         const file = files[0];
 
         // Decode Base64 content
-        const buffer = Buffer.from(file.content, 'base64');
+        const buffer = Buffer.from(file.content, );
 
         // Set headers for download
         response.setHeader('Content-Type', file.type || 'application/octet-stream');
