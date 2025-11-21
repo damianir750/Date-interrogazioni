@@ -19,16 +19,26 @@ export default async function handler(request, response) {
             return response.status(400).json({ error: 'Missing required fields' });
         }
 
-        // Basic size check (redundant if frontend checks, but good for safety)
-        // 4.5MB limit for Vercel serverless payload, so we check for 4MB to be safe
         if (size > 4 * 1024 * 1024) {
             return response.status(413).json({ error: 'File too large (max 4MB)' });
         }
 
+        // --- THE FIX IS HERE ---
+        // 1. We assume 'content' is a Base64 string from the frontend (e.g. FileReader result)
+        // 2. We verify if it has the Data URI prefix (e.g., "data:image/png;base64,") and strip it
+        const base64Data = content.includes(';base64,') 
+            ? content.split(';base64,')[1] 
+            : content;
+
+        // 3. Convert the Base64 string into a binary Buffer
+        const buffer = Buffer.from(base64Data, 'base64');
+        // -----------------------
+
+        // Pass the Buffer to SQL. The neon driver handles the BYTEA formatting automatically.
         await sql`
-      INSERT INTO archive_files (name, type, size, content)
-      VALUES (${name}, ${type}, ${size}, ${content})
-    `;
+            INSERT INTO archive_files (name, type, size, content)
+            VALUES (${name}, ${type}, ${size}, ${buffer})
+        `;
 
         return response.status(201).json({ message: 'File uploaded successfully' });
     } catch (error) {
