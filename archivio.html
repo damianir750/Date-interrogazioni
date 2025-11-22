@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </head>
 
-<body class="bg-gray-50 min-h-screen font-sans">
+<body class="bg-gray-50 min-h-screen font-sans flex flex-col">
 
     <!-- Navbar -->
     <nav
@@ -25,243 +25,30 @@
         </a>
     </nav>
 
-    <div class="max-w-5xl mx-auto p-6">
-
-        <!-- Upload Area -->
-        <div class="bg-white rounded-2xl shadow-lg p-8 mb-8 text-center border-2 border-dashed border-gray-300 hover:border-pink-400 transition-colors cursor-pointer"
-            id="dropZone">
-            <input type="file" id="fileInput" class="hidden" multiple>
-            <div class="bg-pink-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-pink-500">
-                <i data-lucide="upload-cloud" class="w-8 h-8"></i>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col p-6 max-w-7xl mx-auto w-full h-full">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden flex-1 flex flex-col border border-gray-200">
+            <div class="p-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                <h2 class="font-semibold text-gray-700 flex items-center gap-2">
+                    <i data-lucide="hard-drive" class="w-5 h-5 text-pink-500"></i>
+                    Google Drive
+                </h2>
+                <a href="https://drive.google.com/drive/u/0/folders/1zgXEkkcqmTBa90QSPkbomj0OwoggYOa3" target="_blank"
+                    class="text-sm text-pink-600 hover:text-pink-700 font-medium flex items-center gap-1">
+                    Apri in nuova scheda <i data-lucide="external-link" class="w-4 h-4"></i>
+                </a>
             </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Carica i tuoi file</h2>
-            <p class="text-gray-500 mb-6">Trascina qui i file o clicca per selezionarli</p>
-            <button onclick="document.getElementById('fileInput').click()"
-                class="bg-pink-600 text-white px-6 py-2.5 rounded-xl hover:bg-pink-700 transition font-medium shadow-lg shadow-pink-200">
-                Seleziona File
-            </button>
+            <div class="flex-1 w-full h-[800px] relative">
+                <iframe src="https://drive.google.com/embeddedfolderview?id=1zgXEkkcqmTBa90QSPkbomj0OwoggYOa3#list"
+                    class="absolute inset-0 w-full h-full border-0" allowfullscreen>
+                </iframe>
+            </div>
         </div>
+    </div>
 
-        <!-- File List -->
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    <i data-lucide="files" class="w-5 h-5 text-gray-400"></i>
-                    I tuoi documenti
-                </h3>
-                <span class="text-sm text-gray-500" id="fileCount">0 file</span>
-            </div>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
 
-            <div id="fileList" class="divide-y divide-gray-100">
-                <!-- Files will be injected here -->
-                <div class="p-12 text-center text-gray-400" id="emptyState">
-                    <i data-lucide="ghost" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                    <p>Nessun file archiviato</p>
-                    <!DOCTYPE html>
-                    <html lang="it">
-
-                    <head>
-                        <meta charset="UTF-8">
-                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                        <title>Archivio Documenti</title>
-                        <script src="https://cdn.tailwindcss.com"></script>
-                        <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-                    </head>
-
-                    <body class="bg-gray-50 min-h-screen font-sans">
-
-                        <!-- Navbar -->
-                        <nav
-                            class="bg-white shadow-sm border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
-                            <div class="flex items-center gap-3">
-                                <div class="bg-pink-100 p-2 rounded-lg text-pink-600">
-                                    <i data-lucide="folder-archive" class="w-6 h-6"></i>
-                                </div>
-                                <h1 class="text-xl font-bold text-gray-800">Archivio</h1>
-                            </div>
-                            <a href="index.html"
-                                class="text-gray-500 hover:text-gray-800 transition flex items-center gap-2 font-medium">
-                                <i data-lucide="home" class="w-4 h-4"></i> Home
-                            </a>
-                        </nav>
-
-                        <div class="max-w-5xl mx-auto p-6">
-
-                            <!-- Upload Area -->
-                            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8 text-center border-2 border-dashed border-gray-300 hover:border-pink-400 transition-colors cursor-pointer"
-                                id="dropZone">
-                                <input type="file" id="fileInput" class="hidden" multiple>
-                                <div
-                                    class="bg-pink-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-pink-500">
-                                    <i data-lucide="upload-cloud" class="w-8 h-8"></i>
-                                </div>
-                                <h2 class="text-2xl font-bold text-gray-800 mb-2">Carica i tuoi file</h2>
-                                <p class="text-gray-500 mb-6">Trascina qui i file o clicca per selezionarli</p>
-                                <button onclick="document.getElementById('fileInput').click()"
-                                    class="bg-pink-600 text-white px-6 py-2.5 rounded-xl hover:bg-pink-700 transition font-medium shadow-lg shadow-pink-200">
-                                    Seleziona File
-                                </button>
-                            </div>
-
-                            <!-- File List -->
-                            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                                    <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                                        <i data-lucide="files" class="w-5 h-5 text-gray-400"></i>
-                                        I tuoi documenti
-                                    </h3>
-                                    <span class="text-sm text-gray-500" id="fileCount">0 file</span>
-                                </div>
-
-                                <div id="fileList" class="divide-y divide-gray-100">
-                                    <!-- Files will be injected here -->
-                                    <div class="p-12 text-center text-gray-400" id="emptyState">
-                                        <i data-lucide="ghost" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                                        <p>Nessun file archiviato</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <script>
-                            lucide.createIcons();
-
-                            const fileInput = document.getElementById('fileInput');
-                            const fileList = document.getElementById('fileList');
-                            const emptyState = document.getElementById('emptyState');
-                            const fileCount = document.getElementById('fileCount');
-                            const dropZone = document.getElementById('dropZone');
-
-                            function formatSize(bytes) {
-                                if (bytes === 0) return '0 Bytes';
-                                const k = 1024;
-                                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-                                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-                            }
-
-                            async function loadFiles() {
-                                try {
-                                    const res = await fetch('/api/get-files');
-                                    const files = await res.json();
-                                    renderFiles(files);
-                                } catch (error) {
-                                    console.error('Error loading files:', error);
-                                    fileList.innerHTML = '<p class="text-center text-red-500 p-4">Errore caricamento file</p>';
-                                }
-                            }
-
-                            function renderFiles(files) {
-                                if (files.length === 0) {
-                                    emptyState.style.display = 'block';
-                                    fileList.innerHTML = '';
-                                    fileList.appendChild(emptyState);
-                                } else {
-                                    emptyState.style.display = 'none';
-                                    fileList.innerHTML = '';
-
-                                    files.forEach((file) => {
-                                        const div = document.createElement('div');
-                                        div.className = 'p-4 hover:bg-gray-50 transition flex items-center justify-between group';
-                                        div.innerHTML = `
-                        <a href="/api/download-file?id=${file.id}" target="_blank" class="flex items-center gap-4 flex-1">
-                            <div class="bg-gray-100 p-3 rounded-lg text-gray-500">
-                                <i data-lucide="file-text" class="w-6 h-6"></i>
-                            </div>
-                            <div>
-                                <div class="font-medium text-gray-800">${file.name}</div>
-                                <div class="text-xs text-gray-500">${formatSize(file.size)} • ${new Date(file.upload_date).toLocaleDateString('it-IT')}</div>
-                            </div>
-                        </a>
-                        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition">
-                            <button onclick="deleteFile(${file.id})" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition" title="Elimina">
-                                <i data-lucide="trash-2" class="w-5 h-5"></i>
-                            </button>
-                        </div>
-                    `;
-                                        fileList.appendChild(div);
-                                    });
-                                }
-                                fileCount.textContent = `${files.length} file`;
-                                lucide.createIcons();
-                            }
-
-                            async function uploadFile(file) {
-                                if (file.size > 4 * 1024 * 1024) {
-                                    alert(`Il file "${file.name}" è troppo grande (max 4MB)`);
-                                    return;
-                                }
-
-                                const reader = new FileReader();
-                                reader.readAsDataURL(file);
-                                reader.onload = async () => {
-                                    const base64Content = reader.result.split(',')[1]; // Remove data URL prefix
-
-                                    try {
-                                        const res = await fetch('/api/upload-file', {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({
-                                                name: file.name,
-                                                type: file.type,
-                                                size: file.size,
-                                                content: base64Content
-                                            })
-                                        });
-
-                                        if (!res.ok) throw new Error('Upload failed');
-
-                                        loadFiles(); // Refresh list
-                                    } catch (error) {
-                                        console.error('Error uploading:', error);
-                                        alert('Errore durante il caricamento del file');
-                                    }
-                                };
-                            }
-
-                            function handleFiles(files) {
-                                Array.from(files).forEach(file => uploadFile(file));
-                            }
-
-                            async function deleteFile(id) {
-                                if (!confirm('Vuoi davvero eliminare questo file?')) return;
-
-                                try {
-                                    await fetch('/api/delete-file', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ id })
-                                    });
-                                    loadFiles();
-                                } catch (error) {
-                                    console.error('Error deleting:', error);
-                                    alert('Errore durante l\'eliminazione');
-                                }
-                            }
-
-                            // Event Listeners
-                            fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
-
-                            dropZone.addEventListener('dragover', (e) => {
-                                e.preventDefault();
-                                dropZone.classList.add('border-pink-500', 'bg-pink-50');
-                            });
-
-                            dropZone.addEventListener('dragleave', (e) => {
-                                e.preventDefault();
-                                dropZone.classList.remove('border-pink-500', 'bg-pink-50');
-                            });
-
-                            dropZone.addEventListener('drop', (e) => {
-                                e.preventDefault();
-                                dropZone.classList.remove('border-pink-500', 'bg-pink-50');
-                                handleFiles(e.dataTransfer.files);
-                            });
-
-                            // Init
-                            loadFiles();
-                        </script>
-                    </body>
-
-                    </html>
+</html>
