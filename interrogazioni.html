@@ -6,131 +6,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interrogazioni Classe - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <style>
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .pulse-alert {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes pulse {
-
-            0%,
-            100% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.7;
-            }
-        }
-
-        .slide-in {
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(-20px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
-<body class="bg-gray-100 min-h-screen p-4 sm:p-6">
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen p-4 sm:p-6 transition-colors duration-300">
 
     <!-- Navigation -->
-    <nav class="mb-6 max-w-6xl mx-auto">
-        <a href="Index.html"
-            class="inline-flex items-center gap-2 text-purple-600 hover:text-purple-800 transition font-medium">
+    <nav class="mb-6 max-w-6xl mx-auto flex justify-between items-center">
+        <a href="index.html"
+            class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 transition font-medium">
             <i data-lucide="arrow-left" class="w-5 h-5"></i>
             Torna alla Home
         </a>
+        <button id="themeToggleBtn"
+            class="p-2 rounded-full bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition">
+            <i data-lucide="moon" class="w-5 h-5 text-gray-600"></i>
+        </button>
     </nav>
 
     <div class="max-w-6xl mx-auto">
         <!-- Header & Input -->
-        <div class="bg-white rounded-2xl shadow-xl p-6 mb-8">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-8 border border-gray-100 dark:border-gray-700">
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+                <h1 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
                     <i data-lucide="graduation-cap" class="w-10 h-10 text-purple-600"></i>
                     Interrogazioni
                 </h1>
-                <div class="text-sm text-gray-500" id="lastUpdate"></div>
+                <div class="text-sm text-gray-500 dark:text-gray-400" id="lastUpdate"></div>
             </div>
 
             <!-- Input Form -->
             <div
-                class="flex flex-col md:flex-row gap-3 items-stretch md:items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
+                class="flex flex-col md:flex-row gap-3 items-stretch md:items-center bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-100 dark:border-gray-600">
                 <input id="nameInput" type="text" placeholder="Nome studente..."
-                    class="flex-1 p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none">
+                    class="flex-1 p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
                 <input id="dateInput" type="date"
-                    class="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none">
+                    class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
                 <select id="subjectSelect"
-                    class="p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none">
+                    class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
                     <option value="">Seleziona materia...</option>
                 </select>
                 <button onclick="app.addStudent()"
-                    class="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 font-medium">
+                    class="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 font-medium shadow-lg shadow-purple-500/30">
                     <i data-lucide="plus-circle" class="w-5 h-5"></i><span>Salva</span>
                 </button>
             </div>
 
-            <!-- Quick actions -->
-            <div class="flex gap-2 flex-wrap items-center mt-4">
-                <button onclick="app.setToday()"
-                    class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full hover:bg-purple-200 transition">Oggi</button>
-                <button onclick="app.setYesterday()"
-                    class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full hover:bg-purple-200 transition">Ieri</button>
-                <button onclick="app.setLastWeek()"
-                    class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full hover:bg-purple-200 transition">Settimana
-                    scorsa</button>
-                <div class="flex-1"></div>
-                <button onclick="app.openSubjectsModal()"
-                    class="text-xs bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full hover:bg-blue-200 transition flex items-center gap-1 font-medium">
-                    <i data-lucide="settings" class="w-3 h-3"></i>Gestisci Materie
-                </button>
+            <!-- Quick actions & Search -->
+            <div class="flex flex-col sm:flex-row gap-4 mt-4 justify-between items-center">
+                <div class="flex gap-2 flex-wrap justify-center sm:justify-start">
+                    <button onclick="app.setToday()"
+                        class="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/50 transition">Oggi</button>
+                    <button onclick="app.setYesterday()"
+                        class="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/50 transition">Ieri</button>
+                    <button onclick="app.setLastWeek()"
+                        class="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/50 transition">Settimana
+                        scorsa</button>
+                </div>
+
+                <div class="flex gap-3 w-full sm:w-auto">
+                    <div class="relative flex-1 sm:w-64">
+                        <i data-lucide="search"
+                            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                        <input id="searchInput" type="text" placeholder="Cerca studente..."
+                            class="w-full pl-9 pr-4 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
+                    </div>
+                    <button onclick="app.openSubjectsModal()"
+                        class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/50 transition flex items-center gap-1 font-medium whitespace-nowrap">
+                        <i data-lucide="settings" class="w-3 h-3"></i>Gestisci Materie
+                    </button>
+                </div>
             </div>
         </div>
 
         <!-- Stats -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-lg shadow text-center">
-                <div class="text-2xl font-bold text-purple-600" id="totalStudents">0</div>
-                <div class="text-xs text-gray-600">Studenti totali</div>
+            <div
+                class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-center border border-gray-100 dark:border-gray-700">
+                <div class="text-2xl font-bold text-purple-600 dark:text-purple-400" id="totalStudents">0</div>
+                <div class="text-xs text-gray-600 dark:text-gray-400">Studenti totali</div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow text-center">
-                <div class="text-2xl font-bold text-orange-600" id="alertCount">0</div>
-                <div class="text-xs text-gray-600">Da interrogare</div>
+            <div
+                class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-center border border-gray-100 dark:border-gray-700">
+                <div class="text-2xl font-bold text-orange-600 dark:text-orange-400" id="alertCount">0</div>
+                <div class="text-xs text-gray-600 dark:text-gray-400">Da interrogare</div>
             </div>
-            <div class="bg-white p-4 rounded-lg shadow text-center">
-                <div class="text-2xl font-bold text-green-600" id="recentCount">0</div>
-                <div class="text-xs text-gray-600">Recenti (< 14g)</div>
+            <div
+                class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-center border border-gray-100 dark:border-gray-700">
+                <div class="text-2xl font-bold text-green-600 dark:text-green-400" id="recentCount">0</div>
+                <div class="text-xs text-gray-600 dark:text-gray-400">Recenti (< 14g)</div>
                 </div>
-                <div class="bg-white p-4 rounded-lg shadow text-center">
-                    <div class="text-2xl font-bold text-blue-600" id="subjectCount">0</div>
-                    <div class="text-xs text-gray-600">Materie attive</div>
+                <div
+                    class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-center border border-gray-100 dark:border-gray-700">
+                    <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="subjectCount">0</div>
+                    <div class="text-xs text-gray-600 dark:text-gray-400">Materie attive</div>
                 </div>
             </div>
 
@@ -140,34 +116,36 @@
             <!-- Empty state -->
             <div id="emptyState" class="text-center py-12 hidden">
                 <div class="text-6xl mb-4">📖</div>
-                <h3 class="text-xl font-semibold text-gray-700 mb-2">Nessuno studente ancora</h3>
-                <p class="text-gray-500">Aggiungi il primo studente per iniziare!</p>
+                <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">Nessuno studente trovato</h3>
+                <p class="text-gray-500 dark:text-gray-400">Aggiungi il primo studente per iniziare!</p>
             </div>
         </div>
 
         <!-- Modal Gestione Materie -->
         <div id="subjectsModal"
-            class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4 bg-black/50">
-            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-                <div class="p-6 border-b border-gray-200">
+            class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4 bg-black/50 backdrop-blur-sm">
+            <div
+                class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center justify-between">
-                        <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                             <i data-lucide="book-open" class="w-6 h-6 text-purple-600"></i>Gestisci Materie
                         </h2>
-                        <button onclick="app.closeSubjectsModal()" class="text-gray-400 hover:text-gray-600 transition">
+                        <button onclick="app.closeSubjectsModal()"
+                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
                             <i data-lucide="x" class="w-6 h-6"></i>
                         </button>
                     </div>
                 </div>
                 <div class="p-6 overflow-y-auto flex-1">
                     <!-- Form nuova materia -->
-                    <div class="bg-purple-50 p-4 rounded-lg mb-4">
-                        <h3 class="font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                    <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg mb-4">
+                        <h3 class="font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
                             <i data-lucide="plus-circle" class="w-4 h-4"></i>Aggiungi Nuova Materia
                         </h3>
                         <div class="flex gap-2 items-center">
                             <input id="newSubjectName" type="text" placeholder="Nome materia"
-                                class="flex-1 p-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-purple-400 focus:outline-none">
+                                class="flex-1 p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
                             <input id="newSubjectColor" type="color" value="#9b5de5"
                                 class="w-16 h-10 rounded-lg border border-gray-300 cursor-pointer"
                                 title="Scegli colore">
@@ -181,401 +159,8 @@
             </div>
         </div>
 
-        <script>
-            // =====================================================
-            // APP STATE & UTILITIES
-            // =====================================================
-            const app = {
-                state: {
-                    students: [],
-                    subjects: [],
-                    subjectColors: {}
-                },
-
-                // Utility: Formatta data
-                formatDate(dateString) {
-                    if (dateString === '9999-12-31') return 'DATA MANCANTE';
-                    const d = new Date(dateString);
-                    return d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                },
-
-                // Utility: Calcola giorni
-                daysSince(dateString) {
-                    if (dateString === '9999-12-31') return -1;
-                    const then = new Date(dateString);
-                    const now = new Date();
-                    then.setHours(0, 0, 0, 0);
-                    now.setHours(0, 0, 0, 0);
-                    return Math.floor((now - then) / (1000 * 60 * 60 * 24));
-                },
-
-                // Utility: Hex to RGB
-                hexToRgb(hex) {
-                    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                    return result ? {
-                        r: parseInt(result[1], 16),
-                        g: parseInt(result[2], 16),
-                        b: parseInt(result[3], 16)
-                    } : null;
-                },
-
-                // =====================================================
-                // API CALLS
-                // =====================================================
-                async loadSubjects() {
-                    try {
-                        const res = await fetch('/api/get-subjects');
-                        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                        this.state.subjects = await res.json();
-
-                        this.state.subjectColors = {};
-                        const select = document.getElementById('subjectSelect');
-                        select.innerHTML = '<option value="">Seleziona materia...</option>';
-
-                        this.state.subjects.forEach(s => {
-                            this.state.subjectColors[s.name] = s.color;
-                            const option = document.createElement('option');
-                            option.value = s.name;
-                            option.textContent = s.name;
-                            select.appendChild(option);
-                        });
-                    } catch (error) {
-                        console.error('Errore caricamento materie:', error);
-                        // Fallback in case of error
-                        const fallback = [
-                            { name: 'Italiano', color: '#9b5de5' },
-                            { name: 'Storia', color: '#ff7b00' },
-                            { name: 'Matematica', color: '#06d6a0' }
-                        ];
-                        this.state.subjects = fallback;
-                        fallback.forEach(s => this.state.subjectColors[s.name] = s.color);
-
-                        const select = document.getElementById('subjectSelect');
-                        select.innerHTML = '<option value="">Seleziona materia...</option>';
-                        fallback.forEach(s => {
-                            const option = document.createElement('option');
-                            option.value = s.name;
-                            option.textContent = s.name;
-                            select.appendChild(option);
-                        });
-                    }
-                },
-
-                async loadStudents() {
-                    try {
-                        const res = await fetch('/api/get-students');
-                        this.state.students = await res.json();
-                        this.render();
-                    } catch (error) {
-                        console.error('Errore caricamento studenti:', error);
-                    }
-                },
-
-                async addStudent() {
-                    const name = document.getElementById('nameInput').value.trim();
-                    const date = document.getElementById('dateInput').value;
-                    const subject = document.getElementById('subjectSelect').value;
-
-                    if (!name) {
-                        alert("Inserisci il nome dello studente!");
-                        document.getElementById('nameInput').focus();
-                        return;
-                    }
-                    if (!subject) {
-                        alert("Seleziona una materia!");
-                        return;
-                    }
-
-                    const finalDate = date || '9999-12-31';
-
-                    try {
-                        await fetch('/api/add-student', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name, last_interrogation: finalDate, subject })
-                        });
-
-                        document.getElementById('nameInput').value = '';
-                        document.getElementById('dateInput').value = '';
-                        this.loadStudents();
-                    } catch (error) {
-                        alert('Errore durante il salvataggio!');
-                        console.error(error);
-                    }
-                },
-
-                async deleteStudent(id) {
-                    if (!confirm('Sei sicuro di voler eliminare questo studente?')) return;
-
-                    try {
-                        await fetch('/api/delete-student', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id })
-                        });
-                        this.loadStudents();
-                    } catch (error) {
-                        console.error('Errore eliminazione:', error);
-                    }
-                },
-
-                async addNewSubject() {
-                    const name = document.getElementById('newSubjectName').value.trim();
-                    const color = document.getElementById('newSubjectColor').value;
-
-                    if (!name) return alert('Inserisci il nome della materia');
-
-                    try {
-                        await fetch('/api/add-subject', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name, color })
-                        });
-
-                        document.getElementById('newSubjectName').value = '';
-                        this.loadSubjects();
-                    } catch (error) {
-                        console.error('Errore aggiunta materia:', error);
-                    }
-                },
-
-                async deleteSubject(name) {
-                    if (!confirm(`Eliminare la materia "${name}"?`)) return;
-
-                    try {
-                        const res = await fetch('/api/delete-subject', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ name })
-                        });
-
-                        if (!res.ok) {
-                            const data = await res.json();
-                            throw new Error(data.error || 'Errore durante l\'eliminazione');
-                        }
-
-                        this.loadSubjects();
-                    } catch (error) {
-                        alert(error.message);
-                    }
-                },
-
-                // =====================================================
-                // UI HELPERS
-                // =====================================================
-                setToday() {
-                    document.getElementById('dateInput').valueAsDate = new Date();
-                },
-
-                setYesterday() {
-                    const yesterday = new Date();
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    document.getElementById('dateInput').valueAsDate = yesterday;
-                },
-
-                setLastWeek() {
-                    const lastWeek = new Date();
-                    lastWeek.setDate(lastWeek.getDate() - 7);
-                    document.getElementById('dateInput').valueAsDate = lastWeek;
-                },
-
-                openSubjectsModal() {
-                    document.getElementById('subjectsModal').classList.remove('hidden');
-                    document.getElementById('subjectsModal').classList.add('flex');
-                    this.renderSubjectsList();
-                },
-
-                closeSubjectsModal() {
-                    document.getElementById('subjectsModal').classList.add('hidden');
-                    document.getElementById('subjectsModal').classList.remove('flex');
-                },
-
-                // =====================================================
-                // RENDERING
-                // =====================================================
-                updateStats() {
-                    const total = this.state.students.length;
-                    const alerts = this.state.students.filter(s => this.daysSince(s.last_interrogation) > 14).length;
-                    const recent = this.state.students.filter(s => {
-                        const days = this.daysSince(s.last_interrogation);
-                        return days >= 0 && days <= 14;
-                    }).length;
-                    const subjects = new Set(this.state.students.map(s => s.subject)).size;
-
-                    document.getElementById('totalStudents').textContent = total;
-                    document.getElementById('alertCount').textContent = alerts;
-                    document.getElementById('recentCount').textContent = recent;
-                    document.getElementById('subjectCount').textContent = subjects;
-
-                    const now = new Date();
-                    document.getElementById('lastUpdate').textContent = `Ultimo aggiornamento: ${now.toLocaleTimeString('it-IT')}`;
-                },
-
-                renderSubjectsList() {
-                    const container = document.getElementById('subjectsList');
-                    container.innerHTML = '';
-
-                    if (this.state.subjects.length === 0) {
-                        container.innerHTML = '<p class="text-gray-500 text-center py-4">Nessuna materia disponibile</p>';
-                        return;
-                    }
-
-                    this.state.subjects.forEach(subject => {
-                        const studentCount = this.state.students.filter(s => s.subject === subject.name).length;
-                        const div = document.createElement('div');
-                        div.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition';
-                        div.innerHTML = `
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full" style="background: ${subject.color}"></div>
-                            <div>
-                                <div class="font-semibold text-gray-800">${subject.name}</div>
-                                <div class="text-xs text-gray-500">${studentCount} studenti</div>
-                            </div>
-                        </div>
-                        <button onclick="app.deleteSubject('${subject.name}')" 
-                            class="text-red-500 hover:text-red-700 transition ${studentCount > 0 ? 'opacity-50 cursor-not-allowed' : ''}"
-                            title="${studentCount > 0 ? 'Non puoi eliminare materie con studenti' : 'Elimina materia'}">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    `;
-                        container.appendChild(div);
-                    });
-                    lucide.createIcons();
-                },
-
-                render() {
-                    const container = document.getElementById('subjectsContainer');
-                    const emptyState = document.getElementById('emptyState');
-
-                    if (this.state.students.length === 0) {
-                        emptyState.classList.remove('hidden');
-                        container.innerHTML = '';
-                        this.updateStats();
-                        return;
-                    }
-
-                    emptyState.classList.add('hidden');
-
-                    // Raggruppa per materia
-                    const bySubject = {};
-                    this.state.students.forEach(s => {
-                        if (!bySubject[s.subject]) bySubject[s.subject] = [];
-                        bySubject[s.subject].push(s);
-                    });
-
-                    // Ordina per giorni
-                    Object.keys(bySubject).forEach(subject => {
-                        bySubject[subject].sort((a, b) => this.daysSince(b.last_interrogation) - this.daysSince(a.last_interrogation));
-                    });
-
-                    container.innerHTML = '';
-
-                    Object.keys(bySubject).sort().forEach(subject => {
-                        const color = this.state.subjectColors[subject] || '#6b7280';
-                        const rgb = this.hexToRgb(color);
-                        const lightColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-                        const students = bySubject[subject];
-                        const urgentCount = students.filter(s => this.daysSince(s.last_interrogation) > 30).length;
-
-                        const div = document.createElement('div');
-                        div.className = 'fade-in';
-                        div.innerHTML = `
-                        <div class="bg-white rounded-xl shadow-lg p-4 h-full">
-                            <div class="flex items-center justify-between mb-3">
-                                <h2 class="text-xl sm:text-2xl font-semibold flex items-center gap-2" style="color: ${color}">
-                                    <i data-lucide="book-open" class="w-5 h-5"></i>
-                                    <span>${subject}</span>
-                                </h2>
-                                <span class="text-sm font-medium px-2 py-1 rounded-full bg-gray-100 text-gray-700">${students.length}</span>
-                            </div>
-                            ${urgentCount > 0 ? `
-                            <div class="bg-red-50 border border-red-200 text-red-700 text-xs px-3 py-1 rounded-lg mb-3 flex items-center gap-1">
-                                <i data-lucide="alert-triangle" class="w-3 h-3"></i> ${urgentCount} da interrogare urgentemente
-                            </div>` : ''}
-                            <ul class="space-y-2" id="list-${subject}"></ul>
-                        </div>
-                    `;
-                        container.appendChild(div);
-
-                        const list = document.getElementById(`list-${subject}`);
-                        students.forEach((s, i) => {
-                            const days = this.daysSince(s.last_interrogation);
-                            const li = document.createElement('li');
-                            li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm slide-in';
-                            li.style.animationDelay = `${i * 0.05}s`;
-
-                            if (days === -1) {
-                                li.className += ' pulse-alert';
-                                li.style.background = 'rgba(255, 193, 7, 0.2)';
-                                li.style.borderLeft = '4px solid #ffc107';
-                                li.innerHTML = `
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="font-medium text-sm sm:text-base">${s.name}</span>
-                                    <span class="text-xs text-amber-700 font-semibold">📅 DATA MANCANTE</span>
-                                    <span class="bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ Da aggiornare</span>
-                                </div>
-                                <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            `;
-                            } else {
-                                const isVeryOld = days > 30;
-                                const isOld = days > 14;
-
-                                if (isVeryOld) li.className += ' pulse-alert';
-                                li.style.background = lightColor;
-                                li.style.borderLeft = `4px solid ${color}`;
-
-                                let badge = '';
-                                if (isVeryOld) badge = `<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">🔥 ${days}g</span>`;
-                                else if (isOld) badge = `<span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ ${days}g</span>`;
-                                else badge = `<span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">${days}g</span>`;
-
-                                li.innerHTML = `
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="font-medium text-sm sm:text-base">${s.name}</span>
-                                    <span class="text-xs text-gray-600">${this.formatDate(s.last_interrogation)}</span>
-                                    ${badge}
-                                </div>
-                                <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            `;
-                            }
-                            list.appendChild(li);
-                        });
-                    });
-                    lucide.createIcons();
-                    this.updateStats();
-                },
-
-                // =====================================================
-                // INIT
-                // =====================================================
-                async init() {
-                    this.setToday();
-
-                    // Enter key handler
-                    document.getElementById('nameInput').addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') this.addStudent();
-                    });
-
-                    // Close modal on backdrop click
-                    document.getElementById('subjectsModal').addEventListener('click', (e) => {
-                        if (e.target.id === 'subjectsModal') this.closeSubjectsModal();
-                    });
-
-                    await this.loadSubjects();
-                    await this.loadStudents();
-
-                    // Auto-refresh ogni 30 secondi
-                    setInterval(() => this.loadStudents(), 30000);
-                }
-            };
-
-            // Start app
-            app.init();
-        </script>
+        <script src="js/theme.js"></script>
+        <script src="js/app.js"></script>
 </body>
 
 </html>

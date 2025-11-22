@@ -6,24 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portale Classe - Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="css/style.css">
     <style>
-        .fade-in {
-            animation: fadeIn 0.8s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
         .hover-scale {
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -35,7 +25,14 @@
 </head>
 
 <body
-    class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen font-sans text-white flex flex-col">
+    class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen font-sans text-white flex flex-col transition-colors duration-300">
+
+    <nav class="absolute top-0 right-0 p-6 z-50">
+        <button id="themeToggleBtn"
+            class="p-2 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition text-white">
+            <i data-lucide="moon" class="w-5 h-5"></i>
+        </button>
+    </nav>
 
     <div class="flex-1 flex flex-col items-center justify-center p-6">
         <div class="text-center mb-12 fade-in">
@@ -58,7 +55,7 @@
                     class="absolute -top-6 bg-gradient-to-br from-purple-500 to-indigo-600 p-4 rounded-2xl shadow-lg group-hover:shadow-purple-500/50 transition">
                     <i data-lucide="book-open" class="w-8 h-8 text-white"></i>
                 </div>
-                <h2 class="text-2xl font-bold mt-8 mb-2">Interrogazioni</h2>
+                <h2 class="text-2xl font-bold mt-8 mb-2 text-white">Interrogazioni</h2>
                 <p class="text-gray-300 text-sm">Gestisci le date delle interrogazioni, visualizza le statistiche e
                     tieni traccia dei progressi.</p>
                 <div class="mt-6 text-purple-300 group-hover:text-white font-medium flex items-center gap-2">
@@ -73,7 +70,7 @@
                     class="absolute -top-6 bg-gradient-to-br from-pink-500 to-rose-600 p-4 rounded-2xl shadow-lg group-hover:shadow-pink-500/50 transition">
                     <i data-lucide="folder-archive" class="w-8 h-8 text-white"></i>
                 </div>
-                <h2 class="text-2xl font-bold mt-8 mb-2">Archivio</h2>
+                <h2 class="text-2xl font-bold mt-8 mb-2 text-white">Archivio</h2>
                 <p class="text-gray-300 text-sm">Carica e conserva i tuoi documenti scolastici, appunti e file
                     importanti in sicurezza.</p>
                 <div class="mt-6 text-pink-300 group-hover:text-white font-medium flex items-center gap-2">
@@ -88,7 +85,7 @@
                     class="absolute -top-6 bg-gradient-to-br from-amber-500 to-orange-600 p-4 rounded-2xl shadow-lg group-hover:shadow-amber-500/50 transition">
                     <i data-lucide="calendar" class="w-8 h-8 text-white"></i>
                 </div>
-                <h2 class="text-2xl font-bold mt-8 mb-2">Calendario</h2>
+                <h2 class="text-2xl font-bold mt-8 mb-2 text-white">Calendario</h2>
                 <p class="text-gray-300 text-sm">Visualizza gli impegni scolastici, le verifiche e gli eventi importanti
                     sul calendario.</p>
                 <div class="mt-6 text-amber-300 group-hover:text-white font-medium flex items-center gap-2">
@@ -103,6 +100,7 @@
         &copy; 2024 Portale Classe. Tutti i diritti riservati.
     </footer>
 
+    <script src="js/theme.js"></script>
     <script>
         lucide.createIcons();
     </script>
