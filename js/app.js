@@ -143,6 +143,26 @@ const app = {
         }
     },
 
+    async updateStudentName(id, currentName) {
+        const newName = prompt("Inserisci il nuovo nome:", currentName);
+        if (!newName || newName === currentName) return;
+
+        try {
+            const res = await fetch('/api/update-student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, name: newName })
+            });
+
+            if (!res.ok) throw new Error('Errore aggiornamento');
+
+            this.loadStudents();
+        } catch (error) {
+            alert('Errore durante l\'aggiornamento del nome');
+            console.error(error);
+        }
+    },
+
     async addNewSubject() {
         const nameInput = document.getElementById('newSubjectName');
         const colorInput = document.getElementById('newSubjectColor');
@@ -361,9 +381,14 @@ const app = {
                             <span class="text-xs text-amber-700 dark:text-amber-500 font-semibold">📅 DATA MANCANTE</span>
                             <span class="bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ Da aggiornare</span>
                         </div>
-                        <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
+                        <div class="flex items-center">
+                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     `;
                 } else {
                     const isVeryOld = days > 30;
@@ -384,9 +409,14 @@ const app = {
                             <span class="text-xs text-gray-600 dark:text-gray-400">${this.formatDate(s.last_interrogation)}</span>
                             ${badge}
                         </div>
-                        <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
+                        <div class="flex items-center">
+                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
+                                <i data-lucide="pencil" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
                     `;
                 }
                 list.appendChild(li);
