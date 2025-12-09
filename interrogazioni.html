@@ -94,66 +94,65 @@
             <div
                 class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-center border border-gray-100 dark:border-gray-700">
                 <div class="text-2xl font-bold text-green-600 dark:text-green-400" id="recentCount">0</div>
-                <div class="text-xs text-gray-600 dark:text-gray-400">Recenti (< 14g)</div>
-                </div>
-                <div
-                    class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-center border border-gray-100 dark:border-gray-700">
-                    <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="subjectCount">0</div>
-                    <div class="text-xs text-gray-600 dark:text-gray-400">Materie attive</div>
-                </div>
+                <div class="text-xs text-gray-600 dark:text-gray-400">Recenti (&lt; 14g)</div>
             </div>
-
-            <!-- Dashboard materie -->
-            <div id="subjectsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
-
-            <!-- Empty state -->
-            <div id="emptyState" class="text-center py-12 hidden">
-                <div class="text-6xl mb-4">📖</div>
-                <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">Nessuno studente trovato</h3>
-                <p class="text-gray-500 dark:text-gray-400">Aggiungi il primo studente per iniziare!</p>
-            </div>
-        </div>
-
-        <!-- Modal Gestione Materie -->
-        <div id="subjectsModal"
-            class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4 bg-black/50 backdrop-blur-sm">
             <div
-                class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                            <i data-lucide="book-open" class="w-6 h-6 text-purple-600"></i>Gestisci Materie
-                        </h2>
-                        <button onclick="app.closeSubjectsModal()"
-                            class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
-                            <i data-lucide="x" class="w-6 h-6"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="p-6 overflow-y-auto flex-1">
-                    <!-- Form nuova materia -->
-                    <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg mb-4">
-                        <h3 class="font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
-                            <i data-lucide="plus-circle" class="w-4 h-4"></i>Aggiungi Nuova Materia
-                        </h3>
-                        <div class="flex gap-2 items-center">
-                            <input id="newSubjectName" type="text" placeholder="Nome materia"
-                                class="flex-1 p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
-                            <input id="newSubjectColor" type="color" value="#9b5de5"
-                                class="w-16 h-10 rounded-lg border border-gray-300 cursor-pointer"
-                                title="Scegli colore">
-                            <button onclick="app.addNewSubject()"
-                                class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition">Aggiungi</button>
-                        </div>
-                    </div>
-                    <!-- Lista materie -->
-                    <div id="subjectsList" class="space-y-2"></div>
-                </div>
+                class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-center border border-gray-100 dark:border-gray-700">
+                <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="subjectCount">0</div>
+                <div class="text-xs text-gray-600 dark:text-gray-400">Materie attive</div>
             </div>
         </div>
 
-        <script type="module" src="/js/theme.js"></script>
-        <script type="module" src="/js/app.js"></script>
+        <!-- Dashboard materie -->
+        <div id="subjectsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
+
+        <!-- Empty state -->
+        <div id="emptyState" class="text-center py-12 hidden">
+            <div class="text-6xl mb-4">📖</div>
+            <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">Nessuno studente trovato</h3>
+            <p class="text-gray-500 dark:text-gray-400">Aggiungi il primo studente per iniziare!</p>
+        </div>
+    </div>
+
+    <!-- Modal Gestione Materie -->
+    <div id="subjectsModal"
+        class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4 bg-black/50 backdrop-blur-sm">
+        <div
+            class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
+            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-6 h-6 text-purple-600"></i>Gestisci Materie
+                    </h2>
+                    <button onclick="app.closeSubjectsModal()"
+                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <!-- Form nuova materia -->
+                <div class="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg mb-4">
+                    <h3 class="font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>Aggiungi Nuova Materia
+                    </h3>
+                    <div class="flex gap-2 items-center">
+                        <input id="newSubjectName" type="text" placeholder="Nome materia"
+                            class="flex-1 p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
+                        <input id="newSubjectColor" type="color" value="#9b5de5"
+                            class="w-16 h-10 rounded-lg border border-gray-300 cursor-pointer" title="Scegli colore">
+                        <button onclick="app.addNewSubject()"
+                            class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition">Aggiungi</button>
+                    </div>
+                </div>
+                <!-- Lista materie -->
+                <div id="subjectsList" class="space-y-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/js/theme.js"></script>
+    <script type="module" src="/js/app.js"></script>
 </body>
 
 </html>
