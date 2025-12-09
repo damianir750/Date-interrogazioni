@@ -96,6 +96,7 @@ const app = {
     // Optimized Init: Parallel loading
     async loadData() {
         await Promise.all([this.loadSubjects(), this.loadStudents()]);
+        this.render();
     },
 
     async addStudent() {
@@ -355,7 +356,7 @@ const app = {
             const div = document.createElement('div');
             div.className = 'fade-in';
             div.innerHTML = `
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col justify-start">
                     <div class="flex items-center justify-between mb-3">
                         <h2 class="text-xl sm:text-2xl font-semibold flex items-center gap-2" style="color: ${color}">
                             <i data-lucide="book-open" class="w-5 h-5"></i>
@@ -367,6 +368,7 @@ const app = {
                     <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-xs px-3 py-1 rounded-lg mb-3 flex items-center gap-1">
                         <i data-lucide="alert-triangle" class="w-3 h-3"></i> ${urgentCount} da interrogare urgentemente
                     </div>` : ''}
+
                     <ul class="space-y-2 list-none p-0 m-0" id="list-${subject.replace(/\s+/g, '-')}"></ul>
                 </div>
             `;
