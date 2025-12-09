@@ -311,7 +311,9 @@ const app = {
             `;
             container.appendChild(div);
         });
-        createIcons({ icons });
+        requestAnimationFrame(() => {
+            createIcons({ icons });
+        });
     },
 
     render() {
@@ -432,8 +434,14 @@ const app = {
                 list.appendChild(li);
             });
         });
-        createIcons({ icons });
-        this.updateStats();
+
+
+        // Use requestAnimationFrame to let the browser know we are done modifying DOM
+        // before we ask it to calculate layout for icons.
+        requestAnimationFrame(() => {
+            createIcons({ icons });
+            this.updateStats();
+        });
     },
 
     // =====================================================
