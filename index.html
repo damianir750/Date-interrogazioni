@@ -5,27 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portale Classe - Home</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="./style.css">
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
     </script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        .hover-scale {
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .hover-scale:hover {
-            transform: scale(1.05);
-        }
-    </style>
-    <script>
-  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
-</script>
-<script defer src="/_vercel/insights/script.js"></script>
+    <!-- <script defer src="/_vercel/insights/script.js"></script> -->
 </head>
 
 <body
@@ -102,9 +86,10 @@
 
 
 
-    <script src="js/theme.js"></script>
-    <script>
-        lucide.createIcons();
+    <script type="module" src="/js/theme.js"></script>
+    <script type="module">
+        import { createIcons, icons } from 'lucide';
+        createIcons({ icons });
     </script>
 </body>
 

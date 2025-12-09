@@ -11,6 +11,9 @@ export default async function handler(request, response) {
         return response.status(405).json({ error: 'Method Not Allowed' });
     }
 
+    response.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
+
+
     try {
         const subjects = await sql`SELECT * FROM subjects ORDER BY name ASC`;
         return response.status(200).json(subjects);

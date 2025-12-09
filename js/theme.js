@@ -1,3 +1,5 @@
+import { createIcons, icons } from 'lucide';
+
 // Theme Toggle Logic
 const themeToggle = {
     init() {
@@ -35,7 +37,7 @@ const themeToggle = {
         btn.innerHTML = isDark
             ? '<i data-lucide="sun" class="w-5 h-5 text-yellow-400"></i>'
             : '<i data-lucide="moon" class="w-5 h-5 text-gray-600"></i>';
-        lucide.createIcons();
+        createIcons({ icons });
     }
 };
 

@@ -1,3 +1,5 @@
+import { createIcons, icons } from 'lucide';
+
 // =====================================================
 // APP STATE & UTILITIES
 // =====================================================
@@ -89,6 +91,11 @@ const app = {
         } catch (error) {
             console.error('Errore caricamento studenti:', error);
         }
+    },
+
+    // Optimized Init: Parallel loading
+    async loadData() {
+        await Promise.all([this.loadSubjects(), this.loadStudents()]);
     },
 
     async addStudent() {
@@ -248,6 +255,7 @@ const app = {
     // RENDERING
     // =====================================================
     updateStats() {
+        // ... (stats logic same as before)
         const total = this.state.students.length;
         const alerts = this.state.students.filter(s => this.daysSince(s.last_interrogation) > 14).length;
         const recent = this.state.students.filter(s => {
@@ -302,7 +310,7 @@ const app = {
             `;
             container.appendChild(div);
         });
-        lucide.createIcons();
+        createIcons({ icons });
     },
 
     render() {
@@ -422,7 +430,7 @@ const app = {
                 list.appendChild(li);
             });
         });
-        lucide.createIcons();
+        createIcons({ icons });
         this.updateStats();
     },
 
@@ -454,13 +462,15 @@ const app = {
             });
         }
 
-        await this.loadSubjects();
-        await this.loadStudents();
+        await this.loadData();
 
         // Auto-refresh ogni 30 secondi
         setInterval(() => this.loadStudents(), 30000);
     }
 };
+
+// Expose app to window for inline HTML handlers
+window.app = app;
 
 // Start app
 document.addEventListener('DOMContentLoaded', () => {
