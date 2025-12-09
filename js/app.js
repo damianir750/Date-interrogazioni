@@ -466,15 +466,19 @@ const app = {
 
         await this.loadData();
 
-        // Auto-refresh ogni 30 secondi
-        setInterval(() => this.loadStudents(), 30000);
+        // Smart Polling: Auto-refresh only when tab is visible
+        setInterval(() => {
+            if (!document.hidden) {
+                this.loadStudents();
+            }
+        }, 30000);
     }
 };
 
 // Expose app to window for inline HTML handlers
 window.app = app;
 
-// Start app
-document.addEventListener('DOMContentLoaded', () => {
+// Start app when resources are fully loaded to avoid layout warnings
+window.addEventListener('load', () => {
     app.init();
 });
