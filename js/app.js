@@ -367,7 +367,7 @@ const app = {
                     <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-xs px-3 py-1 rounded-lg mb-3 flex items-center gap-1">
                         <i data-lucide="alert-triangle" class="w-3 h-3"></i> ${urgentCount} da interrogare urgentemente
                     </div>` : ''}
-                    <ul class="space-y-2" id="list-${subject.replace(/\s+/g, '-')}"></ul>
+                    <ul class="space-y-2 list-none p-0 m-0" id="list-${subject.replace(/\s+/g, '-')}"></ul>
                 </div>
             `;
             container.appendChild(div);
