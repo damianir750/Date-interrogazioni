@@ -43,5 +43,9 @@ const themeToggle = {
 
 // Init on load
 window.addEventListener('load', () => {
+    // Remove the anti-FOUC hidden style to allow clean theme toggling
+    const foucStyle = document.getElementById('fouc-style');
+    if (foucStyle) foucStyle.remove();
+
     themeToggle.init();
 });

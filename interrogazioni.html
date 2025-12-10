@@ -11,6 +11,7 @@
             else document.documentElement.classList.remove('dark');
             var bg = isDark ? '#111827' : '#f3f4f6';
             var s = document.createElement('style');
+            s.id = 'fouc-style';
             s.innerHTML = "html{visibility:hidden;opacity:0;background-color:" + bg + ";}";
             document.head.appendChild(s);
         })();
@@ -19,7 +20,8 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 
-<body class="bg-gray-100 dark:bg-gray-900 min-h-screen p-4 sm:p-6 transition-colors duration-300">
+<body
+    class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen p-4 sm:p-6 transition-colors duration-300">
 
     <!-- Navigation -->
     <nav class="mb-6 max-w-6xl mx-auto flex justify-between items-center">
