@@ -42,6 +42,6 @@ const themeToggle = {
 };
 
 // Init on load
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
     themeToggle.init();
 });
