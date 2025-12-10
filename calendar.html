@@ -6,21 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
         (function () {
-            try {
-                console.log('[Inline] Script running');
-                var isDark = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                console.log('[Inline] Detected dark:', isDark);
-                if (isDark) document.documentElement.classList.add('dark');
-                else document.documentElement.classList.remove('dark');
-                var bg = isDark ? '#111827' : '#f9fafb';
-                var s = document.createElement('style');
-                s.id = 'fouc-style';
-                s.innerHTML = "html{visibility:hidden;opacity:0;background-color:" + bg + ";}";
-                document.head.appendChild(s);
-                console.log('[Inline] Style injected with bg:', bg);
-            } catch (e) {
-                console.error('[Inline] Error:', e);
-            }
+            var isDark = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDark) document.documentElement.classList.add('dark');
+            else document.documentElement.classList.remove('dark');
+            var bg = isDark ? '#111827' : '#f9fafb';
+            var s = document.createElement('style');
+            s.id = 'fouc-style';
+            s.innerHTML = "html{visibility:hidden;opacity:0;background-color:" + bg + ";}";
+            document.head.appendChild(s);
         })();
     </script>
     <title>Calendario Scolastico</title>
