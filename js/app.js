@@ -1,4 +1,6 @@
-import { createIcons, icons } from 'lucide';
+import { createIcons, Trash2, Pencil, AlertTriangle, BookOpen } from 'lucide';
+
+const icons = { Trash2, Pencil, AlertTriangle, BookOpen };
 
 // =====================================================
 // APP STATE & UTILITIES

@@ -1,4 +1,39 @@
-import { createIcons, icons } from 'lucide';
+import {
+    createIcons,
+    Sun,
+    Moon,
+    Home,
+    ArrowRight,
+    ArrowLeft,
+    FolderArchive,
+    HardDrive,
+    ExternalLink,
+    Calendar,
+    GraduationCap,
+    PlusCircle,
+    Search,
+    Settings,
+    X,
+    BookOpen
+} from 'lucide';
+
+const icons = {
+    Sun,
+    Moon,
+    Home,
+    ArrowRight,
+    ArrowLeft,
+    FolderArchive,
+    HardDrive,
+    ExternalLink,
+    Calendar,
+    GraduationCap,
+    PlusCircle,
+    Search,
+    Settings,
+    X,
+    BookOpen
+};
 
 // Theme Toggle Logic
 const themeToggle = {
