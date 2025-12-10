@@ -3,6 +3,7 @@
 html {
     visibility: visible;
     opacity: 1;
+    background-color: initial !important;
 }
 
 .hover-scale {
