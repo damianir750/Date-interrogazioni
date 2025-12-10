@@ -85,9 +85,10 @@ const app = {
         }
     },
 
-    async loadStudents() {
+    async loadStudents(forceRefresh = false) {
         try {
-            const res = await fetch('/api/get-students');
+            const url = forceRefresh ? `/api/get-students?t=${Date.now()}` : '/api/get-students';
+            const res = await fetch(url);
             this.state.students = await res.json();
             this.render();
         } catch (error) {
@@ -131,7 +132,7 @@ const app = {
 
             nameInput.value = '';
             dateInput.value = '';
-            this.loadStudents();
+            this.loadStudents(true);
         } catch (error) {
             alert('Errore durante il salvataggio!');
             console.error(error);
@@ -147,7 +148,7 @@ const app = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id })
             });
-            this.loadStudents();
+            this.loadStudents(true);
         } catch (error) {
             console.error('Errore eliminazione:', error);
         }
@@ -166,7 +167,7 @@ const app = {
 
             if (!res.ok) throw new Error('Errore aggiornamento');
 
-            this.loadStudents();
+            this.loadStudents(true);
         } catch (error) {
             alert('Errore durante l\'aggiornamento del nome');
             console.error(error);
