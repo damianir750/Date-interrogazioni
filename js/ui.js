@@ -139,9 +139,10 @@ export const ui = {
                 li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm slide-in dark:text-gray-200';
                 li.style.animationDelay = `${i * 0.05}s`;
 
-                // Badge Voti
+                // Badge Voti - matches subject color
                 const gradesCount = s.grades_count || 0;
-                const gradesBadge = `<span class="bg-purple-200 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs px-2 py-1 rounded-full font-bold ml-2" title="Numero voti">🎓 ${gradesCount}</span>`;
+                const badgeBgColor = utils.darkenColor(color, 0.2);
+                const gradesBadge = `<span class="text-white text-xs px-2 py-1 rounded-full font-bold ml-2" style="background-color: ${badgeBgColor};" title="Numero voti">🎓 ${gradesCount}</span>`;
 
                 if (days === -1) {
                     li.className += ' pulse-alert';
