@@ -121,7 +121,7 @@ const app = {
 
         try {
             await api.deleteStudent(id);
-            this.loadStudents(true);
+            // this.loadStudents(true); // removed to avoid double refresh
         } catch (error) {
             console.error('Errore eliminazione:', error);
             // Revert
