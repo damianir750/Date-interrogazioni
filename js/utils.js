@@ -43,6 +43,16 @@ export const utils = {
         };
     },
 
+    // Darkens a hex color by a percentage (0-1)
+    darkenColor(hex, percent = 0.3) {
+        const rgb = this.hexToRgb(hex);
+        if (!rgb) return hex;
+        const r = Math.max(0, Math.floor(rgb.r * (1 - percent)));
+        const g = Math.max(0, Math.floor(rgb.g * (1 - percent)));
+        const b = Math.max(0, Math.floor(rgb.b * (1 - percent)));
+        return `rgb(${r}, ${g}, ${b})`;
+    },
+
     // Escape HTML to prevent XSS
     escapeHtml(unsafe) {
         if (!unsafe) return '';
