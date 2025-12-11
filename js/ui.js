@@ -141,7 +141,7 @@ export const ui = {
 
                 // Badge Voti
                 const gradesCount = s.grades_count || 0;
-                const gradesBadge = `<span class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs px-2 py-1 rounded-full font-bold ml-2" title="Numero voti">🎓 ${gradesCount}</span>`;
+                const gradesBadge = `<span class="bg-purple-200 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 text-xs px-2 py-1 rounded-full font-bold ml-2" title="Numero voti">🎓 ${gradesCount}</span>`;
 
                 if (days === -1) {
                     li.className += ' pulse-alert';

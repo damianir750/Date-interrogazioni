@@ -142,7 +142,7 @@ const app = {
 
         try {
             await api.updateStudent({ id, grades_count: currentGrades + 1 });
-            this.loadStudents(true);
+            // this.loadStudents(true); // removed to avoid double refresh
         } catch (error) {
             console.error(error);
             // Revert on error
