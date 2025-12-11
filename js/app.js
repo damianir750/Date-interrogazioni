@@ -208,6 +208,12 @@ const app = {
         const newDate = prompt("Inserisci data interrogazione (AAAA-MM-GG):", today);
         if (!newDate) return;
 
+        // Simple Regex Validation YYYY-MM-DD
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate)) {
+            alert("Formato data non valido! Usa AAAA-MM-GG");
+            return;
+        }
+
         // Optimistic Update
         const previousStudents = JSON.parse(JSON.stringify(this.state.students));
         const studentIndex = this.state.students.findIndex(s => s.id === id);
