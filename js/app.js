@@ -1,5 +1,6 @@
 import { api } from './api.js';
 import { ui } from './ui.js';
+import { utils } from './utils.js';
 
 // =====================================================
 // APP STATE
@@ -313,10 +314,10 @@ const app = {
             });
         }
 
-        // Search handler
+        // Search handler - Debounced
         const searchInput = document.getElementById('searchInput');
         if (searchInput) {
-            searchInput.addEventListener('input', (e) => this.handleSearch(e));
+            searchInput.addEventListener('input', utils.debounce((e) => this.handleSearch(e), 300));
         }
 
         // Close modal on backdrop click
@@ -327,7 +328,25 @@ const app = {
             });
         }
 
-        await this.loadData();
+        try {
+            await this.loadData();
+        } catch (error) {
+            console.error("Critical Init Error:", error);
+            document.body.innerHTML = `
+                <div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+                    <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md">
+                        <i data-lucide="alert-triangle" class="w-12 h-12 text-red-500 mx-auto mb-4"></i>
+                        <h2 class="text-2xl font-bold mb-2">Errore di Caricamento</h2>
+                        <p class="mb-4">Non è stato possibile caricare i dati. Verifica la connessione o riprova più tardi.</p>
+                        <button onclick="window.location.reload()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Riprova</button>
+                    </div>
+                </div>
+            `;
+            // Re-run icons just in case
+            import('lucide').then(({ createIcons, AlertTriangle }) => {
+                createIcons({ icons: { AlertTriangle } });
+            });
+        }
 
         // Smart Polling: Auto-refresh only when tab is visible
         setInterval(() => {
