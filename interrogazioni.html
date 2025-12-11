@@ -54,6 +54,7 @@
             <div
                 class="flex flex-col md:flex-row gap-3 items-stretch md:items-center bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-100 dark:border-gray-600">
                 <input id="nameInput" type="text" placeholder="Nome studente..." aria-label="Nome studente"
+                    enterkeyhint="next"
                     class="flex-1 p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
                 <input id="dateInput" type="date" aria-label="Data interrogazione"
                     class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
@@ -62,7 +63,7 @@
                     <option value="">Seleziona materia...</option>
                 </select>
                 <input id="gradesCountInput" type="number" min="0" value="0" placeholder="Voti..."
-                    aria-label="Numero di voti"
+                    aria-label="Numero di voti" inputmode="numeric"
                     class="w-20 p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none"
                     title="Numero di voti già presi">
                 <button onclick="app.addStudent()" aria-label="Aggiungi studente"
