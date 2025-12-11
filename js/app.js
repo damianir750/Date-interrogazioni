@@ -258,6 +258,43 @@ const app = {
         }
     },
 
+    async registerInterrogation(id, currentGrades) {
+        const today = new Date().toISOString().split('T')[0];
+        const newDate = prompt("Inserisci data interrogazione (AAAA-MM-GG):", today);
+        if (!newDate) return;
+
+        // Optimistic Update
+        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
+        const studentIndex = this.state.students.findIndex(s => s.id === id);
+        if (studentIndex !== -1) {
+            this.state.students[studentIndex].last_interrogation = newDate;
+            this.state.students[studentIndex].grades_count = (currentGrades || 0) + 1;
+            this.render();
+        }
+
+        try {
+            const res = await fetch('/api/update-student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id,
+                    last_interrogation: newDate,
+                    grades_count: (currentGrades || 0) + 1
+                })
+            });
+
+            if (!res.ok) throw new Error('Errore aggiornamento');
+
+            this.loadStudents(true);
+        } catch (error) {
+            alert('Errore durante la registrazione dell\'interrogazione');
+            console.error(error);
+            // Revert
+            this.state.students = previousStudents;
+            this.render();
+        }
+    },
+
     async addNewSubject() {
         const nameInput = document.getElementById('newSubjectName');
         const colorInput = document.getElementById('newSubjectColor');
@@ -491,6 +528,9 @@ const app = {
                             <span class="bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ Da aggiornare</span>
                         </div>
                         <div class="flex items-center">
+                            <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition ml-2" title="Segna come interrogato">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                            </button>
                             <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition ml-2" title="Modifica numero voti">
                                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                             </button>
@@ -523,6 +563,9 @@ const app = {
                             ${badge}
                         </div>
                         <div class="flex items-center">
+                            <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition ml-2" title="Segna come interrogato">
+                                <i data-lucide="check" class="w-4 h-4"></i>
+                            </button>
                             <button onclick="app.incrementGrade(${s.id}, ${gradesCount})" class="text-green-500 hover:text-green-700 transition ml-2" title="Aggiungi voto (+1)">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                             </button>
