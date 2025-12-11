@@ -20,15 +20,18 @@ export default async function handler(request, response) {
                 return response.status(400).json({ error: "Invalid JSON" });
             }
         }
-        const { id, name } = body;
+        const { id, name, grades_count, last_interrogation } = body;
 
-        if (!id || !name) {
-            return response.status(400).json({ error: "ID e nome sono richiesti" });
+        if (!id) {
+            return response.status(400).json({ error: "ID è richiesto" });
         }
 
         const [student] = await sql`
         UPDATE students 
-        SET name = ${name}
+        SET 
+            name = COALESCE(${name}, name),
+            grades_count = COALESCE(${grades_count}, grades_count),
+            last_interrogation = COALESCE(${last_interrogation}, last_interrogation)
         WHERE id = ${id}
         RETURNING *`;
 

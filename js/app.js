@@ -106,10 +106,12 @@ const app = {
         const nameInput = document.getElementById('nameInput');
         const dateInput = document.getElementById('dateInput');
         const subjectSelect = document.getElementById('subjectSelect');
+        const gradesCountInput = document.getElementById('gradesCountInput');
 
         const name = nameInput.value.trim();
         const date = dateInput.value;
         const subject = subjectSelect.value;
+        const grades_count = parseInt(gradesCountInput.value) || 0;
 
         if (!name) {
             alert("Inserisci il nome dello studente!");
@@ -127,11 +129,12 @@ const app = {
             await fetch('/api/add-student', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, last_interrogation: finalDate, subject })
+                body: JSON.stringify({ name, last_interrogation: finalDate, subject, grades_count })
             });
 
             nameInput.value = '';
             dateInput.value = '';
+            gradesCountInput.value = '0';
             this.loadStudents(true);
         } catch (error) {
             alert('Errore durante il salvataggio!');
@@ -154,22 +157,48 @@ const app = {
         }
     },
 
-    async updateStudentName(id, currentName) {
-        const newName = prompt("Inserisci il nuovo nome:", currentName);
-        if (!newName || newName === currentName) return;
-
+    async incrementGrade(id, currentGrades) {
         try {
             const res = await fetch('/api/update-student', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, name: newName })
+                body: JSON.stringify({ id, grades_count: currentGrades + 1 })
+            });
+            if (!res.ok) throw new Error('Errore aggiornamento');
+            this.loadStudents(true);
+        } catch (error) {
+            console.error(error);
+        }
+    },
+
+    async updateStudentName(id, currentName, currentGrades) {
+        // Simple prompt for name
+        const newName = prompt("Inserisci il nuovo nome:", currentName);
+        if (newName === null) return; // Cancelled
+
+        // Simple prompt for grades
+        const newGradesStr = prompt("Aggiorna numero voti:", currentGrades);
+        if (newGradesStr === null) return; // Cancelled
+        const newGrades = parseInt(newGradesStr);
+
+        if (!newName && isNaN(newGrades)) return;
+
+        try {
+            const payload = { id };
+            if (newName && newName !== currentName) payload.name = newName;
+            if (!isNaN(newGrades) && newGrades !== currentGrades) payload.grades_count = newGrades;
+
+            const res = await fetch('/api/update-student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
 
             if (!res.ok) throw new Error('Errore aggiornamento');
 
             this.loadStudents(true);
         } catch (error) {
-            alert('Errore durante l\'aggiornamento del nome');
+            alert('Errore durante l\'aggiornamento');
             console.error(error);
         }
     },
@@ -344,9 +373,14 @@ const app = {
             bySubject[s.subject].push(s);
         });
 
-        // Ordina per giorni
+        // Ordina per numero voti (crescente), poi per giorni (decrescente, cioè data più vecchia prima)
         Object.keys(bySubject).forEach(subject => {
-            bySubject[subject].sort((a, b) => this.daysSince(b.last_interrogation) - this.daysSince(a.last_interrogation));
+            bySubject[subject].sort((a, b) => {
+                const gradeDiff = (a.grades_count || 0) - (b.grades_count || 0);
+                if (gradeDiff !== 0) return gradeDiff;
+                // Se voti uguali, chi non è interrogato da più tempo va prima
+                return this.daysSince(b.last_interrogation) - this.daysSince(a.last_interrogation);
+            });
         });
 
         container.innerHTML = '';
@@ -386,6 +420,10 @@ const app = {
                 li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm slide-in dark:text-gray-200';
                 li.style.animationDelay = `${i * 0.05}s`;
 
+                // Badge Voti
+                const gradesCount = s.grades_count || 0;
+                const gradesBadge = `<span class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs px-2 py-1 rounded-full font-bold ml-2" title="Numero voti">🎓 ${gradesCount}</span>`;
+
                 if (days === -1) {
                     li.className += ' pulse-alert';
                     li.style.background = 'rgba(255, 193, 7, 0.2)';
@@ -393,11 +431,12 @@ const app = {
                     li.innerHTML = `
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="font-medium text-sm sm:text-base">${s.name}</span>
+                            ${gradesBadge}
                             <span class="text-xs text-amber-700 dark:text-amber-500 font-semibold">📅 DATA MANCANTE</span>
                             <span class="bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ Da aggiornare</span>
                         </div>
                         <div class="flex items-center">
-                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
+                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}', ${gradesCount})" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
                             <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
@@ -421,11 +460,15 @@ const app = {
                     li.innerHTML = `
                         <div class="flex items-center gap-2 flex-wrap">
                             <span class="font-medium text-sm sm:text-base">${s.name}</span>
+                            ${gradesBadge}
                             <span class="text-xs text-gray-600 dark:text-gray-400">${this.formatDate(s.last_interrogation)}</span>
                             ${badge}
                         </div>
                         <div class="flex items-center">
-                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
+                            <button onclick="app.incrementGrade(${s.id}, ${gradesCount})" class="text-green-500 hover:text-green-700 transition ml-2" title="Aggiungi voto">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}', ${gradesCount})" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
                             <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">

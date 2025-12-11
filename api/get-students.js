@@ -14,7 +14,7 @@ export default async function handler(request, response) {
     response.setHeader('Cache-Control', 's-maxage=10, stale-while-revalidate');
 
     try {
-        const students = await sql`SELECT * FROM students ORDER BY last_interrogation ASC`;
+        const students = await sql`SELECT * FROM students ORDER BY grades_count ASC, last_interrogation ASC`;
         return response.status(200).json(students);
     } catch (error) {
         return response.status(500).json({ error: error.message });
