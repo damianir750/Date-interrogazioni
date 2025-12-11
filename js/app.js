@@ -145,6 +145,11 @@ const app = {
     async deleteStudent(id) {
         if (!confirm('Sei sicuro di voler eliminare questo studente?')) return;
 
+        // Optimistic Update
+        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
+        this.state.students = this.state.students.filter(s => s.id !== id);
+        this.render();
+
         try {
             await fetch('/api/delete-student', {
                 method: 'POST',
@@ -154,10 +159,22 @@ const app = {
             this.loadStudents(true);
         } catch (error) {
             console.error('Errore eliminazione:', error);
+            // Revert
+            this.state.students = previousStudents;
+            this.render();
+            alert("Errore di connessione. Eliminazione annullata.");
         }
     },
 
     async incrementGrade(id, currentGrades) {
+        // Optimistic Update
+        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
+        const studentIndex = this.state.students.findIndex(s => s.id === id);
+        if (studentIndex !== -1) {
+            this.state.students[studentIndex].grades_count = (currentGrades || 0) + 1;
+            this.render();
+        }
+
         try {
             const res = await fetch('/api/update-student', {
                 method: 'POST',
@@ -165,15 +182,28 @@ const app = {
                 body: JSON.stringify({ id, grades_count: currentGrades + 1 })
             });
             if (!res.ok) throw new Error('Errore aggiornamento');
+            // Background refresh to ensure consistency
             this.loadStudents(true);
         } catch (error) {
             console.error(error);
+            // Revert on error
+            this.state.students = previousStudents;
+            this.render();
+            alert("Errore di connessione. Modifica annullata.");
         }
     },
 
     async updateStudentName(id, currentName) {
         const newName = prompt("Inserisci il nuovo nome:", currentName);
         if (!newName || newName === currentName) return;
+
+        // Optimistic Update
+        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
+        const studentIndex = this.state.students.findIndex(s => s.id === id);
+        if (studentIndex !== -1) {
+            this.state.students[studentIndex].name = newName;
+            this.render();
+        }
 
         try {
             const res = await fetch('/api/update-student', {
@@ -188,6 +218,9 @@ const app = {
         } catch (error) {
             alert('Errore durante l\'aggiornamento del nome');
             console.error(error);
+            // Revert
+            this.state.students = previousStudents;
+            this.render();
         }
     },
 
@@ -197,6 +230,14 @@ const app = {
         const newGrades = parseInt(newGradesStr);
 
         if (isNaN(newGrades) || newGrades === currentGrades) return;
+
+        // Optimistic Update
+        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
+        const studentIndex = this.state.students.findIndex(s => s.id === id);
+        if (studentIndex !== -1) {
+            this.state.students[studentIndex].grades_count = newGrades;
+            this.render();
+        }
 
         try {
             const res = await fetch('/api/update-student', {
@@ -211,6 +252,9 @@ const app = {
         } catch (error) {
             alert('Errore durante l\'aggiornamento voti');
             console.error(error);
+            // Revert
+            this.state.students = previousStudents;
+            this.render();
         }
     },
 
