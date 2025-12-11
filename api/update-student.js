@@ -29,9 +29,9 @@ export default async function handler(request, response) {
         const [student] = await sql`
         UPDATE students 
         SET 
-            name = COALESCE(${name}, name),
-            grades_count = COALESCE(${grades_count}, grades_count),
-            last_interrogation = COALESCE(${last_interrogation}, last_interrogation)
+            name = COALESCE(${name ?? null}, name),
+            grades_count = COALESCE(${grades_count ?? null}, grades_count),
+            last_interrogation = COALESCE(${last_interrogation ?? null}, last_interrogation)
         WHERE id = ${id}
         RETURNING *`;
 

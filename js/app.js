@@ -171,34 +171,45 @@ const app = {
         }
     },
 
-    async updateStudentName(id, currentName, currentGrades) {
-        // Simple prompt for name
+    async updateStudentName(id, currentName) {
         const newName = prompt("Inserisci il nuovo nome:", currentName);
-        if (newName === null) return; // Cancelled
-
-        // Simple prompt for grades
-        const newGradesStr = prompt("Aggiorna numero voti:", currentGrades);
-        if (newGradesStr === null) return; // Cancelled
-        const newGrades = parseInt(newGradesStr);
-
-        if (!newName && isNaN(newGrades)) return;
+        if (!newName || newName === currentName) return;
 
         try {
-            const payload = { id };
-            if (newName && newName !== currentName) payload.name = newName;
-            if (!isNaN(newGrades) && newGrades !== currentGrades) payload.grades_count = newGrades;
-
             const res = await fetch('/api/update-student', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ id, name: newName })
             });
 
             if (!res.ok) throw new Error('Errore aggiornamento');
 
             this.loadStudents(true);
         } catch (error) {
-            alert('Errore durante l\'aggiornamento');
+            alert('Errore durante l\'aggiornamento del nome');
+            console.error(error);
+        }
+    },
+
+    async updateStudentGrades(id, currentGrades) {
+        const newGradesStr = prompt("Modifica numero voti:", currentGrades);
+        if (newGradesStr === null) return;
+        const newGrades = parseInt(newGradesStr);
+
+        if (isNaN(newGrades) || newGrades === currentGrades) return;
+
+        try {
+            const res = await fetch('/api/update-student', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id, grades_count: newGrades })
+            });
+
+            if (!res.ok) throw new Error('Errore aggiornamento');
+
+            this.loadStudents(true);
+        } catch (error) {
+            alert('Errore durante l\'aggiornamento voti');
             console.error(error);
         }
     },
@@ -436,7 +447,10 @@ const app = {
                             <span class="bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ Da aggiornare</span>
                         </div>
                         <div class="flex items-center">
-                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}', ${gradesCount})" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica">
+                            <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition ml-2" title="Modifica numero voti">
+                                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
                             <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
@@ -465,10 +479,13 @@ const app = {
                             ${badge}
                         </div>
                         <div class="flex items-center">
-                            <button onclick="app.incrementGrade(${s.id}, ${gradesCount})" class="text-green-500 hover:text-green-700 transition ml-2" title="Aggiungi voto">
+                            <button onclick="app.incrementGrade(${s.id}, ${gradesCount})" class="text-green-500 hover:text-green-700 transition ml-2" title="Aggiungi voto (+1)">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}', ${gradesCount})" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica">
+                            <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition ml-2" title="Modifica numero voti">
+                                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
                             <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
