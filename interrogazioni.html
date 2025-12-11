@@ -16,6 +16,8 @@
             document.head.appendChild(s);
         })();
     </script>
+    <meta name="description"
+        content="Dashboard Interrogazioni: gestisci voti e date delle interrogazioni della classe.">
     <title>Interrogazioni Classe - Dashboard</title>
     <link rel="stylesheet" href="./style.css">
 </head>
@@ -30,7 +32,7 @@
             <i data-lucide="arrow-left" class="w-5 h-5"></i>
             Torna alla Home
         </a>
-        <button id="themeToggleBtn"
+        <button id="themeToggleBtn" aria-label="Cambia tema"
             class="p-2 rounded-full bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition">
             <i data-lucide="moon" class="w-5 h-5 text-gray-600"></i>
         </button>
@@ -51,18 +53,19 @@
             <!-- Input Form -->
             <div
                 class="flex flex-col md:flex-row gap-3 items-stretch md:items-center bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-100 dark:border-gray-600">
-                <input id="nameInput" type="text" placeholder="Nome studente..."
+                <input id="nameInput" type="text" placeholder="Nome studente..." aria-label="Nome studente"
                     class="flex-1 p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
-                <input id="dateInput" type="date"
+                <input id="dateInput" type="date" aria-label="Data interrogazione"
                     class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
-                <select id="subjectSelect"
+                <select id="subjectSelect" aria-label="Seleziona materia"
                     class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
                     <option value="">Seleziona materia...</option>
                 </select>
                 <input id="gradesCountInput" type="number" min="0" value="0" placeholder="Voti..."
+                    aria-label="Numero di voti"
                     class="w-20 p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none"
                     title="Numero di voti già presi">
-                <button onclick="app.addStudent()"
+                <button onclick="app.addStudent()" aria-label="Aggiungi studente"
                     class="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 font-medium shadow-lg shadow-purple-500/30">
                     <i data-lucide="plus-circle" class="w-5 h-5"></i><span>Salva</span>
                 </button>
