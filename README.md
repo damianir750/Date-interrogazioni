@@ -12,6 +12,11 @@
 ### ✨ Funzionalità Principali
 - **Gestione Studenti**: Aggiungi, modifica e rimuovi studenti dalla lista.
 - **Tracciamento Date**: Calcolo automatico dei giorni trascorsi dall'ultima interrogazione.
+- **Conteggio Voti**: 🎓 Traccia il numero di interrogazioni già sostenute per ogni studente.
+- **Prioritizzazione Intelligente**: Gli studenti vengono ordinati automaticamente priorizzando chi ha meno voti e, a parità di voti, chi non viene interrogato da più tempo.
+- **Interfaccia Ottimizzata**:
+  - ✨ **Azioni Rapide**: Pulsante "Check" per segnare rapidamente un'interrogazione (aggiorna data e voti).
+  - 🔄 **Aggiornamento Istantaneo**: UI ottimista per un feedback immediato.
 - **Sistema di Alert**:
   - 🟢 **Verde**: Interrogato recentemente (< 14 giorni).
   - 🟠 **Arancione**: Attenzione (> 14 giorni).
@@ -23,8 +28,9 @@
 - **Responsive**: Funziona perfettamente su desktop, tablet e smartphone.
 
 ### 🛠️ Tecnologie Utilizzate
-- **Frontend**: HTML5, JavaScript (Vanilla), Tailwind CSS (via CDN).
-- **Icone**: Lucide Icons.
+- **Frontend**: HTML5, JavaScript (Modulare), Tailwind CSS (Build locale).
+- **Build Tool**: Vite.
+- **Icone**: Lucide Icons (Ottimizzate).
 - **Backend**: API Serverless (Vercel Functions).
 - **Database**: Neon (PostgreSQL).
 
@@ -57,6 +63,11 @@
 ### ✨ Key Features
 - **Student Management**: Add, edit, and remove students from the list.
 - **Date Tracking**: Automatically calculates days since the last interrogation.
+- **Grade Counting**: 🎓 Tracks the number of interrogations for each student.
+- **Smart Prioritization**: Automatically sorts students by prioritizing those with fewer grades, then by longest time since last interrogation.
+- **Optimized Interface**:
+  - ✨ **Quick Actions**: "Check" button to instantly log an interrogation (updates date & grades).
+  - 🔄 **Instant Updates**: Optimistic UI for immediate feedback.
 - **Alert System**:
   - 🟢 **Green**: Recently tested (< 14 days).
   - 🟠 **Orange**: Warning (> 14 days).
@@ -68,8 +79,9 @@
 - **Responsive**: Works perfectly on desktop, tablets, and smartphones.
 
 ### 🛠️ Tech Stack
-- **Frontend**: HTML5, JavaScript (Vanilla), Tailwind CSS (via CDN).
-- **Icons**: Lucide Icons.
+- **Frontend**: HTML5, JavaScript (Modular), Tailwind CSS (Local Build).
+- **Build Tool**: Vite.
+- **Icons**: Lucide Icons (Optimized).
 - **Backend**: Serverless API (Vercel Functions).
 - **Database**: Neon (PostgreSQL).
 
