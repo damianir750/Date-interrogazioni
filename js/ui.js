@@ -134,6 +134,7 @@ export const ui = {
             const list = document.getElementById(`list-${subject.replace(/\s+/g, '-')}`);
             subjectStudents.forEach((s, i) => {
                 const days = utils.daysSince(s.last_interrogation);
+                const safeName = utils.escapeHtml(s.name);
                 const li = document.createElement('li');
                 li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm slide-in dark:text-gray-200';
                 li.style.animationDelay = `${i * 0.05}s`;
@@ -148,7 +149,7 @@ export const ui = {
                     li.style.borderLeft = '4px solid #ffc107';
                     li.innerHTML = `
                         <div class="flex items-center gap-2 flex-wrap">
-                            <span class="font-medium text-sm sm:text-base">${s.name}</span>
+                            <span class="font-medium text-sm sm:text-base">${safeName}</span>
                             ${gradesBadge}
                             <span class="text-xs text-amber-700 dark:text-amber-500 font-semibold">📅 DATA MANCANTE</span>
                             <span class="bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ Da aggiornare</span>
@@ -160,7 +161,7 @@ export const ui = {
                             <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition ml-2" title="Modifica numero voti">
                                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
+                            <button onclick="app.updateStudentName(${s.id}, '${safeName.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
                             <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
@@ -183,7 +184,7 @@ export const ui = {
 
                     li.innerHTML = `
                         <div class="flex items-center gap-2 flex-wrap">
-                            <span class="font-medium text-sm sm:text-base">${s.name}</span>
+                            <span class="font-medium text-sm sm:text-base">${safeName}</span>
                             ${gradesBadge}
                             <span class="text-xs text-gray-600 dark:text-gray-400">${utils.formatDate(s.last_interrogation)}</span>
                             ${badge}
@@ -198,7 +199,7 @@ export const ui = {
                             <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition ml-2" title="Modifica numero voti">
                                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
+                            <button onclick="app.updateStudentName(${s.id}, '${safeName.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
                             <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
