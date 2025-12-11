@@ -5,6 +5,11 @@
 html {
     visibility: visible;
     opacity: 1;
+    color-scheme: light;
+}
+
+html.dark {
+    color-scheme: dark;
 }
 
 .hover-scale {
