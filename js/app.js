@@ -1,9 +1,8 @@
-import { createIcons, Trash2, Pencil, AlertTriangle, BookOpen, GraduationCap, Plus, ArrowLeft, Moon, PlusCircle, Search, Settings, X, Check } from 'lucide';
-
-const icons = { Trash2, Pencil, AlertTriangle, BookOpen, GraduationCap, Plus, ArrowLeft, Moon, PlusCircle, Search, Settings, X, Check };
+import { api } from './api.js';
+import { ui } from './ui.js';
 
 // =====================================================
-// APP STATE & UTILITIES
+// APP STATE
 // =====================================================
 const app = {
     state: {
@@ -13,43 +12,14 @@ const app = {
         searchTerm: ''
     },
 
-    // Utility: Formatta data
-    formatDate(dateString) {
-        if (dateString === '9999-12-31') return 'DATA MANCANTE';
-        const d = new Date(dateString);
-        return d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    },
-
-    // Utility: Calcola giorni
-    daysSince(dateString) {
-        if (dateString === '9999-12-31') return -1;
-        const then = new Date(dateString);
-        const now = new Date();
-        then.setHours(0, 0, 0, 0);
-        now.setHours(0, 0, 0, 0);
-        return Math.floor((now - then) / (1000 * 60 * 60 * 24));
-    },
-
-    // Utility: Hex to RGB
-    hexToRgb(hex) {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-    },
-
     // =====================================================
-    // API CALLS
+    // CONTROLLER METHODS
     // =====================================================
     async loadSubjects() {
         try {
-            const res = await fetch('/api/get-subjects');
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            this.state.subjects = await res.json();
-
+            this.state.subjects = await api.getSubjects();
             this.state.subjectColors = {};
+
             const select = document.getElementById('subjectSelect');
             if (select) {
                 select.innerHTML = '<option value="">Seleziona materia...</option>';
@@ -87,9 +57,7 @@ const app = {
 
     async loadStudents(forceRefresh = false) {
         try {
-            const url = forceRefresh ? `/api/get-students?t=${Date.now()}` : '/api/get-students';
-            const res = await fetch(url);
-            this.state.students = await res.json();
+            this.state.students = await api.getStudents(forceRefresh) || [];
             this.render();
         } catch (error) {
             console.error('Errore caricamento studenti:', error);
@@ -100,6 +68,10 @@ const app = {
     async loadData() {
         await Promise.all([this.loadSubjects(), this.loadStudents()]);
         this.render();
+    },
+
+    render() {
+        ui.render(this.state.students, this.state.subjectColors, this.state.searchTerm);
     },
 
     async addStudent() {
@@ -126,11 +98,7 @@ const app = {
         const finalDate = date || '9999-12-31';
 
         try {
-            await fetch('/api/add-student', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, last_interrogation: finalDate, subject, grades_count })
-            });
+            await api.addStudent({ name, last_interrogation: finalDate, subject, grades_count });
 
             nameInput.value = '';
             dateInput.value = '';
@@ -151,11 +119,7 @@ const app = {
         this.render();
 
         try {
-            await fetch('/api/delete-student', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id })
-            });
+            await api.deleteStudent(id);
             this.loadStudents(true);
         } catch (error) {
             console.error('Errore eliminazione:', error);
@@ -176,13 +140,7 @@ const app = {
         }
 
         try {
-            const res = await fetch('/api/update-student', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, grades_count: currentGrades + 1 })
-            });
-            if (!res.ok) throw new Error('Errore aggiornamento');
-            // Background refresh to ensure consistency
+            await api.updateStudent({ id, grades_count: currentGrades + 1 });
             this.loadStudents(true);
         } catch (error) {
             console.error(error);
@@ -206,14 +164,7 @@ const app = {
         }
 
         try {
-            const res = await fetch('/api/update-student', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, name: newName })
-            });
-
-            if (!res.ok) throw new Error('Errore aggiornamento');
-
+            await api.updateStudent({ id, name: newName });
             this.loadStudents(true);
         } catch (error) {
             alert('Errore durante l\'aggiornamento del nome');
@@ -240,14 +191,7 @@ const app = {
         }
 
         try {
-            const res = await fetch('/api/update-student', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id, grades_count: newGrades })
-            });
-
-            if (!res.ok) throw new Error('Errore aggiornamento');
-
+            await api.updateStudent({ id, grades_count: newGrades });
             this.loadStudents(true);
         } catch (error) {
             alert('Errore durante l\'aggiornamento voti');
@@ -273,18 +217,11 @@ const app = {
         }
 
         try {
-            const res = await fetch('/api/update-student', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    id,
-                    last_interrogation: newDate,
-                    grades_count: (currentGrades || 0) + 1
-                })
+            await api.updateStudent({
+                id,
+                last_interrogation: newDate,
+                grades_count: (currentGrades || 0) + 1
             });
-
-            if (!res.ok) throw new Error('Errore aggiornamento');
-
             this.loadStudents(true);
         } catch (error) {
             alert('Errore durante la registrazione dell\'interrogazione');
@@ -305,11 +242,7 @@ const app = {
         if (!name) return alert('Inserisci il nome della materia');
 
         try {
-            await fetch('/api/add-subject', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, color })
-            });
+            await api.addSubject({ name, color });
 
             nameInput.value = '';
             this.loadSubjects();
@@ -322,17 +255,7 @@ const app = {
         if (!confirm(`Eliminare la materia "${name}"?`)) return;
 
         try {
-            const res = await fetch('/api/delete-subject', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name })
-            });
-
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.error || 'Errore durante l\'eliminazione');
-            }
-
+            await api.deleteSubject(name);
             this.loadSubjects();
         } catch (error) {
             alert(error.message);
@@ -362,7 +285,7 @@ const app = {
         const modal = document.getElementById('subjectsModal');
         modal.classList.remove('hidden');
         modal.classList.add('flex');
-        this.renderSubjectsList();
+        ui.renderSubjectsList(this.state.subjects, this.state.students);
     },
 
     closeSubjectsModal() {
@@ -374,224 +297,6 @@ const app = {
     handleSearch(e) {
         this.state.searchTerm = e.target.value.toLowerCase();
         this.render();
-    },
-
-    // =====================================================
-    // RENDERING
-    // =====================================================
-    updateStats() {
-        // ... (stats logic same as before)
-        const total = this.state.students.length;
-        const alerts = this.state.students.filter(s => this.daysSince(s.last_interrogation) > 14).length;
-        const recent = this.state.students.filter(s => {
-            const days = this.daysSince(s.last_interrogation);
-            return days >= 0 && days <= 14;
-        }).length;
-        const subjects = new Set(this.state.students.map(s => s.subject)).size;
-
-        const totalEl = document.getElementById('totalStudents');
-        if (totalEl) totalEl.textContent = total;
-
-        const alertEl = document.getElementById('alertCount');
-        if (alertEl) alertEl.textContent = alerts;
-
-        const recentEl = document.getElementById('recentCount');
-        if (recentEl) recentEl.textContent = recent;
-
-        const subjectEl = document.getElementById('subjectCount');
-        if (subjectEl) subjectEl.textContent = subjects;
-
-        const now = new Date();
-        const lastUpdateEl = document.getElementById('lastUpdate');
-        if (lastUpdateEl) lastUpdateEl.textContent = `Ultimo aggiornamento: ${now.toLocaleTimeString('it-IT')}`;
-    },
-
-    renderSubjectsList() {
-        const container = document.getElementById('subjectsList');
-        container.innerHTML = '';
-
-        if (this.state.subjects.length === 0) {
-            container.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center py-4">Nessuna materia disponibile</p>';
-            return;
-        }
-
-        this.state.subjects.forEach(subject => {
-            const studentCount = this.state.students.filter(s => s.subject === subject.name).length;
-            const div = document.createElement('div');
-            div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition';
-            div.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full" style="background: ${subject.color}"></div>
-                    <div>
-                        <div class="font-semibold text-gray-800 dark:text-white">${subject.name}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400">${studentCount} studenti</div>
-                    </div>
-                </div>
-                <button onclick="app.deleteSubject('${subject.name}')" 
-                    class="text-red-500 hover:text-red-700 transition ${studentCount > 0 ? 'opacity-50 cursor-not-allowed' : ''}"
-                    title="${studentCount > 0 ? 'Non puoi eliminare materie con studenti' : 'Elimina materia'}">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-            `;
-            container.appendChild(div);
-        });
-        requestAnimationFrame(() => {
-            createIcons({ icons });
-        });
-    },
-
-    render() {
-        const container = document.getElementById('subjectsContainer');
-        const emptyState = document.getElementById('emptyState');
-
-        // Filter students based on search term
-        const filteredStudents = this.state.students.filter(s =>
-            s.name.toLowerCase().includes(this.state.searchTerm)
-        );
-
-        if (this.state.students.length === 0) {
-            emptyState.classList.remove('hidden');
-            container.innerHTML = '';
-            this.updateStats();
-            return;
-        }
-
-        emptyState.classList.add('hidden');
-
-        // Raggruppa per materia
-        const bySubject = {};
-        filteredStudents.forEach(s => {
-            if (!bySubject[s.subject]) bySubject[s.subject] = [];
-            bySubject[s.subject].push(s);
-        });
-
-        // Ordina per numero voti (crescente), poi per giorni (decrescente, cioè data più vecchia prima)
-        Object.keys(bySubject).forEach(subject => {
-            bySubject[subject].sort((a, b) => {
-                const gradeDiff = (a.grades_count || 0) - (b.grades_count || 0);
-                if (gradeDiff !== 0) return gradeDiff;
-                // Se voti uguali, chi non è interrogato da più tempo va prima
-                return this.daysSince(b.last_interrogation) - this.daysSince(a.last_interrogation);
-            });
-        });
-
-        container.innerHTML = '';
-
-        Object.keys(bySubject).sort().forEach(subject => {
-            const color = this.state.subjectColors[subject] || '#6b7280';
-            const rgb = this.hexToRgb(color);
-            const lightColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
-            const students = bySubject[subject];
-            const urgentCount = students.filter(s => this.daysSince(s.last_interrogation) > 30).length;
-
-            const div = document.createElement('div');
-            div.className = 'fade-in';
-            div.innerHTML = `
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col justify-start">
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-xl sm:text-2xl font-semibold flex items-center gap-2" style="color: ${color}">
-                            <i data-lucide="book-open" class="w-5 h-5"></i>
-                            <span>${subject}</span>
-                        </h2>
-                        <span class="text-sm font-medium px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">${students.length}</span>
-                    </div>
-                    ${urgentCount > 0 ? `
-                    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-xs px-3 py-1 rounded-lg mb-3 flex items-center gap-1">
-                        <i data-lucide="alert-triangle" class="w-3 h-3"></i> ${urgentCount} da interrogare urgentemente
-                    </div>` : ''}
-
-                    <ul class="space-y-2 list-none p-0 m-0" id="list-${subject.replace(/\s+/g, '-')}"></ul>
-                </div>
-            `;
-            container.appendChild(div);
-
-            const list = document.getElementById(`list-${subject.replace(/\s+/g, '-')}`);
-            students.forEach((s, i) => {
-                const days = this.daysSince(s.last_interrogation);
-                const li = document.createElement('li');
-                li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm slide-in dark:text-gray-200';
-                li.style.animationDelay = `${i * 0.05}s`;
-
-                // Badge Voti
-                const gradesCount = s.grades_count || 0;
-                const gradesBadge = `<span class="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs px-2 py-1 rounded-full font-bold ml-2" title="Numero voti">🎓 ${gradesCount}</span>`;
-
-                if (days === -1) {
-                    li.className += ' pulse-alert';
-                    li.style.background = 'rgba(255, 193, 7, 0.2)';
-                    li.style.borderLeft = '4px solid #ffc107';
-                    li.innerHTML = `
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="font-medium text-sm sm:text-base">${s.name}</span>
-                            ${gradesBadge}
-                            <span class="text-xs text-amber-700 dark:text-amber-500 font-semibold">📅 DATA MANCANTE</span>
-                            <span class="bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ Da aggiornare</span>
-                        </div>
-                        <div class="flex items-center">
-                            <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition ml-2" title="Segna come interrogato">
-                                <i data-lucide="check" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition ml-2" title="Modifica numero voti">
-                                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
-                                <i data-lucide="pencil" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    const isVeryOld = days > 30;
-                    const isOld = days > 14;
-
-                    if (isVeryOld) li.className += ' pulse-alert';
-                    li.style.background = lightColor;
-                    li.style.borderLeft = `4px solid ${color}`;
-
-                    let badge = '';
-                    if (isVeryOld) badge = `<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">🔥 ${days}g</span>`;
-                    else if (isOld) badge = `<span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ ${days}g</span>`;
-                    else badge = `<span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">${days}g</span>`;
-
-                    li.innerHTML = `
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="font-medium text-sm sm:text-base">${s.name}</span>
-                            ${gradesBadge}
-                            <span class="text-xs text-gray-600 dark:text-gray-400">${this.formatDate(s.last_interrogation)}</span>
-                            ${badge}
-                        </div>
-                        <div class="flex items-center">
-                            <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition ml-2" title="Segna come interrogato">
-                                <i data-lucide="check" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="app.incrementGrade(${s.id}, ${gradesCount})" class="text-green-500 hover:text-green-700 transition ml-2" title="Aggiungi voto (+1)">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition ml-2" title="Modifica numero voti">
-                                <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="app.updateStudentName(${s.id}, '${s.name.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
-                                <i data-lucide="pencil" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    `;
-                }
-                list.appendChild(li);
-            });
-        });
-
-
-        // Use requestAnimationFrame to let the browser know we are done modifying DOM
-        // before we ask it to calculate layout for icons.
-        requestAnimationFrame(() => {
-            createIcons({ icons });
-            this.updateStats();
-        });
     },
 
     // =====================================================
