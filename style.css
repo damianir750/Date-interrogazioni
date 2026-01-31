@@ -155,38 +155,90 @@ html.dyslexic-mode * {
     animation: slideOutRight 0.3s ease-in forwards;
 }
 
-/* Themes - Mode-Aware */
+/* Themes - Comprehensive System with CSS Variables */
 
 /* LIGHT MODE THEMES */
 body.theme-ocean {
     background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+    --theme-accent: #0ea5e9;
+    --theme-accent-hover: #0284c7;
 }
 
 body.theme-sunset {
     background: linear-gradient(135deg, #fed7aa 0%, #fdba74 50%, #fb923c 100%);
+    --theme-accent: #f97316;
+    --theme-accent-hover: #ea580c;
 }
 
 body.theme-forest {
     background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%);
+    --theme-accent: #10b981;
+    --theme-accent-hover: #059669;
 }
 
 body.theme-lavender {
     background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 50%, #d8b4fe 100%);
+    --theme-accent: #a855f7;
+    --theme-accent-hover: #9333ea;
+}
+
+body.theme-rose {
+    background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 50%, #fda4af 100%);
+    --theme-accent: #f43f5e;
+    --theme-accent-hover: #e11d48;
+}
+
+body.theme-mint {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%);
+    --theme-accent: #14b8a6;
+    --theme-accent-hover: #0d9488;
+}
+
+body.theme-peach {
+    background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 50%, #fdba74 100%);
+    --theme-accent: #fb923c;
+    --theme-accent-hover: #f97316;
 }
 
 /* DARK MODE THEMES */
 .dark body.theme-midnight {
     background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+    --theme-accent: #6366f1;
+    --theme-accent-hover: #4f46e5;
 }
 
 .dark body.theme-abyss {
     background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
+    --theme-accent: #0ea5e9;
+    --theme-accent-hover: #0284c7;
 }
 
 .dark body.theme-ember {
     background: linear-gradient(135deg, #7c2d12 0%, #9a3412 50%, #c2410c 100%);
+    --theme-accent: #f97316;
+    --theme-accent-hover: #ea580c;
 }
 
 .dark body.theme-nebula {
     background: linear-gradient(135deg, #4c1d95 0%, #6b21a8 50%, #7e22ce 100%);
+    --theme-accent: #a855f7;
+    --theme-accent-hover: #9333ea;
+}
+
+.dark body.theme-crimson {
+    background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 50%, #991b1b 100%);
+    --theme-accent: #ef4444;
+    --theme-accent-hover: #dc2626;
+}
+
+.dark body.theme-forest-dark {
+    background: linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%);
+    --theme-accent: #22c55e;
+    --theme-accent-hover: #16a34a;
+}
+
+.dark body.theme-slate {
+    background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%);
+    --theme-accent: #64748b;
+    --theme-accent-hover: #475569;
 }

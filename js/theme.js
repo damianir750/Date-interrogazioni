@@ -131,14 +131,20 @@ const bgToggle = {
         { id: 'ocean', name: 'Ocean', colors: ['#e0f2fe', '#bae6fd', '#7dd3fc'] },
         { id: 'sunset', name: 'Sunset', colors: ['#fed7aa', '#fdba74', '#fb923c'] },
         { id: 'forest', name: 'Forest', colors: ['#d1fae5', '#a7f3d0', '#6ee7b7'] },
-        { id: 'lavender', name: 'Lavender', colors: ['#f3e8ff', '#e9d5ff', '#d8b4fe'] }
+        { id: 'lavender', name: 'Lavender', colors: ['#f3e8ff', '#e9d5ff', '#d8b4fe'] },
+        { id: 'rose', name: 'Rose', colors: ['#ffe4e6', '#fecdd3', '#fda4af'] },
+        { id: 'mint', name: 'Mint', colors: ['#d1fae5', '#a7f3d0', '#6ee7b7'] },
+        { id: 'peach', name: 'Peach', colors: ['#ffedd5', '#fed7aa', '#fdba74'] }
     ],
     darkThemes: [
         { id: 'default', name: 'Default', colors: ['#0f172a', '#4c1d95', '#1e293b'] },
         { id: 'midnight', name: 'Midnight', colors: ['#0f172a', '#1e1b4b', '#312e81'] },
         { id: 'abyss', name: 'Abyss', colors: ['#0c4a6e', '#075985', '#0369a1'] },
         { id: 'ember', name: 'Ember', colors: ['#7c2d12', '#9a3412', '#c2410c'] },
-        { id: 'nebula', name: 'Nebula', colors: ['#4c1d95', '#6b21a8', '#7e22ce'] }
+        { id: 'nebula', name: 'Nebula', colors: ['#4c1d95', '#6b21a8', '#7e22ce'] },
+        { id: 'crimson', name: 'Crimson', colors: ['#450a0a', '#7f1d1d', '#991b1b'] },
+        { id: 'forest-dark', name: 'Forest', colors: ['#14532d', '#166534', '#15803d'] },
+        { id: 'slate', name: 'Slate', colors: ['#020617', '#0f172a', '#1e293b'] }
     ],
 
     init() {
