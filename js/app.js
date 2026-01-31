@@ -78,8 +78,6 @@ const app = {
 
     // Helper for optimistic UI updates
     async optimisticUpdate(actionFn, apiFn, errorMsg = "Errore di connessione. Modifica annullata.") {
-        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
-
         // 1. Apply local change
         actionFn();
         ui.updateStats(this.state.students);
@@ -91,10 +89,8 @@ const app = {
             // Optional: Reload to sync server state (can receive args to decide)
         } catch (error) {
             console.error(error);
-            // 3. Revert on error
-            this.state.students = previousStudents;
-            ui.updateStats(this.state.students);
-            this.render();
+            // 3. Re-sync on error (safer than reverting to potentially stale state)
+            this.loadStudents(true);
             alert(errorMsg);
         }
     },
@@ -180,7 +176,7 @@ const app = {
         if (newGradesStr === null) return;
         const newGrades = parseInt(newGradesStr);
 
-        if (isNaN(newGrades) || newGrades === currentGrades) return;
+        if (isNaN(newGrades) || newGrades < 0 || newGrades === currentGrades) return;
 
         await this.optimisticUpdate(
             () => {

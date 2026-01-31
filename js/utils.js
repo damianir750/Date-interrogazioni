@@ -13,10 +13,17 @@ export const utils = {
     // Calcola giorni trascorsi da una data
     daysSince(dateString) {
         if (dateString === '9999-12-31') return -1;
-        const then = new Date(dateString);
+
+        // Parse "YYYY-MM-DD" manually to treat it as local time
+        const [objYear, objMonth, objDay] = dateString.split('-').map(Number);
+
+        // Create date at midnight local time
+        const then = new Date(objYear, objMonth - 1, objDay);
         const now = new Date();
+
         then.setHours(0, 0, 0, 0);
         now.setHours(0, 0, 0, 0);
+
         return Math.floor((now - then) / (1000 * 60 * 60 * 24));
     },
 
