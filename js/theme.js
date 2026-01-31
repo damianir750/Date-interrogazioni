@@ -164,4 +164,7 @@ window.addEventListener('load', () => {
     themeToggle.init();
     a11yToggle.init();
     bgToggle.init();
+
+    // Initialize all Lucide icons
+    createIcons({ icons });
 });
