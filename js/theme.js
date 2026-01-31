@@ -16,7 +16,8 @@ import {
     X,
     BookOpen,
     Eye,
-    Palette
+    Palette,
+    Check
 } from 'lucide';
 
 const icons = {
@@ -36,7 +37,8 @@ const icons = {
     X,
     BookOpen,
     Eye,
-    Palette
+    Palette,
+    Check
 };
 
 // Theme Toggle Logic
