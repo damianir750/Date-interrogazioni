@@ -126,3 +126,61 @@ html.dyslexic-mode * {
         box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
     }
 }
+
+/* Animations */
+@keyframes slideInBottom {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideOutRight {
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+.animate-enter {
+    animation: slideInBottom 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-exit {
+    animation: slideOutRight 0.3s ease-in forwards;
+}
+
+/* Themes */
+/* Default is already in body, these override it */
+
+/* Ocean Theme */
+body.theme-ocean {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+body.theme-ocean.dark {
+    background: linear-gradient(135deg, #0c4a6e 0%, #0f172a 100%);
+}
+
+/* Sunset Theme */
+body.theme-sunset {
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+}
+
+body.theme-sunset.dark {
+    background: linear-gradient(135deg, #431407 0%, #881337 100%);
+}
+
+/* Nebula Theme (Lighter/More colorful dark mode) */
+body.theme-nebula {
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+}
+
+body.theme-nebula.dark {
+    background: linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #db2777 100%);
+}
