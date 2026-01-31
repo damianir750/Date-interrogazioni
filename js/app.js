@@ -59,6 +59,7 @@ const app = {
     async loadStudents(forceRefresh = false) {
         try {
             this.state.students = await api.getStudents(forceRefresh) || [];
+            ui.updateStats(this.state.students);
             this.render();
         } catch (error) {
             console.error('Errore caricamento studenti:', error);
@@ -73,6 +74,29 @@ const app = {
 
     render() {
         ui.render(this.state.students, this.state.subjectColors, this.state.searchTerm);
+    },
+
+    // Helper for optimistic UI updates
+    async optimisticUpdate(actionFn, apiFn, errorMsg = "Errore di connessione. Modifica annullata.") {
+        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
+
+        // 1. Apply local change
+        actionFn();
+        ui.updateStats(this.state.students);
+        this.render();
+
+        try {
+            // 2. Call API
+            await apiFn();
+            // Optional: Reload to sync server state (can receive args to decide)
+        } catch (error) {
+            console.error(error);
+            // 3. Revert on error
+            this.state.students = previousStudents;
+            ui.updateStats(this.state.students);
+            this.render();
+            alert(errorMsg);
+        }
     },
 
     async addStudent() {
@@ -99,12 +123,15 @@ const app = {
         const finalDate = date || '9999-12-31';
 
         try {
-            await api.addStudent({ name, last_interrogation: finalDate, subject, grades_count });
+            const newStudent = await api.addStudent({ name, last_interrogation: finalDate, subject, grades_count });
 
             nameInput.value = '';
             dateInput.value = '';
             gradesCountInput.value = '0';
-            this.loadStudents(true);
+
+            this.state.students.push(newStudent);
+            ui.updateStats(this.state.students);
+            this.render();
         } catch (error) {
             alert('Errore durante il salvataggio!');
             console.error(error);
@@ -114,66 +141,38 @@ const app = {
     async deleteStudent(id) {
         if (!confirm('Sei sicuro di voler eliminare questo studente?')) return;
 
-        // Optimistic Update
-        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
-        this.state.students = this.state.students.filter(s => s.id !== id);
-        this.render();
-
-        try {
-            await api.deleteStudent(id);
-            // this.loadStudents(true); // removed to avoid double refresh
-        } catch (error) {
-            console.error('Errore eliminazione:', error);
-            // Revert
-            this.state.students = previousStudents;
-            this.render();
-            alert("Errore di connessione. Eliminazione annullata.");
-        }
+        await this.optimisticUpdate(
+            () => { this.state.students = this.state.students.filter(s => s.id !== id); },
+            () => api.deleteStudent(id),
+            "Errore di connessione. Eliminazione annullata."
+        );
     },
 
     async incrementGrade(id, currentGrades) {
-        // Optimistic Update
-        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
-        const studentIndex = this.state.students.findIndex(s => s.id === id);
-        if (studentIndex !== -1) {
-            this.state.students[studentIndex].grades_count = (currentGrades || 0) + 1;
-            this.render();
-        }
-
-        try {
-            await api.updateStudent({ id, grades_count: currentGrades + 1 });
-            // this.loadStudents(true); // removed to avoid double refresh
-        } catch (error) {
-            console.error(error);
-            // Revert on error
-            this.state.students = previousStudents;
-            this.render();
-            alert("Errore di connessione. Modifica annullata.");
-        }
+        await this.optimisticUpdate(
+            () => {
+                const s = this.state.students.find(s => s.id === id);
+                if (s) s.grades_count = (currentGrades || 0) + 1;
+            },
+            () => api.updateStudent({ id, grades_count: currentGrades + 1 })
+        );
     },
 
     async updateStudentName(id, currentName) {
         const newName = prompt("Inserisci il nuovo nome:", currentName);
         if (!newName || newName === currentName) return;
 
-        // Optimistic Update
-        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
-        const studentIndex = this.state.students.findIndex(s => s.id === id);
-        if (studentIndex !== -1) {
-            this.state.students[studentIndex].name = newName;
-            this.render();
-        }
-
-        try {
-            await api.updateStudent({ id, name: newName });
-            this.loadStudents(true);
-        } catch (error) {
-            alert('Errore durante l\'aggiornamento del nome');
-            console.error(error);
-            // Revert
-            this.state.students = previousStudents;
-            this.render();
-        }
+        await this.optimisticUpdate(
+            () => {
+                const s = this.state.students.find(s => s.id === id);
+                if (s) s.name = newName;
+            },
+            async () => {
+                await api.updateStudent({ id, name: newName });
+                this.loadStudents(true); // Reload to ensure sync
+            },
+            "Errore durante l'aggiornamento del nome"
+        );
     },
 
     async updateStudentGrades(id, currentGrades) {
@@ -183,24 +182,17 @@ const app = {
 
         if (isNaN(newGrades) || newGrades === currentGrades) return;
 
-        // Optimistic Update
-        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
-        const studentIndex = this.state.students.findIndex(s => s.id === id);
-        if (studentIndex !== -1) {
-            this.state.students[studentIndex].grades_count = newGrades;
-            this.render();
-        }
-
-        try {
-            await api.updateStudent({ id, grades_count: newGrades });
-            this.loadStudents(true);
-        } catch (error) {
-            alert('Errore durante l\'aggiornamento voti');
-            console.error(error);
-            // Revert
-            this.state.students = previousStudents;
-            this.render();
-        }
+        await this.optimisticUpdate(
+            () => {
+                const s = this.state.students.find(s => s.id === id);
+                if (s) s.grades_count = newGrades;
+            },
+            async () => {
+                await api.updateStudent({ id, grades_count: newGrades });
+                this.loadStudents(true);
+            },
+            "Errore durante l'aggiornamento voti"
+        );
     },
 
     async registerInterrogation(id, currentGrades) {
@@ -214,29 +206,24 @@ const app = {
             return;
         }
 
-        // Optimistic Update
-        const previousStudents = JSON.parse(JSON.stringify(this.state.students));
-        const studentIndex = this.state.students.findIndex(s => s.id === id);
-        if (studentIndex !== -1) {
-            this.state.students[studentIndex].last_interrogation = newDate;
-            this.state.students[studentIndex].grades_count = (currentGrades || 0) + 1;
-            this.render();
-        }
-
-        try {
-            await api.updateStudent({
-                id,
-                last_interrogation: newDate,
-                grades_count: (currentGrades || 0) + 1
-            });
-            this.loadStudents(true);
-        } catch (error) {
-            alert('Errore durante la registrazione dell\'interrogazione');
-            console.error(error);
-            // Revert
-            this.state.students = previousStudents;
-            this.render();
-        }
+        await this.optimisticUpdate(
+            () => {
+                const s = this.state.students.find(s => s.id === id);
+                if (s) {
+                    s.last_interrogation = newDate;
+                    s.grades_count = (currentGrades || 0) + 1;
+                }
+            },
+            async () => {
+                await api.updateStudent({
+                    id,
+                    last_interrogation: newDate,
+                    grades_count: (currentGrades || 0) + 1
+                });
+                this.loadStudents(true);
+            },
+            "Errore durante la registrazione dell'interrogazione"
+        );
     },
 
     async addNewSubject() {
@@ -249,10 +236,28 @@ const app = {
         if (!name) return alert('Inserisci il nome della materia');
 
         try {
-            await api.addSubject({ name, color });
+            const newSubject = await api.addSubject({ name, color });
 
             nameInput.value = '';
-            this.loadSubjects();
+
+            // Optimization: Update local state instead of re-fetching
+            this.state.subjects.push(newSubject);
+            this.state.subjectColors[newSubject.name] = newSubject.color;
+
+            // Update Select
+            const select = document.getElementById('subjectSelect');
+            if (select) {
+                const option = document.createElement('option');
+                option.value = newSubject.name;
+                option.textContent = newSubject.name;
+                select.appendChild(option);
+            }
+
+            // If modal is open, re-render list
+            const modal = document.getElementById('subjectsModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                ui.renderSubjectsList(this.state.subjects, this.state.students);
+            }
         } catch (error) {
             console.error('Errore aggiunta materia:', error);
         }
@@ -263,7 +268,23 @@ const app = {
 
         try {
             await api.deleteSubject(name);
-            this.loadSubjects();
+
+            // Optimization: Local update
+            this.state.subjects = this.state.subjects.filter(s => s.name !== name);
+            delete this.state.subjectColors[name];
+
+            // Update Select
+            const select = document.getElementById('subjectSelect');
+            if (select) {
+                const option = Array.from(select.options).find(o => o.value === name);
+                if (option) option.remove();
+            }
+
+            // Update modal list if open
+            const modal = document.getElementById('subjectsModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                ui.renderSubjectsList(this.state.subjects, this.state.students);
+            }
         } catch (error) {
             alert(error.message);
         }

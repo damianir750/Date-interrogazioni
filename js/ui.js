@@ -40,26 +40,32 @@ export const ui = {
             return;
         }
 
+        const fragment = document.createDocumentFragment();
+
         subjects.forEach(subject => {
             const studentCount = students.filter(s => s.subject === subject.name).length;
+            const safeName = utils.escapeHtml(subject.name);
+            const safeNameAttr = utils.escapeAttribute(subject.name);
+
             const div = document.createElement('div');
             div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition';
             div.innerHTML = `
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-full" style="background: ${subject.color}"></div>
                     <div>
-                        <div class="font-semibold text-gray-800 dark:text-white">${subject.name}</div>
+                        <div class="font-semibold text-gray-800 dark:text-white">${safeName}</div>
                         <div class="text-xs text-gray-500 dark:text-gray-400">${studentCount} studenti</div>
                     </div>
                 </div>
-                <button onclick="app.deleteSubject('${subject.name}')" 
+                <button onclick="app.deleteSubject('${safeNameAttr}')" 
                     class="text-red-500 hover:text-red-700 transition ${studentCount > 0 ? 'opacity-50 cursor-not-allowed' : ''}"
                     title="${studentCount > 0 ? 'Non puoi eliminare materie con studenti' : 'Elimina materia'}">
                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
             `;
-            container.appendChild(div);
+            fragment.appendChild(div);
         });
+        container.appendChild(fragment);
         requestAnimationFrame(() => {
             createIcons({ icons });
         });
@@ -78,7 +84,6 @@ export const ui = {
         if (students.length === 0) {
             emptyState.classList.remove('hidden');
             container.innerHTML = '';
-            this.updateStats(students);
             return;
         }
 
@@ -102,6 +107,7 @@ export const ui = {
         });
 
         container.innerHTML = '';
+        const fragment = document.createDocumentFragment();
 
         Object.keys(bySubject).sort().forEach(subject => {
             const color = subjectColors[subject] || '#6b7280';
@@ -109,6 +115,7 @@ export const ui = {
             const lightColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
             const subjectStudents = bySubject[subject];
             const urgentCount = subjectStudents.filter(s => utils.daysSince(s.last_interrogation) > 30).length;
+            const safeSubject = utils.escapeHtml(subject);
 
             const div = document.createElement('div');
             div.className = 'fade-in';
@@ -117,7 +124,7 @@ export const ui = {
                     <div class="flex items-center justify-between mb-3">
                         <h2 class="text-xl sm:text-2xl font-semibold flex items-center gap-2" style="color: ${color}">
                             <i data-lucide="book-open" class="w-5 h-5"></i>
-                            <span>${subject}</span>
+                            <span>${safeSubject}</span>
                         </h2>
                         <span class="text-sm font-medium px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">${subjectStudents.length}</span>
                     </div>
@@ -126,12 +133,12 @@ export const ui = {
                         <i data-lucide="alert-triangle" class="w-3 h-3"></i> ${urgentCount} da interrogare urgentemente
                     </div>` : ''}
 
-                    <ul class="space-y-2 list-none p-0 m-0" id="list-${subject.replace(/\s+/g, '-')}"></ul>
+                    <ul class="space-y-2 list-none p-0 m-0"></ul>
                 </div>
             `;
-            container.appendChild(div);
+            fragment.appendChild(div);
 
-            const list = document.getElementById(`list-${subject.replace(/\s+/g, '-')}`);
+            const list = div.querySelector('ul');
             subjectStudents.forEach((s, i) => {
                 const days = utils.daysSince(s.last_interrogation);
                 const safeName = utils.escapeHtml(s.name);
@@ -143,6 +150,8 @@ export const ui = {
                 const gradesCount = s.grades_count || 0;
                 const badgeBgColor = utils.darkenColor(color, 0.2);
                 const gradesBadge = `<span class="text-white text-xs px-2 py-1 rounded-full font-bold ml-2" style="background-color: ${badgeBgColor};" title="Numero voti">🎓 ${gradesCount}</span>`;
+
+                const safeNameAttr = utils.escapeAttribute(s.name); // For JS calls
 
                 if (days === -1) {
                     li.className += ' pulse-alert';
@@ -162,7 +171,7 @@ export const ui = {
                             <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition ml-2" title="Modifica numero voti">
                                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.updateStudentName(${s.id}, '${safeName.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
+                            <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
                             <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
@@ -200,7 +209,7 @@ export const ui = {
                             <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition ml-2" title="Modifica numero voti">
                                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.updateStudentName(${s.id}, '${safeName.replace(/'/g, "\\'")}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
+                            <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
                             <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
@@ -212,13 +221,13 @@ export const ui = {
                 list.appendChild(li);
             });
         });
+        container.appendChild(fragment);
 
 
         // Use requestAnimationFrame to let the browser know we are done modifying DOM
         // before we ask it to calculate layout for icons.
         requestAnimationFrame(() => {
             createIcons({ icons });
-            this.updateStats(students);
         });
     }
 };

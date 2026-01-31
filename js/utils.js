@@ -20,14 +20,20 @@ export const utils = {
         return Math.floor((now - then) / (1000 * 60 * 60 * 24));
     },
 
-    // Convert Hex to RGB object
+    // Convert Hex to RGB object (Memoized)
+    _hexToRgbCache: {},
     hexToRgb(hex) {
+        if (this._hexToRgbCache[hex]) return this._hexToRgbCache[hex];
+
         const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
+        const rgb = result ? {
             r: parseInt(result[1], 16),
             g: parseInt(result[2], 16),
             b: parseInt(result[3], 16)
         } : null;
+
+        this._hexToRgbCache[hex] = rgb;
+        return rgb;
     },
 
     // Debounce function
@@ -55,12 +61,23 @@ export const utils = {
 
     // Escape HTML to prevent XSS
     escapeHtml(unsafe) {
-        if (!unsafe) return '';
-        return unsafe
+        if (unsafe === null || unsafe === undefined) return '';
+        return String(unsafe)
             .replace(/&/g, "&amp;")
             .replace(/</g, "&lt;")
             .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
+            .replace(/'/g, "&#039;")
+            .replace(/`/g, "&#96;"); // Backticks can sometimes be used for XSS
+    },
+
+    // Escape for HTML attributes (like onclick)
+    escapeAttribute(unsafe) {
+        if (unsafe === null || unsafe === undefined) return '';
+        // For attributes, we mainly need to worry about quotes breaking out
+        return String(unsafe)
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "\\'") // Escaping for JS string inside attribute
+            .replace(/\n/g, " "); // No newlines in attributes
     }
 };

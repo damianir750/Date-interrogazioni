@@ -1,10 +1,5 @@
-import { neon } from '@neondatabase/serverless';
-
-
-if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL is not defined");
-}
-const sql = neon(process.env.DATABASE_URL);
+import sql from './_db.js';
+import { validateSubject } from './_utils.js';
 
 export default async function handler(request, response) {
     if (request.method !== 'POST') {
@@ -22,8 +17,9 @@ export default async function handler(request, response) {
         }
         const { name, color } = body;
 
-        if (!name || !color) {
-            return response.status(400).json({ error: "Nome e colore richiesti" });
+        const validationErrors = validateSubject(body);
+        if (validationErrors.length > 0) {
+            return response.status(400).json({ error: validationErrors.join(", ") });
         }
 
         const [subject] = await sql`
