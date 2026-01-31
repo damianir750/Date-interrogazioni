@@ -71,6 +71,11 @@ const themeToggle = {
             localStorage.theme = 'dark';
         }
         this.updateIcon();
+
+        // Reapply theme for the new mode
+        if (window.bgToggle) {
+            window.bgToggle.applyCurrentTheme();
+        }
     },
 
     updateIcon() {
