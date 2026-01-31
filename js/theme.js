@@ -15,7 +15,8 @@ import {
     Settings,
     X,
     BookOpen,
-    Eye
+    Eye,
+    Palette
 } from 'lucide';
 
 const icons = {
@@ -34,7 +35,8 @@ const icons = {
     Settings,
     X,
     BookOpen,
-    Eye
+    Eye,
+    Palette
 };
 
 // Theme Toggle Logic
@@ -115,6 +117,44 @@ const a11yToggle = {
     }
 };
 
+// Background Theme Logic
+const bgToggle = {
+    themes: ['default', 'ocean', 'sunset', 'nebula'],
+
+    init() {
+        const savedBg = localStorage.bg_theme || 'default';
+        this.applyTheme(savedBg);
+
+        const btn = document.getElementById('bgToggleBtn');
+        if (btn) {
+            btn.addEventListener('click', () => this.cycle());
+        }
+    },
+
+    cycle() {
+        const currentTheme = localStorage.bg_theme || 'default';
+        const currentIndex = this.themes.indexOf(currentTheme);
+        const nextIndex = (currentIndex + 1) % this.themes.length;
+        const nextTheme = this.themes[nextIndex];
+
+        this.applyTheme(nextTheme);
+    },
+
+    applyTheme(themeName) {
+        // Remove all theme classes first
+        this.themes.forEach(t => {
+            if (t !== 'default') document.body.classList.remove(`theme-${t}`);
+        });
+
+        // Add new theme class if not default
+        if (themeName !== 'default') {
+            document.body.classList.add(`theme-${themeName}`);
+        }
+
+        localStorage.bg_theme = themeName;
+    }
+};
+
 // Init on load
 window.addEventListener('load', () => {
     // Remove the anti-FOUC hidden style to allow clean theme toggling
@@ -123,4 +163,5 @@ window.addEventListener('load', () => {
 
     themeToggle.init();
     a11yToggle.init();
+    bgToggle.init();
 });
