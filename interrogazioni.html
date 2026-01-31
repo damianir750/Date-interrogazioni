@@ -19,55 +19,60 @@
     <meta name="description"
         content="Dashboard Interrogazioni: gestisci voti e date delle interrogazioni della classe.">
     <title>Interrogazioni Classe - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
 </head>
 
 <body
-    class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen p-4 sm:p-6 transition-colors duration-300">
+    class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 min-h-screen p-4 sm:p-6 transition-colors duration-500 font-['Outfit'] selection:bg-purple-500 selection:text-white">
 
     <!-- Navigation -->
     <nav class="mb-6 max-w-6xl mx-auto flex justify-between items-center">
         <a href="index.html"
-            class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 transition font-medium">
+            class="inline-flex items-center gap-2 text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 transition font-medium hover:scale-105 active:scale-95">
             <i data-lucide="arrow-left" class="w-5 h-5"></i>
             Torna alla Home
         </a>
         <button id="themeToggleBtn" aria-label="Cambia tema"
-            class="p-2 rounded-full bg-white dark:bg-gray-800 shadow-sm hover:shadow-md transition">
-            <i data-lucide="moon" class="w-5 h-5 text-gray-600"></i>
+            class="p-2 rounded-full bg-white/50 dark:bg-gray-800/50 backdrop-blur-md shadow-sm hover:shadow-md transition text-gray-700 dark:text-gray-200">
+            <i data-lucide="moon" class="w-5 h-5"></i>
         </button>
     </nav>
 
     <div class="max-w-6xl mx-auto">
         <!-- Header & Input -->
         <div
-            class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 mb-8 border border-gray-100 dark:border-gray-700">
+            class="bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl rounded-2xl shadow-xl p-6 mb-8 border border-white/20 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5">
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <h1 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
-                    <i data-lucide="graduation-cap" class="w-10 h-10 text-purple-600"></i>
+                <h1 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3 tracking-tight">
+                    <i data-lucide="graduation-cap" class="w-10 h-10 text-purple-600 drop-shadow-md"></i>
                     Interrogazioni
                 </h1>
-                <div class="text-sm text-gray-500 dark:text-gray-400" id="lastUpdate"></div>
+                <div class="text-sm font-medium text-gray-500 dark:text-gray-400 bg-white/50 dark:bg-gray-700/50 px-3 py-1 rounded-full"
+                    id="lastUpdate"></div>
             </div>
 
             <!-- Input Form -->
             <div
-                class="flex flex-col md:flex-row gap-3 items-stretch md:items-center bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-100 dark:border-gray-600">
+                class="flex flex-col md:flex-row gap-3 items-stretch md:items-center bg-gray-50/50 dark:bg-gray-700/30 p-4 rounded-xl border border-gray-100 dark:border-gray-600/50">
                 <input id="nameInput" type="text" placeholder="Nome studente..." aria-label="Nome studente"
                     enterkeyhint="next"
-                    class="flex-1 p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
+                    class="flex-1 p-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800/80 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-shadow shadow-sm">
                 <input id="dateInput" type="date" aria-label="Data interrogazione"
-                    class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
+                    class="p-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800/80 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-shadow shadow-sm text-gray-700">
                 <select id="subjectSelect" aria-label="Seleziona materia"
-                    class="p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
+                    class="p-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800/80 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-shadow shadow-sm">
                     <option value="">Seleziona materia...</option>
                 </select>
                 <input id="gradesCountInput" type="number" min="0" value="0" placeholder="Voti..."
                     aria-label="Numero di voti" inputmode="numeric"
-                    class="w-20 p-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none"
+                    class="w-20 p-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800/80 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent focus:outline-none transition-shadow shadow-sm"
                     title="Numero di voti già presi">
                 <button onclick="app.addStudent()" aria-label="Aggiungi studente"
-                    class="bg-purple-500 text-white px-6 py-2 rounded-lg hover:bg-purple-600 transition flex items-center justify-center gap-2 font-medium shadow-lg shadow-purple-500/30">
+                    class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-2 rounded-lg hover:from-purple-600 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/40 active:scale-95">
                     <i data-lucide="plus-circle" class="w-5 h-5"></i><span>Salva</span>
                 </button>
             </div>
@@ -76,11 +81,11 @@
             <div class="flex flex-col sm:flex-row gap-4 mt-4 justify-between items-center">
                 <div class="flex gap-2 flex-wrap justify-center sm:justify-start">
                     <button onclick="app.setToday()"
-                        class="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/50 transition">Oggi</button>
+                        class="text-xs font-semibold bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-3 py-1.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/60 transition active:scale-95">Oggi</button>
                     <button onclick="app.setYesterday()"
-                        class="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/50 transition">Ieri</button>
+                        class="text-xs font-semibold bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-3 py-1.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/60 transition active:scale-95">Ieri</button>
                     <button onclick="app.setLastWeek()"
-                        class="text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/50 transition">Settimana
+                        class="text-xs font-semibold bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-3 py-1.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/60 transition active:scale-95">Settimana
                         scorsa</button>
                 </div>
 
@@ -89,10 +94,10 @@
                         <i data-lucide="search"
                             class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
                         <input id="searchInput" type="text" placeholder="Cerca studente..."
-                            class="w-full pl-9 pr-4 py-1.5 text-sm rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-purple-400 focus:outline-none">
+                            class="w-full pl-9 pr-4 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 dark:text-white focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-shadow shadow-sm">
                     </div>
                     <button onclick="app.openSubjectsModal()"
-                        class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/50 transition flex items-center gap-1 font-medium whitespace-nowrap">
+                        class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/50 transition flex items-center gap-1 font-semibold whitespace-nowrap active:scale-95">
                         <i data-lucide="settings" class="w-3 h-3"></i>Gestisci Materie
                     </button>
                 </div>
@@ -102,44 +107,49 @@
         <!-- Stats -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             <div
-                class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-center border border-gray-100 dark:border-gray-700">
+                class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md p-4 rounded-xl shadow-sm border border-white/20 dark:border-white/10 text-center hover:scale-105 transition-transform duration-300">
                 <div class="text-2xl font-bold text-purple-600 dark:text-purple-400" id="totalStudents">0</div>
-                <div class="text-xs text-gray-600 dark:text-gray-400">Studenti totali</div>
+                <div class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Studenti
+                    totali</div>
             </div>
             <div
-                class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-center border border-gray-100 dark:border-gray-700">
+                class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md p-4 rounded-xl shadow-sm border border-white/20 dark:border-white/10 text-center hover:scale-105 transition-transform duration-300">
                 <div class="text-2xl font-bold text-orange-600 dark:text-orange-400" id="alertCount">0</div>
-                <div class="text-xs text-gray-600 dark:text-gray-400">Da interrogare</div>
+                <div class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Da interrogare
+                </div>
             </div>
             <div
-                class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-center border border-gray-100 dark:border-gray-700">
+                class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md p-4 rounded-xl shadow-sm border border-white/20 dark:border-white/10 text-center hover:scale-105 transition-transform duration-300">
                 <div class="text-2xl font-bold text-green-600 dark:text-green-400" id="recentCount">0</div>
-                <div class="text-xs text-gray-600 dark:text-gray-400">Recenti (&lt; 14g)</div>
+                <div class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Recenti (&lt;
+                    14g)</div>
             </div>
             <div
-                class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow text-center border border-gray-100 dark:border-gray-700">
+                class="bg-white/60 dark:bg-gray-800/60 backdrop-blur-md p-4 rounded-xl shadow-sm border border-white/20 dark:border-white/10 text-center hover:scale-105 transition-transform duration-300">
                 <div class="text-2xl font-bold text-blue-600 dark:text-blue-400" id="subjectCount">0</div>
-                <div class="text-xs text-gray-600 dark:text-gray-400">Materie attive</div>
+                <div class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Materie attive
+                </div>
             </div>
         </div>
 
         <!-- Dashboard materie -->
-        <div id="subjectsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"></div>
+        <div id="subjectsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 pb-12"></div>
 
         <!-- Empty state -->
         <div id="emptyState" class="text-center py-12 hidden">
-            <div class="text-6xl mb-4">📖</div>
-            <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">Nessuno studente trovato</h3>
-            <p class="text-gray-500 dark:text-gray-400">Aggiungi il primo studente per iniziare!</p>
+            <div class="text-6xl mb-4 animate-bounce">📖</div>
+            <h3 class="text-xl font-bold text-gray-700 dark:text-gray-200 mb-2">Nessuno studente trovato</h3>
+            <p class="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">Il registro è vuoto. Aggiungi il primo studente
+                per iniziare a tracciare le interrogazioni!</p>
         </div>
     </div>
 
     <!-- Modal Gestione Materie -->
     <div id="subjectsModal"
-        class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4 bg-black/50 backdrop-blur-sm">
-        <div
-            class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700">
-            <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+        class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4 bg-black/60 backdrop-blur-sm transition-all duration-300">
+        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-200 dark:border-gray-700 ring-1 ring-white/10 transform scale-95 transition-transform duration-300"
+            id="modalContent">
+            <div class="p-6 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <div class="flex items-center justify-between">
                     <h2 class="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
                         <i data-lucide="book-open" class="w-6 h-6 text-purple-600"></i>Gestisci Materie
