@@ -14,7 +14,8 @@ import {
     Search,
     Settings,
     X,
-    BookOpen
+    BookOpen,
+    Eye
 } from 'lucide';
 
 const icons = {
@@ -32,7 +33,8 @@ const icons = {
     Search,
     Settings,
     X,
-    BookOpen
+    BookOpen,
+    Eye
 };
 
 // Theme Toggle Logic
@@ -79,6 +81,40 @@ const themeToggle = {
     }
 };
 
+// Accessibility Toggle Logic
+const a11yToggle = {
+    init() {
+        const isDyslexic = localStorage.dyslexic === 'true';
+        if (isDyslexic) {
+            document.documentElement.classList.add('dyslexic-mode');
+        }
+
+        const btn = document.getElementById('dyslexiaToggleBtn');
+        if (btn) {
+            btn.addEventListener('click', () => this.toggle());
+            this.updateStyle(btn, isDyslexic);
+        }
+    },
+
+    toggle() {
+        const isActive = document.documentElement.classList.toggle('dyslexic-mode');
+        localStorage.dyslexic = isActive;
+
+        const btn = document.getElementById('dyslexiaToggleBtn');
+        if (btn) this.updateStyle(btn, isActive);
+    },
+
+    updateStyle(btn, isActive) {
+        if (isActive) {
+            btn.classList.add('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-300');
+            btn.classList.remove('text-gray-700', 'dark:text-gray-200');
+        } else {
+            btn.classList.remove('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-300');
+            btn.classList.add('text-gray-700', 'dark:text-gray-200');
+        }
+    }
+};
+
 // Init on load
 window.addEventListener('load', () => {
     // Remove the anti-FOUC hidden style to allow clean theme toggling
@@ -86,4 +122,5 @@ window.addEventListener('load', () => {
     if (foucStyle) foucStyle.remove();
 
     themeToggle.init();
+    a11yToggle.init();
 });

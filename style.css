@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url("https://cdn.jsdelivr.net/npm/open-dyslexic@1.0.3/open-dyslexic.min.css");
 @variant dark (&:where(.dark, .dark *));
 
 
@@ -10,6 +11,12 @@ html {
 
 html.dark {
     color-scheme: dark;
+}
+
+html.dyslexic-mode * {
+    font-family: 'OpenDyslexic', sans-serif !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0.05em !important;
 }
 
 .hover-scale {
