@@ -164,7 +164,7 @@ const bgToggle = {
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     ${themes.map(theme => `
-                        <button onclick="bgToggle.selectTheme('${theme.id}')" 
+                        <button onclick="window.bgToggle.selectTheme('${theme.id}')" 
                             class="group relative p-4 rounded-xl border-2 transition-all hover:scale-105 ${currentTheme === theme.id ? 'border-purple-500 shadow-lg ring-2 ring-purple-200 dark:ring-purple-800' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600'}"
                         >
                             <div class="h-16 rounded-lg mb-2 overflow-hidden shadow-inner" style="background: linear-gradient(135deg, ${theme.colors.join(', ')})"></div>
@@ -220,3 +220,6 @@ window.addEventListener('load', () => {
     // Initialize all Lucide icons
     createIcons({ icons });
 });
+
+// Expose bgToggle globally for onclick handlers
+window.bgToggle = bgToggle;
