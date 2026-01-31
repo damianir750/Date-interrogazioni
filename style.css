@@ -242,3 +242,38 @@ body.theme-peach {
     --theme-accent: #64748b;
     --theme-accent-hover: #475569;
 }
+
+/* Theme-Aware Components */
+.theme-card:hover {
+    box-shadow: 0 25px 50px -12px var(--theme-accent, rgb(168 85 247 / 0.25));
+}
+
+.theme-icon {
+    background: linear-gradient(135deg, var(--theme-accent, #a855f7), var(--theme-accent-hover, #9333ea)) !important;
+}
+
+/* Apply theme accent to buttons and interactive elements */
+button:not(.bg-red-500):not(.bg-green-500):hover,
+.btn-primary {
+    background-color: var(--theme-accent, #a855f7);
+}
+
+button:not(.bg-red-500):not(.bg-green-500):active,
+.btn-primary:active {
+    background-color: var(--theme-accent-hover, #9333ea);
+}
+
+/* Theme-aware badges and pills */
+.badge-accent {
+    background-color: var(--theme-accent, #a855f7);
+    color: white;
+}
+
+/* Theme-aware links */
+a.theme-link {
+    color: var(--theme-accent, #a855f7);
+}
+
+a.theme-link:hover {
+    color: var(--theme-accent-hover, #9333ea);
+}
