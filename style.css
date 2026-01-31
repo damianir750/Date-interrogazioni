@@ -155,32 +155,38 @@ html.dyslexic-mode * {
     animation: slideOutRight 0.3s ease-in forwards;
 }
 
-/* Themes */
-/* Default is already in body, these override it */
+/* Themes - Mode-Aware */
 
-/* Ocean Theme */
+/* LIGHT MODE THEMES */
 body.theme-ocean {
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
 }
 
-body.theme-ocean.dark {
-    background: linear-gradient(135deg, #0c4a6e 0%, #0f172a 100%);
-}
-
-/* Sunset Theme */
 body.theme-sunset {
-    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 50%, #fb923c 100%);
 }
 
-body.theme-sunset.dark {
-    background: linear-gradient(135deg, #431407 0%, #881337 100%);
+body.theme-forest {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%);
 }
 
-/* Nebula Theme (Lighter/More colorful dark mode) */
-body.theme-nebula {
-    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+body.theme-lavender {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 50%, #d8b4fe 100%);
+}
+
+/* DARK MODE THEMES */
+body.theme-midnight.dark {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+}
+
+body.theme-abyss.dark {
+    background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
+}
+
+body.theme-ember.dark {
+    background: linear-gradient(135deg, #7c2d12 0%, #9a3412 50%, #c2410c 100%);
 }
 
 body.theme-nebula.dark {
-    background: linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #db2777 100%);
+    background: linear-gradient(135deg, #4c1d95 0%, #6b21a8 50%, #7e22ce 100%);
 }
