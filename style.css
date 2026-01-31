@@ -175,18 +175,18 @@ body.theme-lavender {
 }
 
 /* DARK MODE THEMES */
-body.theme-midnight.dark {
+.dark body.theme-midnight {
     background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
 }
 
-body.theme-abyss.dark {
+.dark body.theme-abyss {
     background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
 }
 
-body.theme-ember.dark {
+.dark body.theme-ember {
     background: linear-gradient(135deg, #7c2d12 0%, #9a3412 50%, #c2410c 100%);
 }
 
-body.theme-nebula.dark {
+.dark body.theme-nebula {
     background: linear-gradient(135deg, #4c1d95 0%, #6b21a8 50%, #7e22ce 100%);
 }
