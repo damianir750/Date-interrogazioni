@@ -142,8 +142,7 @@ const bgToggle = {
     ],
 
     init() {
-        const savedBg = localStorage.bg_theme || 'default';
-        this.applyTheme(savedBg);
+        this.applyCurrentTheme();
 
         const btn = document.getElementById('bgToggleBtn');
         if (btn) {
@@ -151,10 +150,28 @@ const bgToggle = {
         }
     },
 
+    getCurrentTheme() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const key = isDark ? 'bg_theme_dark' : 'bg_theme_light';
+        return localStorage[key] || 'default';
+    },
+
+    applyCurrentTheme() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const currentTheme = this.getCurrentTheme();
+        const themes = isDark ? this.darkThemes : this.lightThemes;
+
+        // Check if current theme exists in the current mode's theme list
+        const themeExists = themes.some(t => t.id === currentTheme);
+        const themeToApply = themeExists ? currentTheme : 'default';
+
+        this.applyTheme(themeToApply, false);
+    },
+
     openModal() {
         const isDark = document.documentElement.classList.contains('dark');
         const themes = isDark ? this.darkThemes : this.lightThemes;
-        const currentTheme = localStorage.bg_theme || 'default';
+        const currentTheme = this.getCurrentTheme();
 
         const modal = document.createElement('div');
         modal.id = 'themeModal';
@@ -191,11 +208,12 @@ const bgToggle = {
     },
 
     selectTheme(themeId) {
-        this.applyTheme(themeId);
+        this.applyTheme(themeId, true);
         document.getElementById('themeModal')?.remove();
     },
 
-    applyTheme(themeName) {
+    applyTheme(themeName, saveToStorage = true) {
+        const isDark = document.documentElement.classList.contains('dark');
         const allThemes = [...this.lightThemes, ...this.darkThemes].map(t => t.id);
 
         // Remove all theme classes
@@ -208,7 +226,11 @@ const bgToggle = {
             document.body.classList.add(`theme-${themeName}`);
         }
 
-        localStorage.bg_theme = themeName;
+        // Save to appropriate storage key
+        if (saveToStorage) {
+            const key = isDark ? 'bg_theme_dark' : 'bg_theme_light';
+            localStorage[key] = themeName;
+        }
     }
 };
 
