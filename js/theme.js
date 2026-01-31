@@ -121,7 +121,20 @@ const a11yToggle = {
 
 // Background Theme Logic
 const bgToggle = {
-    themes: ['default', 'ocean', 'sunset', 'nebula'],
+    lightThemes: [
+        { id: 'default', name: 'Default', colors: ['#e0e7ff', '#ddd6fe', '#fce7f3'] },
+        { id: 'ocean', name: 'Ocean', colors: ['#e0f2fe', '#bae6fd', '#7dd3fc'] },
+        { id: 'sunset', name: 'Sunset', colors: ['#fed7aa', '#fdba74', '#fb923c'] },
+        { id: 'forest', name: 'Forest', colors: ['#d1fae5', '#a7f3d0', '#6ee7b7'] },
+        { id: 'lavender', name: 'Lavender', colors: ['#f3e8ff', '#e9d5ff', '#d8b4fe'] }
+    ],
+    darkThemes: [
+        { id: 'default', name: 'Default', colors: ['#0f172a', '#4c1d95', '#1e293b'] },
+        { id: 'midnight', name: 'Midnight', colors: ['#0f172a', '#1e1b4b', '#312e81'] },
+        { id: 'abyss', name: 'Abyss', colors: ['#0c4a6e', '#075985', '#0369a1'] },
+        { id: 'ember', name: 'Ember', colors: ['#7c2d12', '#9a3412', '#c2410c'] },
+        { id: 'nebula', name: 'Nebula', colors: ['#4c1d95', '#6b21a8', '#7e22ce'] }
+    ],
 
     init() {
         const savedBg = localStorage.bg_theme || 'default';
@@ -129,22 +142,59 @@ const bgToggle = {
 
         const btn = document.getElementById('bgToggleBtn');
         if (btn) {
-            btn.addEventListener('click', () => this.cycle());
+            btn.addEventListener('click', () => this.openModal());
         }
     },
 
-    cycle() {
+    openModal() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const themes = isDark ? this.darkThemes : this.lightThemes;
         const currentTheme = localStorage.bg_theme || 'default';
-        const currentIndex = this.themes.indexOf(currentTheme);
-        const nextIndex = (currentIndex + 1) % this.themes.length;
-        const nextTheme = this.themes[nextIndex];
 
-        this.applyTheme(nextTheme);
+        const modal = document.createElement('div');
+        modal.id = 'themeModal';
+        modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4';
+        modal.innerHTML = `
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-gray-700 animate-enter">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white">Scegli Tema ${isDark ? 'Scuro' : 'Chiaro'}</h3>
+                    <button onclick="document.getElementById('themeModal').remove()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    ${themes.map(theme => `
+                        <button onclick="bgToggle.selectTheme('${theme.id}')" 
+                            class="group relative p-4 rounded-xl border-2 transition-all hover:scale-105 ${currentTheme === theme.id ? 'border-purple-500 shadow-lg ring-2 ring-purple-200 dark:ring-purple-800' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600'}"
+                        >
+                            <div class="h-16 rounded-lg mb-2 overflow-hidden shadow-inner" style="background: linear-gradient(135deg, ${theme.colors.join(', ')})"></div>
+                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">${theme.name}</p>
+                            ${currentTheme === theme.id ? '<div class="absolute top-2 right-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shadow-lg"><i data-lucide="check" class="w-3 h-3 text-white"></i></div>' : ''}
+                        </button>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        createIcons({ icons });
+
+        // Close on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    },
+
+    selectTheme(themeId) {
+        this.applyTheme(themeId);
+        document.getElementById('themeModal')?.remove();
     },
 
     applyTheme(themeName) {
-        // Remove all theme classes first
-        this.themes.forEach(t => {
+        const allThemes = [...this.lightThemes, ...this.darkThemes].map(t => t.id);
+
+        // Remove all theme classes
+        allThemes.forEach(t => {
             if (t !== 'default') document.body.classList.remove(`theme-${t}`);
         });
 
