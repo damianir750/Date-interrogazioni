@@ -6,7 +6,15 @@ export const utils = {
     // Formatta data (YYYY-MM-DD -> DD/MM/YYYY)
     formatDate(dateString) {
         if (!dateString || dateString === '9999-12-31') return 'DATA MANCANTE';
-        const d = new Date(dateString);
+
+        // Handle Date objects
+        let d;
+        if (dateString instanceof Date) {
+            d = dateString;
+        } else {
+            d = new Date(dateString);
+        }
+
         if (isNaN(d.getTime())) return 'DATA NON VALIDA';
         return d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
     },
@@ -16,8 +24,22 @@ export const utils = {
         // Handle null, undefined, empty string
         if (!dateString || dateString === '9999-12-31') return -1;
 
+        // Convert Date object to string if needed
+        if (dateString instanceof Date) {
+            const year = dateString.getFullYear();
+            const month = String(dateString.getMonth() + 1).padStart(2, '0');
+            const day = String(dateString.getDate()).padStart(2, '0');
+            dateString = `${year}-${month}-${day}`;
+        }
+
+        // Ensure it's a string
+        dateString = String(dateString);
+
         // Parse "YYYY-MM-DD" manually to treat it as local time
-        const [objYear, objMonth, objDay] = dateString.split('-').map(Number);
+        const parts = dateString.split('-');
+        if (parts.length !== 3) return -1;
+
+        const [objYear, objMonth, objDay] = parts.map(Number);
 
         // Validate parsed values
         if (isNaN(objYear) || isNaN(objMonth) || isNaN(objDay)) return -1;
