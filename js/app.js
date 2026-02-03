@@ -59,6 +59,20 @@ const app = {
     async loadStudents(forceRefresh = false) {
         try {
             this.state.students = await api.getStudents(forceRefresh) || [];
+
+            // Normalize date formats from database
+            this.state.students.forEach(student => {
+                if (student.last_interrogation && student.last_interrogation !== '9999-12-31') {
+                    const d = new Date(student.last_interrogation);
+                    if (!isNaN(d.getTime())) {
+                        const year = d.getFullYear();
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        student.last_interrogation = `${year}-${month}-${day}`;
+                    }
+                }
+            });
+
             ui.updateStats(this.state.students);
             this.render();
         } catch (error) {
@@ -120,6 +134,15 @@ const app = {
 
         try {
             const newStudent = await api.addStudent({ name, last_interrogation: finalDate, subject, grades_count });
+
+            // Normalize date format from database
+            if (newStudent.last_interrogation && newStudent.last_interrogation !== '9999-12-31') {
+                const d = new Date(newStudent.last_interrogation);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                newStudent.last_interrogation = `${year}-${month}-${day}`;
+            }
 
             nameInput.value = '';
             dateInput.value = '';
@@ -206,7 +229,7 @@ const app = {
             () => {
                 const s = this.state.students.find(s => s.id === id);
                 if (s) {
-                    s.last_interrogation = newDate;
+                    s.last_interrogation = newDate; // Already in YYYY-MM-DD format
                     s.grades_count = (currentGrades || 0) + 1;
                 }
             },
