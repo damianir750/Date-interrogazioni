@@ -7,10 +7,14 @@ html {
     visibility: visible;
     opacity: 1;
     color-scheme: light;
+    --theme-card-bg: rgba(255, 255, 255, 0.4);
+    --theme-card-border: rgba(255, 255, 255, 0.2);
 }
 
 html.dark {
     color-scheme: dark;
+    --theme-card-bg: rgba(255, 255, 255, 0.05);
+    --theme-card-border: rgba(255, 255, 255, 0.1);
 }
 
 html.dyslexic-mode * {
