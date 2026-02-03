@@ -169,6 +169,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #0369a1;
     --theme-text-secondary: #075985;
     --theme-text-muted: #0c4a6e;
+    --theme-card-bg: rgba(255, 255, 255, 0.4);
+    --theme-card-border: rgba(255, 255, 255, 0.3);
 }
 
 .theme-sunset,
@@ -179,6 +181,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #7c2d12;
     --theme-text-secondary: #9a3412;
     --theme-text-muted: #c2410c;
+    --theme-card-bg: rgba(255, 255, 255, 0.4);
+    --theme-card-border: rgba(255, 255, 255, 0.3);
 }
 
 .theme-forest,
@@ -189,6 +193,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #064e3b;
     --theme-text-secondary: #065f46;
     --theme-text-muted: #047857;
+    --theme-card-bg: rgba(255, 255, 255, 0.4);
+    --theme-card-border: rgba(255, 255, 255, 0.3);
 }
 
 .theme-lavender,
@@ -199,6 +205,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #581c87;
     --theme-text-secondary: #6b21a8;
     --theme-text-muted: #7e22ce;
+    --theme-card-bg: rgba(255, 255, 255, 0.4);
+    --theme-card-border: rgba(255, 255, 255, 0.3);
 }
 
 .theme-rose,
@@ -209,6 +217,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #881337;
     --theme-text-secondary: #9f1239;
     --theme-text-muted: #be123c;
+    --theme-card-bg: rgba(255, 255, 255, 0.4);
+    --theme-card-border: rgba(255, 255, 255, 0.3);
 }
 
 .theme-mint,
@@ -219,6 +229,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #042f2e;
     --theme-text-secondary: #0d9488;
     --theme-text-muted: #134e4a;
+    --theme-card-bg: rgba(255, 255, 255, 0.4);
+    --theme-card-border: rgba(255, 255, 255, 0.3);
 }
 
 .theme-peach,
@@ -229,6 +241,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #7c2d12;
     --theme-text-secondary: #9a3412;
     --theme-text-muted: #ea580c;
+    --theme-card-bg: rgba(255, 255, 255, 0.4);
+    --theme-card-border: rgba(255, 255, 255, 0.3);
 }
 
 /* LIGHT SOLID THEMES */
@@ -240,6 +254,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #0c4a6e;
     --theme-text-secondary: #075985;
     --theme-border: #bae6fd;
+    --theme-card-bg: rgba(255, 255, 255, 0.5);
+    --theme-card-border: #bae6fd;
 }
 
 .theme-cream,
@@ -250,6 +266,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #78350f;
     --theme-text-secondary: #92400e;
     --theme-border: #fde68a;
+    --theme-card-bg: rgba(255, 255, 255, 0.5);
+    --theme-card-border: #fde68a;
 }
 
 .theme-blush,
@@ -260,6 +278,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #831843;
     --theme-text-secondary: #9f1239;
     --theme-border: #fbcfe8;
+    --theme-card-bg: rgba(255, 255, 255, 0.5);
+    --theme-card-border: #fbcfe8;
 }
 
 .theme-sage,
@@ -270,6 +290,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #14532d;
     --theme-text-secondary: #166534;
     --theme-border: #bbf7d0;
+    --theme-card-bg: rgba(255, 255, 255, 0.5);
+    --theme-card-border: #bbf7d0;
 }
 
 /* DARK MODE THEMES */
@@ -282,6 +304,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #f8fafc;
     --theme-text-secondary: #e2e8f0;
     --theme-text-muted: #94a3b8;
+    --theme-card-bg: rgba(255, 255, 255, 0.05);
+    --theme-card-border: rgba(255, 255, 255, 0.1);
 }
 
 .dark.theme-abyss,
@@ -293,6 +317,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #f0f9ff;
     --theme-text-secondary: #e0f2fe;
     --theme-text-muted: #7dd3fc;
+    --theme-card-bg: rgba(255, 255, 255, 0.05);
+    --theme-card-border: rgba(255, 255, 255, 0.1);
 }
 
 .dark.theme-ember,
@@ -304,6 +330,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #fff7ed;
     --theme-text-secondary: #ffedd5;
     --theme-text-muted: #fdba74;
+    --theme-card-bg: rgba(255, 255, 255, 0.05);
+    --theme-card-border: rgba(255, 255, 255, 0.1);
 }
 
 .dark.theme-nebula,
@@ -315,6 +343,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #faf5ff;
     --theme-text-secondary: #f3e8ff;
     --theme-text-muted: #d8b4fe;
+    --theme-card-bg: rgba(255, 255, 255, 0.05);
+    --theme-card-border: rgba(255, 255, 255, 0.1);
 }
 
 .dark.theme-crimson,
@@ -326,6 +356,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #fef2f2;
     --theme-text-secondary: #fee2e2;
     --theme-text-muted: #fca5a5;
+    --theme-card-bg: rgba(255, 255, 255, 0.05);
+    --theme-card-border: rgba(255, 255, 255, 0.1);
 }
 
 .dark.theme-forest-dark,
@@ -337,6 +369,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #f0fdf4;
     --theme-text-secondary: #dcfce7;
     --theme-text-muted: #86efac;
+    --theme-card-bg: rgba(255, 255, 255, 0.05);
+    --theme-card-border: rgba(255, 255, 255, 0.1);
 }
 
 .dark.theme-slate,
@@ -360,6 +394,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #f1f5f9;
     --theme-text-secondary: #cbd5e1;
     --theme-border: #334155;
+    --theme-card-bg: rgba(255, 255, 255, 0.05);
+    --theme-card-border: #475569;
 }
 
 .dark.theme-navy,
@@ -371,6 +407,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #dbeafe;
     --theme-text-secondary: #bfdbfe;
     --theme-border: #3b82f6;
+    --theme-card-bg: rgba(255, 255, 255, 0.05);
+    --theme-card-border: #3b82f6;
 }
 
 .dark.theme-plum,
@@ -382,6 +420,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #f3e8ff;
     --theme-text-secondary: #e9d5ff;
     --theme-border: #7c3aed;
+    --theme-card-bg: rgba(255, 255, 255, 0.05);
+    --theme-card-border: #7c3aed;
 }
 
 .dark.theme-pine,
@@ -393,6 +433,8 @@ html[class*="theme-"] body {
     --theme-text-primary: #dcfce7;
     --theme-text-secondary: #bbf7d0;
     --theme-border: #16a34a;
+    --theme-card-bg: rgba(255, 255, 255, 0.05);
+    --theme-card-border: #16a34a;
 }
 
 /* Theme-Aware Components - Complete Site Theming */
@@ -403,8 +445,8 @@ html[class*="theme-"] body {
 }
 
 .theme-card {
-    background-color: var(--theme-card-bg, rgba(255, 255, 255, 0.4));
-    border-color: var(--theme-card-border, rgba(255, 255, 255, 0.2));
+    background-color: var(--theme-card-bg, rgba(255, 255, 255, 0.4)) !important;
+    border-color: var(--theme-card-border, rgba(255, 255, 255, 0.2)) !important;
 }
 
 /* Text Colors */
