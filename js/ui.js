@@ -158,11 +158,13 @@ export const ui = {
                     li.style.background = 'rgba(255, 193, 7, 0.2)';
                     li.style.borderLeft = '4px solid #ffc107';
                     li.innerHTML = `
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="font-medium text-sm sm:text-base">${safeName}</span>
-                            ${gradesBadge}
-                            <span class="text-xs text-amber-700 dark:text-amber-500 font-semibold">📅 DATA MANCANTE</span>
-                            <span class="bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ Da aggiornare</span>
+                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                            <span class="font-medium text-sm sm:text-base truncate max-w-[120px] sm:max-w-[200px]" title="${safeName}">${safeName}</span>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                ${gradesBadge}
+                                <span class="text-[10px] sm:text-xs text-amber-700 dark:text-amber-500 font-semibold whitespace-nowrap">📅 MANCANTE</span>
+                                <span class="bg-amber-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap">⚠️ Aggiorna</span>
+                            </div>
                         </div>
                         <div class="flex items-center">
                             <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition ml-2" title="Segna come interrogato">
@@ -193,11 +195,13 @@ export const ui = {
                     else badge = `<span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">${days}g</span>`;
 
                     li.innerHTML = `
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="font-medium text-sm sm:text-base">${safeName}</span>
-                            ${gradesBadge}
-                            <span class="text-xs text-gray-600 dark:text-gray-400">${utils.formatDate(s.last_interrogation)}</span>
-                            ${badge}
+                        <div class="flex items-center gap-2 min-w-0 flex-1">
+                            <span class="font-medium text-sm sm:text-base truncate max-w-[120px] sm:max-w-[200px]" title="${safeName}">${safeName}</span>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                ${gradesBadge}
+                                <span class="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">${utils.formatDate(s.last_interrogation)}</span>
+                                ${badge.replace('px-2 py-1', 'px-2 py-0.5')}
+                            </div>
                         </div>
                         <div class="flex items-center">
                             <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition ml-2" title="Segna come interrogato">
