@@ -57,11 +57,11 @@
         <div
             class="bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl rounded-2xl shadow-xl p-6 mb-8 border border-white/20 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5">
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <h1 class="text-3xl font-bold text-gray-800 dark:text-white flex items-center gap-3 tracking-tight">
-                    <i data-lucide="graduation-cap" class="w-10 h-10 text-purple-600 drop-shadow-md"></i>
+                <h1 class="text-3xl font-bold theme-text-primary flex items-center gap-3 tracking-tight">
+                    <i data-lucide="graduation-cap" class="w-10 h-10 theme-accent-text drop-shadow-md"></i>
                     Interrogazioni
                 </h1>
-                <div class="text-sm font-medium text-gray-500 dark:text-gray-400 bg-white/50 dark:bg-gray-700/50 px-3 py-1 rounded-full"
+                <div class="text-sm font-medium theme-text-secondary bg-white/50 dark:bg-gray-700/50 px-3 py-1 rounded-full"
                     id="lastUpdate"></div>
             </div>
 
@@ -91,11 +91,11 @@
             <div class="flex flex-col sm:flex-row gap-4 mt-4 justify-between items-center">
                 <div class="flex gap-2 flex-wrap justify-center sm:justify-start">
                     <button onclick="app.setToday()"
-                        class="text-xs font-semibold bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-3 py-1.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/60 transition active:scale-95">Oggi</button>
+                        class="text-xs font-semibold bg-purple-100 dark:bg-purple-900/40 theme-accent-text px-3 py-1.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/60 transition active:scale-95">Oggi</button>
                     <button onclick="app.setYesterday()"
-                        class="text-xs font-semibold bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-3 py-1.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/60 transition active:scale-95">Ieri</button>
+                        class="text-xs font-semibold bg-purple-100 dark:bg-purple-900/40 theme-accent-text px-3 py-1.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/60 transition active:scale-95">Ieri</button>
                     <button onclick="app.setLastWeek()"
-                        class="text-xs font-semibold bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-3 py-1.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/60 transition active:scale-95">Settimana
+                        class="text-xs font-semibold bg-purple-100 dark:bg-purple-900/40 theme-accent-text px-3 py-1.5 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/60 transition active:scale-95">Settimana
                         scorsa</button>
                 </div>
 
@@ -107,7 +107,7 @@
                             class="w-full pl-9 pr-4 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-white/80 dark:bg-gray-800/80 dark:text-white focus:ring-2 focus:ring-purple-400 focus:border-transparent focus:outline-none transition-shadow shadow-sm">
                     </div>
                     <button onclick="app.openSubjectsModal()"
-                        class="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/50 transition flex items-center gap-1 font-semibold whitespace-nowrap active:scale-95">
+                        class="text-xs bg-blue-100 dark:bg-blue-900/30 theme-accent-text px-3 py-1.5 rounded-full hover:bg-blue-200 dark:hover:bg-blue-900/50 transition flex items-center gap-1 font-semibold whitespace-nowrap active:scale-95">
                         <i data-lucide="settings" class="w-3 h-3"></i>Gestisci Materie
                     </button>
                 </div>

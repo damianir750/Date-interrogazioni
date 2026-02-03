@@ -162,42 +162,63 @@ body.theme-ocean {
     background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
     --theme-accent: #0ea5e9;
     --theme-accent-hover: #0284c7;
+    --theme-text-primary: #0369a1;
+    --theme-text-secondary: #075985;
+    --theme-text-muted: #0c4a6e;
 }
 
 body.theme-sunset {
     background: linear-gradient(135deg, #fed7aa 0%, #fdba74 50%, #fb923c 100%);
     --theme-accent: #f97316;
     --theme-accent-hover: #ea580c;
+    --theme-text-primary: #7c2d12;
+    --theme-text-secondary: #9a3412;
+    --theme-text-muted: #c2410c;
 }
 
 body.theme-forest {
     background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%);
     --theme-accent: #10b981;
     --theme-accent-hover: #059669;
+    --theme-text-primary: #064e3b;
+    --theme-text-secondary: #065f46;
+    --theme-text-muted: #047857;
 }
 
 body.theme-lavender {
     background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 50%, #d8b4fe 100%);
     --theme-accent: #a855f7;
     --theme-accent-hover: #9333ea;
+    --theme-text-primary: #581c87;
+    --theme-text-secondary: #6b21a8;
+    --theme-text-muted: #7e22ce;
 }
 
 body.theme-rose {
     background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 50%, #fda4af 100%);
     --theme-accent: #f43f5e;
     --theme-accent-hover: #e11d48;
+    --theme-text-primary: #881337;
+    --theme-text-secondary: #9f1239;
+    --theme-text-muted: #be123c;
 }
 
 body.theme-mint {
     background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%);
     --theme-accent: #14b8a6;
     --theme-accent-hover: #0d9488;
+    --theme-text-primary: #042f2e;
+    --theme-text-secondary: #0d9488;
+    --theme-text-muted: #134e4a;
 }
 
 body.theme-peach {
     background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 50%, #fdba74 100%);
     --theme-accent: #fb923c;
     --theme-accent-hover: #f97316;
+    --theme-text-primary: #7c2d12;
+    --theme-text-secondary: #9a3412;
+    --theme-text-muted: #ea580c;
 }
 
 /* LIGHT SOLID THEMES */
@@ -242,42 +263,63 @@ body.theme-sage {
     background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
     --theme-accent: #6366f1;
     --theme-accent-hover: #4f46e5;
+    --theme-text-primary: #f8fafc;
+    --theme-text-secondary: #e2e8f0;
+    --theme-text-muted: #94a3b8;
 }
 
 .dark body.theme-abyss {
     background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
     --theme-accent: #0ea5e9;
     --theme-accent-hover: #0284c7;
+    --theme-text-primary: #f0f9ff;
+    --theme-text-secondary: #e0f2fe;
+    --theme-text-muted: #7dd3fc;
 }
 
 .dark body.theme-ember {
     background: linear-gradient(135deg, #7c2d12 0%, #9a3412 50%, #c2410c 100%);
     --theme-accent: #f97316;
     --theme-accent-hover: #ea580c;
+    --theme-text-primary: #fff7ed;
+    --theme-text-secondary: #ffedd5;
+    --theme-text-muted: #fdba74;
 }
 
 .dark body.theme-nebula {
     background: linear-gradient(135deg, #4c1d95 0%, #6b21a8 50%, #7e22ce 100%);
     --theme-accent: #a855f7;
     --theme-accent-hover: #9333ea;
+    --theme-text-primary: #faf5ff;
+    --theme-text-secondary: #f3e8ff;
+    --theme-text-muted: #d8b4fe;
 }
 
 .dark body.theme-crimson {
     background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 50%, #991b1b 100%);
     --theme-accent: #ef4444;
     --theme-accent-hover: #dc2626;
+    --theme-text-primary: #fef2f2;
+    --theme-text-secondary: #fee2e2;
+    --theme-text-muted: #fca5a5;
 }
 
 .dark body.theme-forest-dark {
     background: linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%);
     --theme-accent: #22c55e;
     --theme-accent-hover: #16a34a;
+    --theme-text-primary: #f0fdf4;
+    --theme-text-secondary: #dcfce7;
+    --theme-text-muted: #86efac;
 }
 
 .dark body.theme-slate {
     background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%);
     --theme-accent: #64748b;
     --theme-accent-hover: #475569;
+    --theme-text-primary: #f8fafc;
+    --theme-text-secondary: #e2e8f0;
+    --theme-text-muted: #94a3b8;
 }
 
 /* DARK SOLID THEMES */
