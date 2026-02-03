@@ -167,7 +167,7 @@ export const ui = {
                     li.innerHTML = `
                         <div class="flex w-full gap-3">
                             <div class="flex-1 min-w-0">
-                                <span class="font-medium text-sm sm:text-base block truncate" title="${safeName}">${safeName}</span>
+                                <span class="font-medium text-sm sm:text-base break-words" title="${safeName}">${safeName}</span>
                                 <div class="flex items-center gap-2 mt-1 flex-wrap">
                                     ${gradesBadge}
                                     <span class="text-[10px] sm:text-xs text-amber-700 dark:text-amber-500 font-semibold whitespace-nowrap">📅 MANCANTE</span>
@@ -206,7 +206,7 @@ export const ui = {
                     li.innerHTML = `
                         <div class="flex w-full gap-3">
                             <div class="flex-1 min-w-0">
-                                <span class="font-medium text-sm sm:text-base block truncate" title="${safeName}">${safeName}</span>
+                                <span class="font-medium text-sm sm:text-base break-words" title="${safeName}">${safeName}</span>
                                 <div class="flex items-center gap-2 mt-1 flex-wrap">
                                     ${gradesBadge}
                                     <span class="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">${utils.formatDate(s.last_interrogation)}</span>
