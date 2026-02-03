@@ -238,14 +238,14 @@ const bgToggle = {
         const isDark = document.documentElement.classList.contains('dark');
         const allThemes = [...this.lightThemes, ...this.darkThemes].map(t => t.id);
 
-        // Remove all theme classes
+        // Remove all theme classes from html
         allThemes.forEach(t => {
-            if (t !== 'default') document.body.classList.remove(`theme-${t}`);
+            if (t !== 'default') document.documentElement.classList.remove(`theme-${t}`);
         });
 
-        // Add new theme class if not default
+        // Add new theme class to html if not default
         if (themeName !== 'default') {
-            document.body.classList.add(`theme-${themeName}`);
+            document.documentElement.classList.add(`theme-${themeName}`);
         }
 
         // Save to appropriate storage key

@@ -7,9 +7,15 @@
     <script>
         (function () {
             var isDark = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
-            if (isDark) document.documentElement.classList.add('dark');
-            else document.documentElement.classList.remove('dark');
-            var bg = isDark ? '#111827' : '#f3f4f6';
+            document.documentElement.classList.toggle('dark', isDark);
+
+            var key = isDark ? 'bg_theme_dark' : 'bg_theme_light';
+            var theme = localStorage[key];
+            if (theme && theme !== 'default') {
+                document.documentElement.classList.add('theme-' + theme);
+            }
+
+            var bg = isDark ? '#0f172a' : '#f1f5f9';
             var s = document.createElement('style');
             s.id = 'fouc-style';
             s.innerHTML = "html{visibility:hidden;opacity:0;background-color:" + bg + ";}";
