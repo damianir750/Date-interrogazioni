@@ -196,7 +196,7 @@ export const ui = {
 
                     li.innerHTML = `
                         <div class="flex items-center gap-2 min-w-0 flex-1">
-                            <span class="font-medium text-sm sm:text-base truncate max-w-[120px] sm:max-w-[200px]" title="${safeName}">${safeName}</span>
+                            <span class="font-medium text-sm sm:text-base truncate min-w-0 flex-1" title="${safeName}">${safeName}</span>
                             <div class="flex items-center gap-1 flex-shrink-0">
                                 ${gradesBadge}
                                 <span class="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">${utils.formatDate(s.last_interrogation)}</span>
