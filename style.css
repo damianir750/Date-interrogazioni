@@ -59,6 +59,23 @@ html.dyslexic-mode * {
         background-size: 200% 100%;
         animation: shimmer 2s infinite;
     }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(168, 85, 247, 0.2);
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(168, 85, 247, 0.4);
+    }
 }
 
 @keyframes float {
