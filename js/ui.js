@@ -158,8 +158,8 @@ export const ui = {
                     li.style.background = 'rgba(255, 193, 7, 0.2)';
                     li.style.borderLeft = '4px solid #ffc107';
                     li.innerHTML = `
-                        <div class="flex items-center gap-2 min-w-0 flex-1">
-                            <span class="font-medium text-sm sm:text-base truncate min-w-0 flex-1" title="${safeName}">${safeName}</span>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0 flex-1">
+                            <span class="font-medium text-sm sm:text-base truncate" title="${safeName}">${safeName}</span>
                             <div class="flex items-center gap-1 flex-shrink-0">
                                 ${gradesBadge}
                                 <span class="text-[10px] sm:text-xs text-amber-700 dark:text-amber-500 font-semibold whitespace-nowrap">📅 MANCANTE</span>
@@ -195,8 +195,8 @@ export const ui = {
                     else badge = `<span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">${days}g</span>`;
 
                     li.innerHTML = `
-                        <div class="flex items-center gap-2 min-w-0 flex-1">
-                            <span class="font-medium text-sm sm:text-base truncate min-w-0 flex-1" title="${safeName}">${safeName}</span>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0 flex-1">
+                            <span class="font-medium text-sm sm:text-base truncate" title="${safeName}">${safeName}</span>
                             <div class="flex items-center gap-1 flex-shrink-0">
                                 ${gradesBadge}
                                 <span class="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">${utils.formatDate(s.last_interrogation)}</span>
