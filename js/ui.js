@@ -149,7 +149,7 @@ export const ui = {
                 // Badge Voti - matches subject color
                 const gradesCount = s.grades_count || 0;
                 const badgeBgColor = utils.darkenColor(color, 0.2);
-                const gradesBadge = `<span class="text-white text-xs px-2 py-1 rounded-full font-bold ml-2" style="background-color: ${badgeBgColor};" title="Numero voti">🎓 ${gradesCount}</span>`;
+                const gradesBadge = `<span class="text-white text-xs px-2 py-1 rounded-full font-bold" style="background-color: ${badgeBgColor};" title="Numero voti">🎓 ${gradesCount}</span>`;
 
                 const safeNameAttr = utils.escapeAttribute(s.name); // For JS calls
 
