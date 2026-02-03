@@ -199,23 +199,34 @@ const bgToggle = {
         modal.id = 'themeModal';
         modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4';
         modal.innerHTML = `
-            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-200 dark:border-gray-700 animate-enter">
-                <div class="flex items-center justify-between mb-4">
+            <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] flex flex-col border border-gray-200 dark:border-gray-700 animate-enter overflow-hidden">
+                <div class="flex items-center justify-between p-6 pb-4 border-b border-gray-100 dark:border-gray-800">
                     <h3 class="text-xl font-bold text-gray-800 dark:text-white">Scegli Tema ${isDark ? 'Scuro' : 'Chiaro'}</h3>
                     <button onclick="document.getElementById('themeModal').remove()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    ${themes.map(theme => `
-                        <button onclick="window.bgToggle.selectTheme('${theme.id}')" 
-                            class="group relative p-4 rounded-xl border-2 transition-all hover:scale-105 ${currentTheme === theme.id ? 'border-purple-500 shadow-lg ring-2 ring-purple-200 dark:ring-purple-800' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600'}"
-                        >
-                            <div class="h-16 rounded-lg mb-2 overflow-hidden shadow-inner" style="background: linear-gradient(135deg, ${theme.colors.join(', ')})"></div>
-                            <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">${theme.name}</p>
-                            ${currentTheme === theme.id ? '<div class="absolute top-2 right-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shadow-lg"><i data-lucide="check" class="w-3 h-3 text-white"></i></div>' : ''}
-                        </button>
-                    `).join('')}
+                
+                <div class="p-6 pt-4 overflow-y-auto flex-1 custom-scrollbar">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        ${themes.map(theme => `
+                            <button onclick="window.bgToggle.selectTheme('${theme.id}')" 
+                                class="group relative p-4 rounded-xl border-2 transition-all hover:scale-[1.02] active:scale-[0.98] min-h-[140px] flex flex-col ${currentTheme === theme.id ? 'border-purple-500 shadow-lg ring-2 ring-purple-200 dark:ring-purple-800' : 'border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600'}"
+                            >
+                                <div class="flex-1 rounded-lg mb-2 overflow-hidden shadow-inner w-full" style="background: linear-gradient(135deg, ${theme.colors.join(', ')})"></div>
+                                <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">${theme.name}</p>
+                                ${currentTheme === theme.id ? '<div class="absolute top-2 right-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center shadow-lg"><i data-lucide="check" class="w-3 h-3 text-white"></i></div>' : ''}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50 sm:hidden">
+                    <button onclick="document.getElementById('themeModal').remove()" 
+                        class="w-full py-3 bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-200 rounded-xl font-bold active:scale-95 transition-transform"
+                    >
+                        Chiudi
+                    </button>
                 </div>
             </div>
         `;
