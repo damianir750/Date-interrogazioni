@@ -115,12 +115,20 @@ const a11yToggle = {
 
     updateStyle(btn, isActive) {
         if (isActive) {
-            btn.classList.add('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-300');
-            btn.classList.remove('text-gray-700', 'dark:text-gray-200');
+            btn.classList.add('bg-blue-500', 'text-white', 'ring-4', 'ring-blue-500/30', 'dark:bg-blue-600', 'dark:ring-blue-400/40');
+            btn.classList.remove('bg-white/50', 'dark:bg-gray-800/50', 'text-gray-700', 'dark:text-gray-200', 'bg-black/5', 'dark:bg-white/10');
+            btn.innerHTML = '<i data-lucide="eye" class="w-5 h-5 text-white"></i>';
         } else {
-            btn.classList.remove('bg-blue-100', 'text-blue-700', 'dark:bg-blue-900', 'dark:text-blue-300');
-            btn.classList.add('text-gray-700', 'dark:text-gray-200');
+            btn.classList.remove('bg-blue-500', 'text-white', 'ring-4', 'ring-blue-500/30', 'dark:bg-blue-600', 'dark:ring-blue-400/40');
+            const isHome = window.location.pathname.endsWith('index.html') || window.location.pathname === '/';
+            if (isHome) {
+                btn.classList.add('bg-black/5', 'dark:bg-white/10', 'text-gray-700', 'dark:text-white');
+            } else {
+                btn.classList.add('bg-white/50', 'dark:bg-gray-800/50', 'text-gray-700', 'dark:text-gray-200');
+            }
+            btn.innerHTML = '<i data-lucide="eye" class="w-5 h-5"></i>';
         }
+        createIcons({ icons });
     }
 };
 
