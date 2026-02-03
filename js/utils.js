@@ -5,17 +5,22 @@
 export const utils = {
     // Formatta data (YYYY-MM-DD -> DD/MM/YYYY)
     formatDate(dateString) {
-        if (dateString === '9999-12-31') return 'DATA MANCANTE';
+        if (!dateString || dateString === '9999-12-31') return 'DATA MANCANTE';
         const d = new Date(dateString);
+        if (isNaN(d.getTime())) return 'DATA NON VALIDA';
         return d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
     },
 
     // Calcola giorni trascorsi da una data
     daysSince(dateString) {
-        if (dateString === '9999-12-31') return -1;
+        // Handle null, undefined, empty string
+        if (!dateString || dateString === '9999-12-31') return -1;
 
         // Parse "YYYY-MM-DD" manually to treat it as local time
         const [objYear, objMonth, objDay] = dateString.split('-').map(Number);
+
+        // Validate parsed values
+        if (isNaN(objYear) || isNaN(objMonth) || isNaN(objDay)) return -1;
 
         // Create date at midnight local time
         const then = new Date(objYear, objMonth - 1, objDay);
