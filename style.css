@@ -317,16 +317,54 @@ body.theme-sage {
     --theme-border: #16a34a;
 }
 
-/* Theme-Aware Components */
+/* Theme-Aware Components - Complete Site Theming */
+
+/* Cards */
 .theme-card:hover {
     box-shadow: 0 25px 50px -12px var(--theme-accent, rgb(168 85 247 / 0.25));
 }
 
+.theme-card {
+    background-color: var(--theme-card-bg, rgba(255, 255, 255, 0.4));
+    border-color: var(--theme-card-border, rgba(255, 255, 255, 0.2));
+}
+
+/* Text Colors */
+.theme-text-primary {
+    color: var(--theme-text-primary, #111827);
+}
+
+.dark .theme-text-primary {
+    color: var(--theme-text-primary, #f9fafb);
+}
+
+.theme-text-secondary {
+    color: var(--theme-text-secondary, #6b7280);
+}
+
+.dark .theme-text-secondary {
+    color: var(--theme-text-secondary, #d1d5db);
+}
+
+.theme-text-muted {
+    color: var(--theme-text-muted, #9ca3af);
+}
+
+/* Borders */
+.theme-border {
+    border-color: var(--theme-border, #e5e7eb);
+}
+
+.dark .theme-border {
+    border-color: var(--theme-border, #374151);
+}
+
+/* Icons */
 .theme-icon {
     background: linear-gradient(135deg, var(--theme-accent, #a855f7), var(--theme-accent-hover, #9333ea)) !important;
 }
 
-/* Apply theme accent to buttons and interactive elements */
+/* Buttons */
 button:not(.bg-red-500):not(.bg-green-500):hover,
 .btn-primary {
     background-color: var(--theme-accent, #a855f7);
@@ -337,17 +375,55 @@ button:not(.bg-red-500):not(.bg-green-500):active,
     background-color: var(--theme-accent-hover, #9333ea);
 }
 
-/* Theme-aware badges and pills */
-.badge-accent {
+.theme-btn {
     background-color: var(--theme-accent, #a855f7);
     color: white;
 }
 
-/* Theme-aware links */
+.theme-btn:hover {
+    background-color: var(--theme-accent-hover, #9333ea);
+}
+
+/* Badges and Pills */
+.badge-accent,
+.theme-badge {
+    background-color: var(--theme-accent, #a855f7);
+    color: white;
+}
+
+/* Links */
 a.theme-link {
     color: var(--theme-accent, #a855f7);
 }
 
 a.theme-link:hover {
     color: var(--theme-accent-hover, #9333ea);
+}
+
+/* Inputs */
+.theme-input {
+    background-color: var(--theme-card-bg, rgba(255, 255, 255, 0.4));
+    border-color: var(--theme-border, #e5e7eb);
+    color: var(--theme-text-primary, #111827);
+}
+
+.dark .theme-input {
+    background-color: var(--theme-card-bg, rgba(255, 255, 255, 0.05));
+    border-color: var(--theme-border, #374151);
+    color: var(--theme-text-primary, #f9fafb);
+}
+
+/* Focus States */
+.theme-focus:focus {
+    border-color: var(--theme-accent, #a855f7);
+    ring-color: var(--theme-accent, #a855f7);
+}
+
+/* Accents */
+.theme-accent-bg {
+    background-color: var(--theme-accent, #a855f7);
+}
+
+.theme-accent-text {
+    color: var(--theme-accent, #a855f7);
 }
