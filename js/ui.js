@@ -158,25 +158,27 @@ export const ui = {
                     li.style.background = 'rgba(255, 193, 7, 0.2)';
                     li.style.borderLeft = '4px solid #ffc107';
                     li.innerHTML = `
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0 flex-1">
-                            <span class="font-medium text-sm sm:text-base truncate" title="${safeName}">${safeName}</span>
-                            <div class="flex items-center gap-1 flex-shrink-0">
-                                ${gradesBadge}
-                                <span class="text-[10px] sm:text-xs text-amber-700 dark:text-amber-500 font-semibold whitespace-nowrap">📅 MANCANTE</span>
-                                <span class="bg-amber-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap">⚠️ Aggiorna</span>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                                <span class="font-medium text-sm sm:text-base truncate block" title="${safeName}">${safeName}</span>
+                                <div class="flex items-center gap-1 flex-shrink-0">
+                                    ${gradesBadge}
+                                    <span class="text-[10px] sm:text-xs text-amber-700 dark:text-amber-500 font-semibold whitespace-nowrap">📅 MANCANTE</span>
+                                    <span class="bg-amber-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap">⚠️ Aggiorna</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="flex items-center">
-                            <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition ml-2" title="Segna come interrogato">
+                        <div class="flex items-center flex-shrink-0 ml-2">
+                            <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition p-1" title="Segna come interrogato">
                                 <i data-lucide="check" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition ml-2" title="Modifica numero voti">
+                            <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition p-1" title="Modifica numero voti">
                                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
+                            <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition p-1" title="Modifica nome">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
+                            <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition p-1" title="Elimina">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
                         </div>
@@ -195,28 +197,30 @@ export const ui = {
                     else badge = `<span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">${days}g</span>`;
 
                     li.innerHTML = `
-                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 min-w-0 flex-1">
-                            <span class="font-medium text-sm sm:text-base truncate" title="${safeName}">${safeName}</span>
-                            <div class="flex items-center gap-1 flex-shrink-0">
-                                ${gradesBadge}
-                                <span class="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">${utils.formatDate(s.last_interrogation)}</span>
-                                ${badge.replace('px-2 py-1', 'px-2 py-0.5')}
+                        <div class="min-w-0 flex-1">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                                <span class="font-medium text-sm sm:text-base truncate block" title="${safeName}">${safeName}</span>
+                                <div class="flex items-center gap-1 flex-shrink-0">
+                                    ${gradesBadge}
+                                    <span class="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">${utils.formatDate(s.last_interrogation)}</span>
+                                    ${badge.replace('px-2 py-1', 'px-2 py-0.5')}
+                                </div>
                             </div>
                         </div>
-                        <div class="flex items-center">
-                            <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition ml-2" title="Segna come interrogato">
+                        <div class="flex items-center flex-shrink-0 ml-2">
+                            <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition p-1" title="Segna come interrogato">
                                 <i data-lucide="check" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.incrementGrade(${s.id}, ${gradesCount})" class="text-green-500 hover:text-green-700 transition ml-2" title="Aggiungi voto (+1)">
+                            <button onclick="app.incrementGrade(${s.id}, ${gradesCount})" class="text-green-500 hover:text-green-700 transition p-1" title="Aggiungi voto (+1)">
                                 <i data-lucide="plus" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition ml-2" title="Modifica numero voti">
+                            <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition p-1" title="Modifica numero voti">
                                 <i data-lucide="graduation-cap" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition ml-2" title="Modifica nome">
+                            <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition p-1" title="Modifica nome">
                                 <i data-lucide="pencil" class="w-4 h-4"></i>
                             </button>
-                            <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition ml-2" title="Elimina">
+                            <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition p-1" title="Elimina">
                                 <i data-lucide="trash-2" class="w-4 h-4"></i>
                             </button>
                         </div>
