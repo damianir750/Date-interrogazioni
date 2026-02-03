@@ -22,25 +22,25 @@
 </head>
 
 <body
-    class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white min-h-screen font-sans flex flex-col transition-colors duration-300">
+    class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 theme-text-primary min-h-screen font-['Outfit'] flex flex-col transition-colors duration-500">
 
     <!-- Navbar -->
     <nav
-        class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        class="bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl shadow-sm border-b border-white/20 dark:border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
         <div class="flex items-center gap-3">
-            <div class="bg-pink-100 dark:bg-pink-900/30 p-2 rounded-lg text-pink-600 dark:text-pink-400">
+            <div class="bg-pink-100 dark:bg-pink-900/30 p-2 rounded-lg theme-accent-text">
                 <i data-lucide="folder-archive" class="w-6 h-6"></i>
             </div>
-            <h1 class="text-xl font-bold text-gray-800 dark:text-white">Archivio</h1>
+            <h1 class="text-xl font-bold theme-text-primary">Archivio</h1>
         </div>
         <div class="flex items-center gap-4">
             <a href="index.html"
-                class="text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition flex items-center gap-2 font-medium">
+                class="theme-text-secondary hover:theme-text-primary transition flex items-center gap-2 font-medium">
                 <i data-lucide="home" class="w-4 h-4"></i> Home
             </a>
             <button id="themeToggleBtn" aria-label="Cambia tema"
-                class="p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                <i data-lucide="moon" class="w-5 h-5 text-gray-600 dark:text-gray-300"></i>
+                class="p-2 rounded-full bg-white/50 dark:bg-gray-800/50 backdrop-blur-md shadow-sm hover:shadow-md transition theme-text-secondary">
+                <i data-lucide="moon" class="w-5 h-5"></i>
             </button>
         </div>
     </nav>
@@ -48,16 +48,16 @@
     <!-- Main Content -->
     <div class="flex-1 flex flex-col p-6 max-w-7xl mx-auto w-full h-full">
         <div
-            class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden flex-1 flex flex-col border border-gray-200 dark:border-gray-700">
+            class="bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-2xl shadow-lg shadow-black/5 overflow-hidden flex-1 flex flex-col border border-white/20 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5">
             <div
-                class="p-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex justify-between items-center">
-                <h2 class="font-semibold text-gray-700 dark:text-gray-200 flex items-center gap-2">
-                    <i data-lucide="hard-drive" class="w-5 h-5 text-pink-500"></i>
+                class="p-4 border-b border-white/20 dark:border-white/10 bg-white/30 dark:bg-gray-800/30 flex justify-between items-center">
+                <h2 class="font-semibold theme-text-primary flex items-center gap-2">
+                    <i data-lucide="hard-drive" class="w-5 h-5 theme-accent-text"></i>
                     Google Drive
                 </h2>
                 <a href="https://drive.google.com/drive/u/0/folders/1zgXEkkcqmTBa90QSPkbomj0OwoggYOa3" target="_blank"
                     rel="noopener noreferrer"
-                    class="text-sm text-pink-600 hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300 font-medium flex items-center gap-1">
+                    class="text-sm theme-accent-text hover:opacity-80 font-medium flex items-center gap-1">
                     Apri in nuova scheda <i data-lucide="external-link" class="w-4 h-4"></i>
                 </a>
             </div>
