@@ -451,6 +451,12 @@ html[class*="theme-"] body {
 .theme-card {
     background-color: var(--theme-card-bg, rgba(255, 255, 255, 0.4)) !important;
     border-color: var(--theme-card-border, rgba(255, 255, 255, 0.2)) !important;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-card:hover {
+    box-shadow: 0 20px 40px -10px var(--theme-accent, rgba(168, 85, 247, 0.3)), 0 0 20px var(--theme-accent, rgba(168, 85, 247, 0.1));
+    transform: translateY(-5px) scale(1.02);
 }
 
 /* Text Colors */
@@ -488,15 +494,25 @@ html[class*="theme-"] body {
     background: linear-gradient(135deg, var(--theme-accent, #a855f7), var(--theme-accent-hover, #9333ea)) !important;
 }
 
-/* Buttons */
+/* Buttons & Interactive */
 button:not(.bg-red-500):not(.bg-green-500):hover,
-.btn-primary {
+.btn-primary:hover {
     background-color: var(--theme-accent, #a855f7);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--theme-accent, rgba(168, 85, 247, 0.2));
 }
 
 button:not(.bg-red-500):not(.bg-green-500):active,
 .btn-primary:active {
     background-color: var(--theme-accent-hover, #9333ea);
+    transform: translateY(0);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--theme-accent, #a855f7);
+    outline-offset: 2px;
 }
 
 .theme-btn {

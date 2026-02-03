@@ -40,26 +40,33 @@ export const ui = {
             return;
         }
 
+        // Pre-calculate student counts for O(1) lookup inside loop
+        const studentCounts = {};
+        students.forEach(s => {
+            studentCounts[s.subject] = (studentCounts[s.subject] || 0) + 1;
+        });
+
         const fragment = document.createDocumentFragment();
 
         subjects.forEach(subject => {
-            const studentCount = students.filter(s => s.subject === subject.name).length;
+            const count = studentCounts[subject.name] || 0;
             const safeName = utils.escapeHtml(subject.name);
             const safeNameAttr = utils.escapeAttribute(subject.name);
 
             const div = document.createElement('div');
-            div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition';
+            div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition shadow-sm';
             div.innerHTML = `
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full" style="background: ${subject.color}"></div>
+                    <div class="w-8 h-8 rounded-full shadow-inner border border-black/5" style="background: ${subject.color}"></div>
                     <div>
                         <div class="font-semibold text-gray-800 dark:text-white">${safeName}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400">${studentCount} studenti</div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">${count} studenti</div>
                     </div>
                 </div>
                 <button onclick="app.deleteSubject('${safeNameAttr}')" 
-                    class="text-red-500 hover:text-red-700 transition ${studentCount > 0 ? 'opacity-50 cursor-not-allowed' : ''}"
-                    title="${studentCount > 0 ? 'Non puoi eliminare materie con studenti' : 'Elimina materia'}">
+                    class="text-red-500 hover:text-red-700 transition ${count > 0 ? 'opacity-30 cursor-not-allowed' : 'hover:scale-110'}"
+                    ${count > 0 ? 'disabled' : ''}
+                    title="${count > 0 ? 'Materia in uso' : 'Elimina materia'}">
                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
             `;
