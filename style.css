@@ -156,10 +156,14 @@ html.dyslexic-mode * {
 }
 
 /* Themes - Comprehensive System with CSS Variables */
+html[class*="theme-"] body {
+    background: none !important;
+}
 
 /* LIGHT MODE THEMES */
-.theme-ocean {
-    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+.theme-ocean,
+.theme-ocean body {
+    background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%) !important;
     --theme-accent: #0ea5e9;
     --theme-accent-hover: #0284c7;
     --theme-text-primary: #0369a1;
@@ -167,8 +171,9 @@ html.dyslexic-mode * {
     --theme-text-muted: #0c4a6e;
 }
 
-.theme-sunset {
-    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 50%, #fb923c 100%);
+.theme-sunset,
+.theme-sunset body {
+    background: linear-gradient(135deg, #fed7aa 0%, #fdba74 50%, #fb923c 100%) !important;
     --theme-accent: #f97316;
     --theme-accent-hover: #ea580c;
     --theme-text-primary: #7c2d12;
@@ -176,8 +181,9 @@ html.dyslexic-mode * {
     --theme-text-muted: #c2410c;
 }
 
-.theme-forest {
-    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%);
+.theme-forest,
+.theme-forest body {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%) !important;
     --theme-accent: #10b981;
     --theme-accent-hover: #059669;
     --theme-text-primary: #064e3b;
@@ -185,8 +191,9 @@ html.dyslexic-mode * {
     --theme-text-muted: #047857;
 }
 
-.theme-lavender {
-    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 50%, #d8b4fe 100%);
+.theme-lavender,
+.theme-lavender body {
+    background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 50%, #d8b4fe 100%) !important;
     --theme-accent: #a855f7;
     --theme-accent-hover: #9333ea;
     --theme-text-primary: #581c87;
@@ -194,8 +201,9 @@ html.dyslexic-mode * {
     --theme-text-muted: #7e22ce;
 }
 
-.theme-rose {
-    background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 50%, #fda4af 100%);
+.theme-rose,
+.theme-rose body {
+    background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 50%, #fda4af 100%) !important;
     --theme-accent: #f43f5e;
     --theme-accent-hover: #e11d48;
     --theme-text-primary: #881337;
@@ -203,8 +211,9 @@ html.dyslexic-mode * {
     --theme-text-muted: #be123c;
 }
 
-.theme-mint {
-    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%);
+.theme-mint,
+.theme-mint body {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #6ee7b7 100%) !important;
     --theme-accent: #14b8a6;
     --theme-accent-hover: #0d9488;
     --theme-text-primary: #042f2e;
@@ -212,8 +221,9 @@ html.dyslexic-mode * {
     --theme-text-muted: #134e4a;
 }
 
-.theme-peach {
-    background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 50%, #fdba74 100%);
+.theme-peach,
+.theme-peach body {
+    background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 50%, #fdba74 100%) !important;
     --theme-accent: #fb923c;
     --theme-accent-hover: #f97316;
     --theme-text-primary: #7c2d12;
@@ -222,8 +232,9 @@ html.dyslexic-mode * {
 }
 
 /* LIGHT SOLID THEMES */
-.theme-sky {
-    background: #e0f2fe;
+.theme-sky,
+.theme-sky body {
+    background: #e0f2fe !important;
     --theme-accent: #0ea5e9;
     --theme-accent-hover: #0284c7;
     --theme-text-primary: #0c4a6e;
@@ -231,8 +242,9 @@ html.dyslexic-mode * {
     --theme-border: #bae6fd;
 }
 
-.theme-cream {
-    background: #fef3c7;
+.theme-cream,
+.theme-cream body {
+    background: #fef3c7 !important;
     --theme-accent: #f59e0b;
     --theme-accent-hover: #d97706;
     --theme-text-primary: #78350f;
@@ -240,8 +252,9 @@ html.dyslexic-mode * {
     --theme-border: #fde68a;
 }
 
-.theme-blush {
-    background: #fce7f3;
+.theme-blush,
+.theme-blush body {
+    background: #fce7f3 !important;
     --theme-accent: #ec4899;
     --theme-accent-hover: #db2777;
     --theme-text-primary: #831843;
@@ -249,8 +262,9 @@ html.dyslexic-mode * {
     --theme-border: #fbcfe8;
 }
 
-.theme-sage {
-    background: #dcfce7;
+.theme-sage,
+.theme-sage body {
+    background: #dcfce7 !important;
     --theme-accent: #10b981;
     --theme-accent-hover: #059669;
     --theme-text-primary: #14532d;
@@ -260,8 +274,9 @@ html.dyslexic-mode * {
 
 /* DARK MODE THEMES */
 .dark.theme-midnight,
-.dark .theme-midnight {
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+.dark.theme-midnight body,
+.dark .theme-midnight body {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%) !important;
     --theme-accent: #6366f1;
     --theme-accent-hover: #4f46e5;
     --theme-text-primary: #f8fafc;
@@ -270,8 +285,9 @@ html.dyslexic-mode * {
 }
 
 .dark.theme-abyss,
-.dark .theme-abyss {
-    background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
+.dark.theme-abyss body,
+.dark .theme-abyss body {
+    background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%) !important;
     --theme-accent: #0ea5e9;
     --theme-accent-hover: #0284c7;
     --theme-text-primary: #f0f9ff;
@@ -280,8 +296,9 @@ html.dyslexic-mode * {
 }
 
 .dark.theme-ember,
-.dark .theme-ember {
-    background: linear-gradient(135deg, #7c2d12 0%, #9a3412 50%, #c2410c 100%);
+.dark.theme-ember body,
+.dark .theme-ember body {
+    background: linear-gradient(135deg, #7c2d12 0%, #9a3412 50%, #c2410c 100%) !important;
     --theme-accent: #f97316;
     --theme-accent-hover: #ea580c;
     --theme-text-primary: #fff7ed;
@@ -290,8 +307,9 @@ html.dyslexic-mode * {
 }
 
 .dark.theme-nebula,
-.dark .theme-nebula {
-    background: linear-gradient(135deg, #4c1d95 0%, #6b21a8 50%, #7e22ce 100%);
+.dark.theme-nebula body,
+.dark .theme-nebula body {
+    background: linear-gradient(135deg, #4c1d95 0%, #6b21a8 50%, #7e22ce 100%) !important;
     --theme-accent: #a855f7;
     --theme-accent-hover: #9333ea;
     --theme-text-primary: #faf5ff;
@@ -300,8 +318,9 @@ html.dyslexic-mode * {
 }
 
 .dark.theme-crimson,
-.dark .theme-crimson {
-    background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 50%, #991b1b 100%);
+.dark.theme-crimson body,
+.dark .theme-crimson body {
+    background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 50%, #991b1b 100%) !important;
     --theme-accent: #ef4444;
     --theme-accent-hover: #dc2626;
     --theme-text-primary: #fef2f2;
@@ -310,8 +329,9 @@ html.dyslexic-mode * {
 }
 
 .dark.theme-forest-dark,
-.dark .theme-forest-dark {
-    background: linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%);
+.dark.theme-forest-dark body,
+.dark .theme-forest-dark body {
+    background: linear-gradient(135deg, #14532d 0%, #166534 50%, #15803d 100%) !important;
     --theme-accent: #22c55e;
     --theme-accent-hover: #16a34a;
     --theme-text-primary: #f0fdf4;
@@ -320,8 +340,9 @@ html.dyslexic-mode * {
 }
 
 .dark.theme-slate,
-.dark .theme-slate {
-    background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%);
+.dark.theme-slate body,
+.dark .theme-slate body {
+    background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%) !important;
     --theme-accent: #64748b;
     --theme-accent-hover: #475569;
     --theme-text-primary: #f8fafc;
@@ -331,8 +352,9 @@ html.dyslexic-mode * {
 
 /* DARK SOLID THEMES */
 .dark.theme-charcoal,
-.dark .theme-charcoal {
-    background: #1e293b;
+.dark.theme-charcoal body,
+.dark .theme-charcoal body {
+    background: #1e293b !important;
     --theme-accent: #64748b;
     --theme-accent-hover: #475569;
     --theme-text-primary: #f1f5f9;
@@ -341,8 +363,9 @@ html.dyslexic-mode * {
 }
 
 .dark.theme-navy,
-.dark .theme-navy {
-    background: #1e3a8a;
+.dark.theme-navy body,
+.dark .theme-navy body {
+    background: #1e3a8a !important;
     --theme-accent: #60a5fa;
     --theme-accent-hover: #3b82f6;
     --theme-text-primary: #dbeafe;
@@ -351,8 +374,9 @@ html.dyslexic-mode * {
 }
 
 .dark.theme-plum,
-.dark .theme-plum {
-    background: #581c87;
+.dark.theme-plum body,
+.dark .theme-plum body {
+    background: #581c87 !important;
     --theme-accent: #c084fc;
     --theme-accent-hover: #a855f7;
     --theme-text-primary: #f3e8ff;
@@ -361,8 +385,9 @@ html.dyslexic-mode * {
 }
 
 .dark.theme-pine,
-.dark .theme-pine {
-    background: #14532d;
+.dark.theme-pine body,
+.dark .theme-pine body {
+    background: #14532d !important;
     --theme-accent: #4ade80;
     --theme-accent-hover: #22c55e;
     --theme-text-primary: #dcfce7;
