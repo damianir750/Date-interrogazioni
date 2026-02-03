@@ -200,6 +200,43 @@ body.theme-peach {
     --theme-accent-hover: #f97316;
 }
 
+/* LIGHT SOLID THEMES */
+body.theme-sky {
+    background: #e0f2fe;
+    --theme-accent: #0ea5e9;
+    --theme-accent-hover: #0284c7;
+    --theme-text-primary: #0c4a6e;
+    --theme-text-secondary: #075985;
+    --theme-border: #bae6fd;
+}
+
+body.theme-cream {
+    background: #fef3c7;
+    --theme-accent: #f59e0b;
+    --theme-accent-hover: #d97706;
+    --theme-text-primary: #78350f;
+    --theme-text-secondary: #92400e;
+    --theme-border: #fde68a;
+}
+
+body.theme-blush {
+    background: #fce7f3;
+    --theme-accent: #ec4899;
+    --theme-accent-hover: #db2777;
+    --theme-text-primary: #831843;
+    --theme-text-secondary: #9f1239;
+    --theme-border: #fbcfe8;
+}
+
+body.theme-sage {
+    background: #dcfce7;
+    --theme-accent: #10b981;
+    --theme-accent-hover: #059669;
+    --theme-text-primary: #14532d;
+    --theme-text-secondary: #166534;
+    --theme-border: #bbf7d0;
+}
+
 /* DARK MODE THEMES */
 .dark body.theme-midnight {
     background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
@@ -241,6 +278,43 @@ body.theme-peach {
     background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e293b 100%);
     --theme-accent: #64748b;
     --theme-accent-hover: #475569;
+}
+
+/* DARK SOLID THEMES */
+.dark body.theme-charcoal {
+    background: #1e293b;
+    --theme-accent: #64748b;
+    --theme-accent-hover: #475569;
+    --theme-text-primary: #f1f5f9;
+    --theme-text-secondary: #cbd5e1;
+    --theme-border: #334155;
+}
+
+.dark body.theme-navy {
+    background: #1e3a8a;
+    --theme-accent: #60a5fa;
+    --theme-accent-hover: #3b82f6;
+    --theme-text-primary: #dbeafe;
+    --theme-text-secondary: #bfdbfe;
+    --theme-border: #3b82f6;
+}
+
+.dark body.theme-plum {
+    background: #581c87;
+    --theme-accent: #c084fc;
+    --theme-accent-hover: #a855f7;
+    --theme-text-primary: #f3e8ff;
+    --theme-text-secondary: #e9d5ff;
+    --theme-border: #7c3aed;
+}
+
+.dark body.theme-pine {
+    background: #14532d;
+    --theme-accent: #4ade80;
+    --theme-accent-hover: #22c55e;
+    --theme-text-primary: #dcfce7;
+    --theme-text-secondary: #bbf7d0;
+    --theme-border: #16a34a;
 }
 
 /* Theme-Aware Components */

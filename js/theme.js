@@ -134,7 +134,11 @@ const bgToggle = {
         { id: 'lavender', name: 'Lavender', colors: ['#f3e8ff', '#e9d5ff', '#d8b4fe'] },
         { id: 'rose', name: 'Rose', colors: ['#ffe4e6', '#fecdd3', '#fda4af'] },
         { id: 'mint', name: 'Mint', colors: ['#d1fae5', '#a7f3d0', '#6ee7b7'] },
-        { id: 'peach', name: 'Peach', colors: ['#ffedd5', '#fed7aa', '#fdba74'] }
+        { id: 'peach', name: 'Peach', colors: ['#ffedd5', '#fed7aa', '#fdba74'] },
+        { id: 'sky', name: 'Sky', colors: ['#e0f2fe', '#e0f2fe', '#e0f2fe'] },
+        { id: 'cream', name: 'Cream', colors: ['#fef3c7', '#fef3c7', '#fef3c7'] },
+        { id: 'blush', name: 'Blush', colors: ['#fce7f3', '#fce7f3', '#fce7f3'] },
+        { id: 'sage', name: 'Sage', colors: ['#dcfce7', '#dcfce7', '#dcfce7'] }
     ],
     darkThemes: [
         { id: 'default', name: 'Default', colors: ['#0f172a', '#4c1d95', '#1e293b'] },
@@ -144,7 +148,11 @@ const bgToggle = {
         { id: 'nebula', name: 'Nebula', colors: ['#4c1d95', '#6b21a8', '#7e22ce'] },
         { id: 'crimson', name: 'Crimson', colors: ['#450a0a', '#7f1d1d', '#991b1b'] },
         { id: 'forest-dark', name: 'Forest', colors: ['#14532d', '#166534', '#15803d'] },
-        { id: 'slate', name: 'Slate', colors: ['#020617', '#0f172a', '#1e293b'] }
+        { id: 'slate', name: 'Slate', colors: ['#020617', '#0f172a', '#1e293b'] },
+        { id: 'charcoal', name: 'Charcoal', colors: ['#1e293b', '#1e293b', '#1e293b'] },
+        { id: 'navy', name: 'Navy', colors: ['#1e3a8a', '#1e3a8a', '#1e3a8a'] },
+        { id: 'plum', name: 'Plum', colors: ['#581c87', '#581c87', '#581c87'] },
+        { id: 'pine', name: 'Pine', colors: ['#14532d', '#14532d', '#14532d'] }
     ],
 
     init() {
