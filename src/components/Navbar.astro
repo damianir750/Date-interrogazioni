@@ -1,0 +1,23 @@
+---
+import ThemeButtons from './ThemeButtons.astro';
+
+interface Props {
+    homeColor?: string;
+}
+
+const { homeColor = 'purple' } = Astro.props;
+const iconColorClass = {
+    purple: 'text-purple-600 dark:text-purple-400',
+    pink: 'text-pink-600 dark:text-pink-400',
+    amber: 'text-amber-600 dark:text-amber-400'
+}[homeColor] || 'text-purple-600 dark:text-purple-400';
+---
+
+<nav class="mb-10 max-w-7xl mx-auto flex justify-between items-center relative z-10 pt-8">
+    <a href="/"
+        class="group inline-flex items-center gap-3 font-bold px-5 py-2.5 glass rounded-2xl transition-all hover:scale-105 active:scale-95">
+        <i data-lucide="arrow-left" class={`w-5 h-5 ${iconColorClass} group-hover:-translate-x-1 transition-transform`}></i>
+        <span class="bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-300 bg-clip-text text-transparent">Home</span>
+    </a>
+    <ThemeButtons />
+</nav>

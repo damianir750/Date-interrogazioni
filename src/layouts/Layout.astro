@@ -1,0 +1,40 @@
+---
+import '../styles/global.css';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = "Portale Classe: Gestione interrogazioni e archivio." } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="it">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<title>{title}</title>
+	</head>
+	<body class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-900 dark:to-slate-950 min-h-screen font-['Outfit'] text-gray-900 dark:text-white flex flex-col transition-colors duration-500 selection:bg-purple-500 selection:text-white overflow-x-hidden">
+		
+		<!-- Decorative Elements (Fixed backgrounds) -->
+		<div class="fixed top-0 left-0 w-full h-full pointer-events-none opacity-20 dark:opacity-30 z-0">
+			<div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-500 blur-[120px] rounded-full animate-float"></div>
+			<div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500 blur-[120px] rounded-full animate-float" style="animation-delay: -2s;"></div>
+		</div>
+
+		<slot />
+
+		<script is:inline src="https://unpkg.com/lucide@latest"></script>
+		<script is:inline>
+			// Initialize Lucide icons
+			if (window.lucide) {
+				window.lucide.createIcons();
+			}
+		</script>
+	</body>
+</html>
