@@ -105,7 +105,7 @@ const app = {
             console.error(error);
             // 3. Re-sync on error (safer than reverting to potentially stale state)
             this.loadStudents(true);
-            utils.showToast(errorMsg, 'error');
+            alert(errorMsg);
         }
     },
 
@@ -121,12 +121,12 @@ const app = {
         const grades_count = parseInt(gradesCountInput.value) || 0;
 
         if (!name) {
-            utils.showToast("Inserisci il nome dello studente!", 'error');
+            alert("Inserisci il nome dello studente!");
             nameInput.focus();
             return;
         }
         if (!subject) {
-            utils.showToast("Seleziona una materia!", 'error');
+            alert("Seleziona una materia!");
             return;
         }
 
@@ -151,9 +151,8 @@ const app = {
             this.state.students.push(newStudent);
             ui.updateStats(this.state.students);
             this.render();
-            utils.showToast("Studente aggiunto con successo!", 'success');
         } catch (error) {
-            utils.showToast('Errore durante il salvataggio!', 'error');
+            alert('Errore durante il salvataggio!');
             console.error(error);
         }
     },
@@ -222,7 +221,7 @@ const app = {
 
         // Simple Regex Validation YYYY-MM-DD
         if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate)) {
-            utils.showToast("Formato data non valido! Usa AAAA-MM-GG", 'error');
+            alert("Formato data non valido! Usa AAAA-MM-GG");
             return;
         }
 
@@ -253,7 +252,7 @@ const app = {
         const name = nameInput.value.trim();
         const color = colorInput.value;
 
-        if (!name) return utils.showToast('Inserisci il nome della materia', 'error');
+        if (!name) return alert('Inserisci il nome della materia');
 
         try {
             const newSubject = await api.addSubject({ name, color });
@@ -278,10 +277,8 @@ const app = {
             if (modal && !modal.classList.contains('hidden')) {
                 ui.renderSubjectsList(this.state.subjects, this.state.students);
             }
-            utils.showToast("Materia aggiunta!", 'success');
         } catch (error) {
             console.error('Errore aggiunta materia:', error);
-            utils.showToast('Errore aggiunta materia', 'error');
         }
     },
 
@@ -307,9 +304,8 @@ const app = {
             if (modal && !modal.classList.contains('hidden')) {
                 ui.renderSubjectsList(this.state.subjects, this.state.students);
             }
-            utils.showToast("Materia eliminata", 'info');
         } catch (error) {
-            utils.showToast(error.message, 'error');
+            alert(error.message);
         }
     },
 

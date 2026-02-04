@@ -4,11 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "astro": "astro",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,14 +22,11 @@
   },
   "homepage": "https://github.com/damianir750/Date-interrogazioni#readme",
   "dependencies": {
-    "@astrojs/vercel": "^9.0.4",
     "@neondatabase/serverless": "^0.6.0",
-    "astro": "^5.17.1",
     "lucide": "^0.556.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.17",
-    "@tailwindcss/vite": "^4.1.18",
     "autoprefixer": "^10.4.22",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17",

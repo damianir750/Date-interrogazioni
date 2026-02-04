@@ -93,42 +93,6 @@ export const utils = {
         return `rgb(${r}, ${g}, ${b})`;
     },
 
-    // Toast System
-    showToast(message, type = 'info', duration = 4000) {
-        let container = document.getElementById('toast-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'toast-container';
-            document.body.appendChild(container);
-        }
-
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-
-        const icons = {
-            success: 'check-circle',
-            error: 'alert-circle',
-            info: 'info'
-        };
-
-        toast.innerHTML = `
-            <i data-lucide="${icons[type] || 'info'}" class="w-5 h-5"></i>
-            <span class="font-medium">${message}</span>
-        `;
-
-        container.appendChild(toast);
-
-        // Initialize icons if lucide is available
-        if (window.lucide) {
-            window.lucide.createIcons();
-        }
-
-        setTimeout(() => {
-            toast.style.animation = 'toast-out 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards';
-            setTimeout(() => toast.remove(), 500);
-        }, duration);
-    },
-
     // Escape HTML to prevent XSS
     escapeHtml(unsafe) {
         if (unsafe === null || unsafe === undefined) return '';

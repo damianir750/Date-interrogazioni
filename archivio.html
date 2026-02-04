@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function () {
+            var isDark = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            document.documentElement.classList.toggle('dark', isDark);
+
+            var key = isDark ? 'bg_theme_dark' : 'bg_theme_light';
+            var theme = localStorage[key];
+            if (theme && theme !== 'default') {
+                document.documentElement.classList.add('theme-' + theme);
+            }
+
+            var bg = isDark ? '#0f172a' : '#f1f5f9';
+            var s = document.createElement('style');
+            s.id = 'fouc-style';
+            s.innerHTML = "html{visibility:hidden;opacity:0;background-color:" + bg + ";}";
+            document.head.appendChild(s);
+        })();
+    </script>
+    <meta name="description" content="Archivio Documenti: accesso rapido ai file della classe su Google Drive.">
+    <title>Archivio Documenti</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body
+    class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-purple-950 dark:to-slate-950 theme-text-primary min-h-screen font-['Outfit'] flex flex-col transition-colors duration-500">
+
+    <!-- Navbar -->
+    <nav
+        class="bg-white/40 dark:bg-gray-800/40 backdrop-blur-xl shadow-sm border-b border-white/20 dark:border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="bg-pink-100 dark:bg-pink-900/30 p-2 rounded-lg theme-accent-text">
+                <i data-lucide="folder-archive" class="w-6 h-6"></i>
+            </div>
+            <h1 class="text-xl font-bold theme-text-primary">Archivio</h1>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="index.html"
+                class="inline-flex items-center gap-2 font-bold transition-all duration-300 hover:gap-3 bg-gradient-to-r from-pink-600 to-rose-600 dark:from-pink-400 dark:to-rose-300 bg-clip-text text-transparent hover:scale-105 active:scale-95">
+                <i data-lucide="arrow-left" class="w-5 h-5 text-pink-600 dark:text-pink-400"></i> Torna alla Home
+            </a>
+            <div class="flex gap-3">
+                <button id="bgToggleBtn" aria-label="Cambia Sfondo" title="Cambia tema colore"
+                    class="p-2 rounded-full bg-white/50 dark:bg-gray-800/50 backdrop-blur-md shadow-sm hover:shadow-md transition text-gray-700 dark:text-gray-200">
+                    <i data-lucide="palette" class="w-5 h-5"></i>
+                </button>
+                <button id="dyslexiaToggleBtn" aria-label="Modalità Dislessia" title="Font Alta Leggibilità"
+                    class="p-2 rounded-full bg-white/50 dark:bg-gray-800/50 backdrop-blur-md shadow-sm hover:shadow-md transition text-gray-700 dark:text-gray-200">
+                    <i data-lucide="eye" class="w-5 h-5"></i>
+                </button>
+                <button id="themeToggleBtn" aria-label="Cambia tema"
+                    class="p-2 rounded-full bg-white/50 dark:bg-gray-800/50 backdrop-blur-md shadow-sm hover:shadow-md transition text-gray-700 dark:text-gray-200">
+                    <i data-lucide="moon" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col p-6 max-w-7xl mx-auto w-full h-full">
+        <div
+            class="bg-white/40 dark:bg-white/5 backdrop-blur-2xl rounded-2xl shadow-lg shadow-black/5 overflow-hidden flex-1 flex flex-col border border-white/20 dark:border-white/10 ring-1 ring-black/5 dark:ring-white/5">
+            <div
+                class="p-4 border-b border-white/20 dark:border-white/10 bg-white/30 dark:bg-gray-800/30 flex justify-between items-center">
+                <h2 class="font-semibold theme-text-primary flex items-center gap-2">
+                    <i data-lucide="hard-drive" class="w-5 h-5 theme-accent-text"></i>
+                    Google Drive
+                </h2>
+                <a href="https://drive.google.com/drive/u/0/folders/1zgXEkkcqmTBa90QSPkbomj0OwoggYOa3" target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-sm theme-accent-text hover:opacity-80 font-medium flex items-center gap-1">
+                    Apri in nuova scheda <i data-lucide="external-link" class="w-4 h-4"></i>
+                </a>
+            </div>
+            <div class="flex-1 w-full h-[800px] relative bg-white">
+                <iframe src="https://drive.google.com/embeddedfolderview?id=1zgXEkkcqmTBa90QSPkbomj0OwoggYOa3#list"
+                    class="absolute inset-0 w-full h-full border-0" allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/js/theme.js"></script>
+
+</body>
+
+</html>
