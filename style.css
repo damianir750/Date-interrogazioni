@@ -33,10 +33,12 @@ html.dyslexic-mode * {
 
 @layer utilities {
     .fade-in {
+        opacity: 0;
         animation: fadeIn 0.5s ease-out forwards;
     }
 
     .slide-in {
+        opacity: 0;
         animation: slideIn 0.3s ease-out both;
     }
 

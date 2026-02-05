@@ -97,9 +97,16 @@ const themeToggle = {
 
         const isDark = document.documentElement.classList.contains('dark');
         btn.innerHTML = isDark
-            ? '<i data-lucide="sun" class="w-5 h-5 text-yellow-400"></i>'
-            : '<i data-lucide="moon" class="w-5 h-5 text-gray-600"></i>';
-        createIcons({ icons });
+            ? `<i data-lucide="sun" class="w-5 h-5 text-yellow-400"></i>`
+            : `<i data-lucide="moon" class="w-5 h-5 text-gray-600"></i>`;
+
+        // Target only this button to avoid global flickering
+        createIcons({
+            icons,
+            attrs: { 'data-lucide': true },
+            nameAttr: 'data-lucide',
+            root: btn
+        });
     }
 };
 
@@ -141,7 +148,10 @@ const a11yToggle = {
             }
             btn.innerHTML = '<i data-lucide="eye" class="w-5 h-5"></i>';
         }
-        createIcons({ icons });
+        createIcons({
+            icons,
+            root: btn
+        });
     }
 };
 
@@ -282,20 +292,17 @@ const bgToggle = {
 
 // Init as soon as DOM is ready to avoid flickering
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialize logic
+    // 1. Initialize logic (without redundant icon calls)
     themeToggle.init();
     a11yToggle.init();
     bgToggle.init();
 
-    // 2. Initialize all Lucide icons
+    // 2. Initialize all Lucide icons globally ONCE
     createIcons({ icons });
 
-    // 3. Remove the anti-FOUC hidden style ONLY after icons and theme are applied
-    // Small delay ensures the browser has rendered the initial state
-    requestAnimationFrame(() => {
-        const foucStyle = document.getElementById('fouc-style');
-        if (foucStyle) foucStyle.remove();
-    });
+    // 3. Remove the anti-FOUC style synchronously to ensure icons are painted immediately
+    const foucStyle = document.getElementById('fouc-style');
+    if (foucStyle) foucStyle.remove();
 });
 
 // Expose bgToggle globally for onclick handlers
