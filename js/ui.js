@@ -144,7 +144,7 @@ export const ui = {
         container.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
-        Object.keys(bySubject).sort().forEach(subject => {
+        Object.keys(bySubject).sort().forEach((subject, groupIndex) => {
             const color = subjectColors[subject] || '#6b7280';
             const rgb = utils.hexToRgb(color);
             const lightColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
@@ -154,6 +154,7 @@ export const ui = {
 
             const div = document.createElement('div');
             div.className = 'fade-in';
+            div.style.animationDelay = `${groupIndex * 0.1}s`;
             div.innerHTML = `
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col justify-start">
                     <div class="flex items-center justify-between mb-3">
@@ -179,7 +180,7 @@ export const ui = {
                 const safeName = utils.escapeHtml(s.name);
                 const li = document.createElement('li');
                 li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm slide-in dark:text-gray-200';
-                li.style.animationDelay = `${i * 0.05}s`;
+                li.style.animationDelay = `${(groupIndex * 0.1) + (i * 0.05)}s`;
 
                 // Badge Voti - matches subject color
                 const gradesCount = s.grades_count || 0;
