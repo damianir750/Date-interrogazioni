@@ -1,0 +1,17 @@
+{
+    "name": "Portale Classe",
+    "short_name": "Portale",
+    "description": "Gestisci interrogazioni, archivio e calendario scolastico.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#6366f1",
+    "icons": [
+        {
+            "src": "/public/icon.png",
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

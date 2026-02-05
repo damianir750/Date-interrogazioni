@@ -86,8 +86,8 @@ export const ui = {
         container.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
-        // Mostra 3 card skeleton di placeholder
-        for (let i = 0; i < 3; i++) {
+        // Mostra 1 card skeleton di placeholder
+        for (let i = 0; i < 1; i++) {
             const div = document.createElement('div');
             div.className = 'fade-in';
             div.innerHTML = `
