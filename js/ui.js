@@ -73,9 +73,7 @@ export const ui = {
             fragment.appendChild(div);
         });
         container.appendChild(fragment);
-        requestAnimationFrame(() => {
-            createIcons({ icons });
-        });
+        requestAnimationFrame(() => createIcons({ icons }));
     },
 
     // Renderizza i loader (skeleton screens)
@@ -268,11 +266,7 @@ export const ui = {
         });
         container.appendChild(fragment);
 
-
-        // Use requestAnimationFrame to let the browser know we are done modifying DOM
-        // before we ask it to calculate layout for icons.
-        requestAnimationFrame(() => {
-            createIcons({ icons });
-        });
+        // Optimization: Single call to createIcons for the whole container
+        requestAnimationFrame(() => createIcons({ icons }));
     }
 };
