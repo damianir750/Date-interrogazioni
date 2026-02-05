@@ -84,20 +84,22 @@ export const ui = {
         container.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
-        // Mostra 1 card skeleton di placeholder
-        for (let i = 0; i < 1; i++) {
+        // Mostra 3 card skeleton di placeholder per riempire la griglia
+        for (let i = 0; i < 3; i++) {
             const div = document.createElement('div');
+            // Use same container classes as real cards
             div.className = 'fade-in';
+            div.style.animationDelay = `${i * 0.1}s`;
             div.innerHTML = `
-                <div class="bg-white/60 dark:bg-gray-800/60 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col gap-4">
-                    <div class="flex items-center justify-between">
-                        <div class="h-8 w-32 skeleton rounded-lg"></div>
-                        <div class="h-6 w-8 skeleton rounded-full"></div>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col justify-start">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="h-8 w-40 skeleton rounded-lg"></div>
+                        <div class="h-6 w-10 skeleton rounded-full"></div>
                     </div>
-                    <div class="space-y-3">
-                        <div class="h-16 w-full skeleton rounded-lg"></div>
-                        <div class="h-16 w-full skeleton rounded-lg"></div>
-                        <div class="h-16 w-full skeleton rounded-lg"></div>
+                    <div class="space-y-2">
+                        <div class="h-14 w-full skeleton rounded-lg opacity-80"></div>
+                        <div class="h-14 w-full skeleton rounded-lg opacity-60"></div>
+                        <div class="h-14 w-full skeleton rounded-lg opacity-40"></div>
                     </div>
                 </div>
             `;
