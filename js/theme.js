@@ -280,18 +280,22 @@ const bgToggle = {
     }
 };
 
-// Init on load
-window.addEventListener('load', () => {
-    // Remove the anti-FOUC hidden style to allow clean theme toggling
-    const foucStyle = document.getElementById('fouc-style');
-    if (foucStyle) foucStyle.remove();
-
+// Init as soon as DOM is ready to avoid flickering
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Initialize logic
     themeToggle.init();
     a11yToggle.init();
     bgToggle.init();
 
-    // Initialize all Lucide icons
+    // 2. Initialize all Lucide icons
     createIcons({ icons });
+
+    // 3. Remove the anti-FOUC hidden style ONLY after icons and theme are applied
+    // Small delay ensures the browser has rendered the initial state
+    requestAnimationFrame(() => {
+        const foucStyle = document.getElementById('fouc-style');
+        if (foucStyle) foucStyle.remove();
+    });
 });
 
 // Expose bgToggle globally for onclick handlers
