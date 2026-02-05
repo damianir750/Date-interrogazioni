@@ -56,7 +56,7 @@ const app = {
         }
     },
 
-    async loadStudents(forceRefresh = false, skipRender = false) {
+    async loadStudents(forceRefresh = false) {
         try {
             this.state.students = await api.getStudents(forceRefresh) || [];
 
@@ -73,10 +73,8 @@ const app = {
                 }
             });
 
-            if (!skipRender) {
-                ui.updateStats(this.state.students);
-                this.render();
-            }
+            ui.updateStats(this.state.students);
+            this.render();
         } catch (error) {
             console.error('Errore caricamento studenti:', error);
         }
@@ -85,8 +83,7 @@ const app = {
     // Optimized Init: Parallel loading
     async loadData() {
         ui.renderSkeletons();
-        await Promise.all([this.loadSubjects(), this.loadStudents(false, true)]);
-        ui.updateStats(this.state.students);
+        await Promise.all([this.loadSubjects(), this.loadStudents()]);
         this.render();
     },
 
