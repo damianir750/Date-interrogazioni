@@ -19,6 +19,7 @@ import {
     Palette,
     Check
 } from 'lucide';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 
 const icons = {
     Sun,
@@ -276,6 +277,9 @@ window.addEventListener('load', () => {
     themeToggle.init();
     a11yToggle.init();
     bgToggle.init();
+
+    // Initialize Vercel Speed Insights
+    injectSpeedInsights();
 
     // Initialize all Lucide icons
     createIcons({ icons });
