@@ -19,19 +19,6 @@ import {
     Palette,
     Check
 } from 'lucide';
-import { injectSpeedInsights } from '@vercel/speed-insights';
-import { inject } from '@vercel/analytics';
-
-// Initialize Vercel services immediately
-injectSpeedInsights();
-inject();
-
-// Register Service Worker for PWA
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
-    });
-}
 
 const icons = {
     Sun,
