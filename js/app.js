@@ -82,6 +82,7 @@ const app = {
 
     // Optimized Init: Parallel loading
     async loadData() {
+        ui.renderSkeletons();
         await Promise.all([this.loadSubjects(), this.loadStudents()]);
         this.render();
     },

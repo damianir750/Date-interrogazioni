@@ -78,6 +78,36 @@ export const ui = {
         });
     },
 
+    // Renderizza i loader (skeleton screens)
+    renderSkeletons() {
+        const container = document.getElementById('subjectsContainer');
+        if (!container) return;
+
+        container.innerHTML = '';
+        const fragment = document.createDocumentFragment();
+
+        // Mostra 3 card skeleton di placeholder
+        for (let i = 0; i < 3; i++) {
+            const div = document.createElement('div');
+            div.className = 'fade-in';
+            div.innerHTML = `
+                <div class="bg-white/60 dark:bg-gray-800/60 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col gap-4">
+                    <div class="flex items-center justify-between">
+                        <div class="h-8 w-32 skeleton rounded-lg"></div>
+                        <div class="h-6 w-8 skeleton rounded-full"></div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="h-16 w-full skeleton rounded-lg"></div>
+                        <div class="h-16 w-full skeleton rounded-lg"></div>
+                        <div class="h-16 w-full skeleton rounded-lg"></div>
+                    </div>
+                </div>
+            `;
+            fragment.appendChild(div);
+        }
+        container.appendChild(fragment);
+    },
+
     // Renderizza la lista principale
     render(students, subjectColors, searchTerm) {
         const container = document.getElementById('subjectsContainer');
