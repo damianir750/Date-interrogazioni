@@ -103,11 +103,21 @@ html.dyslexic-mode * {
             animation: none !important;
             transform: none !important;
             transition: none !important;
+            opacity: 1 !important;
+            /* Fix visibility bug */
         }
 
         /* Reduce paint repaints */
         * {
             box-shadow: none !important;
+            text-shadow: none !important;
+            /* New: remove text shadows on mobile */
+        }
+
+        /* Optimization for large lists */
+        li {
+            contain: content;
+            /* Browser optimization for list items */
         }
     }
 
