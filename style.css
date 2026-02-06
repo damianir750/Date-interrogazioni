@@ -119,6 +119,27 @@ html.dyslexic-mode * {
             contain: content;
             /* Browser optimization for list items */
         }
+
+        /* NUCLEAR OPTION: Sketchy content-visibility */
+        /* Takes off-screen elements out of the rendering pipeline */
+        .fade-in {
+            content-visibility: auto;
+            contain-intrinsic-size: 1px 300px;
+            /* Estimated height of a card */
+        }
+
+        /* Remove body gradient */
+        body {
+            background: #f8fafc !important;
+            /* Light mode solid */
+            background-image: none !important;
+        }
+
+        .dark body {
+            background: #0f172a !important;
+            /* Dark mode solid */
+            background-image: none !important;
+        }
     }
 
     .custom-scrollbar::-webkit-scrollbar {
