@@ -95,6 +95,9 @@ html.dyslexic-mode * {
 
         .animate-float,
         .animate-shimmer,
+        .slide-in,
+        .pulse-alert,
+        .animate-enter,
         .hover-scale:hover,
         .theme-card:hover {
             animation: none !important;
