@@ -241,11 +241,11 @@ export const ui = {
                                 </div>
                             </div>
                             <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1 opacity-50">
-                                <div class="p-1.5"><div class="w-4 h-4 skeleton rounded-sm"></div></div>
-                                <div class="p-1.5"><div class="w-4 h-4 skeleton rounded-sm"></div></div>
-                                <div class="p-1.5"><div class="w-4 h-4 skeleton rounded-sm"></div></div>
-                                <div class="p-1.5"><div class="w-4 h-4 skeleton rounded-sm"></div></div>
-                                <div class="p-1.5"><div class="w-4 h-4 skeleton rounded-sm"></div></div>
+                                <button class="p-1.5 invisible"><i data-lucide="check" class="w-4 h-4 skeleton rounded-sm"></i></button>
+                                <button class="p-1.5 invisible"><i data-lucide="plus" class="w-4 h-4 skeleton rounded-sm"></i></button>
+                                <button class="p-1.5 invisible"><i data-lucide="graduation-cap" class="w-4 h-4 skeleton rounded-sm"></i></button>
+                                <button class="p-1.5 invisible"><i data-lucide="pencil" class="w-4 h-4 skeleton rounded-sm"></i></button>
+                                <button class="p-1.5 invisible"><i data-lucide="trash-2" class="w-4 h-4 skeleton rounded-sm"></i></button>
                             </div>
                         </div>
                     </li>
