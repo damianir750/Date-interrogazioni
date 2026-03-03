@@ -25,8 +25,8 @@ const request = async (endpoint, method = 'GET', body = null, signal = null) => 
 
     const res = await fetch(`${BASE_URL}${endpoint}`, options);
 
-    // Handle unauthorized — redirect to login
-    if (res.status === 401) {
+    // Handle unauthorized — redirect to login (but not for verify-code which is the login endpoint itself)
+    if (res.status === 401 && !endpoint.includes('verify-code')) {
         localStorage.removeItem('auth_code');
         window.dispatchEvent(new Event('auth-expired'));
         throw new Error('Non autorizzato');

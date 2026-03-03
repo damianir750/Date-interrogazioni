@@ -419,7 +419,10 @@ const app = {
             await this.loadData();
         } catch (error) {
             localStorage.removeItem('auth_code');
-            errorEl?.classList.remove('hidden');
+            if (errorEl) {
+                errorEl.textContent = error.message || 'Codice errato, riprova';
+                errorEl.classList.remove('hidden');
+            }
             input.value = '';
             input.focus();
         } finally {
