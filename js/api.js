@@ -4,7 +4,7 @@
 
 const BASE_URL = '/api';
 
-const request = async (endpoint, method = 'GET', body = null) => {
+const request = async (endpoint, method = 'GET', body = null, signal = null) => {
     const options = {
         method,
         headers: { 'Content-Type': 'application/json' }
@@ -12,6 +12,10 @@ const request = async (endpoint, method = 'GET', body = null) => {
 
     if (body) {
         options.body = JSON.stringify(body);
+    }
+
+    if (signal) {
+        options.signal = signal;
     }
 
     const res = await fetch(`${BASE_URL}${endpoint}`, options);
@@ -37,11 +41,11 @@ const request = async (endpoint, method = 'GET', body = null) => {
 };
 
 export const api = {
-    getSubjects: () => request('/get-subjects'),
+    getSubjects: (signal = null) => request('/get-subjects', 'GET', null, signal),
 
-    getStudents: (forceRefresh = false) => {
+    getStudents: (forceRefresh = false, signal = null) => {
         const query = forceRefresh ? `?t=${Date.now()}` : '';
-        return request(`/get-students${query}`);
+        return request(`/get-students${query}`, 'GET', null, signal);
     },
 
     addStudent: (student) => request('/add-student', 'POST', student),

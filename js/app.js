@@ -13,6 +13,8 @@ const app = {
         searchTerm: ''
     },
 
+    _loadStudentsController: null, // Keep track of pending requests for loadStudents
+
     // =====================================================
     // CONTROLLER METHODS
     // =====================================================
@@ -57,9 +59,16 @@ const app = {
     },
 
     async loadStudents(forceRefresh = false, skipRender = false) {
+        // Abort previous pending request to prevent race conditions
+        if (this._loadStudentsController) {
+            this._loadStudentsController.abort();
+        }
+        this._loadStudentsController = new AbortController();
+        const signal = this._loadStudentsController.signal;
+
         try {
             const oldDataStr = JSON.stringify(this.state.students || []);
-            const newData = await api.getStudents(forceRefresh) || [];
+            const newData = await api.getStudents(forceRefresh, signal) || [];
 
             // Normalize date formats from database immediately
             newData.forEach(student => {
@@ -75,6 +84,10 @@ const app = {
                 this.render();
             }
         } catch (error) {
+            if (error.name === 'AbortError') {
+                // Ignore intentionally aborted requests
+                return;
+            }
             console.error('Errore caricamento constuenti:', error);
         }
     },

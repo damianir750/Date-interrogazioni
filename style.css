@@ -26,6 +26,8 @@ html.dyslexic-mode * {
 
 .hover-scale {
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backface-visibility: hidden;
+    transform: translateZ(0);
 }
 
 .hover-scale:hover {
@@ -592,6 +594,9 @@ html[class*="theme-"] body {
     background-color: var(--theme-card-bg, rgba(255, 255, 255, 0.4)) !important;
     border-color: var(--theme-card-border, rgba(255, 255, 255, 0.2)) !important;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    will-change: transform, box-shadow;
 }
 
 .theme-card:hover {
