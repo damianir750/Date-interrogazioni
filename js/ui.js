@@ -232,16 +232,20 @@ export const ui = {
                 listHTML += `
                     <li class="flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20 ${j > 0 ? 'opacity-70' : ''}">
                         <div class="flex w-full gap-3">
-                            <div class="flex-1 min-w-0 py-0.5">
-                                <div class="h-5 ${j % 2 === 0 ? 'w-3/4' : 'w-1/2'} skeleton rounded mb-2 pt-0.5"></div>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <div class="h-5 w-12 skeleton rounded-full"></div>
-                                    <div class="h-5 ${j % 2 === 0 ? 'w-24' : 'w-20'} skeleton rounded-full"></div>
+                            <div class="flex-1 min-w-0">
+                                <span class="font-medium text-sm sm:text-base break-words skeleton text-transparent rounded ${j % 2 === 0 ? 'w-1/2' : 'w-3/4'} inline-block">Nome Studente</span>
+                                <div class="flex items-center gap-2 mt-1 flex-wrap">
+                                    <span class="text-transparent text-xs px-2 py-1 rounded-full font-bold skeleton">🎓 0</span>
+                                    <span class="text-transparent text-[10px] sm:text-xs whitespace-nowrap skeleton rounded">00/00/0000</span>
+                                    <span class="text-transparent text-xs px-2 py-0.5 rounded-full font-bold skeleton">00g</span>
                                 </div>
                             </div>
-                            <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
-                                <div class="h-7 w-7 skeleton rounded"></div>
-                                <div class="h-7 w-7 skeleton rounded"></div>
+                            <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1 opacity-50">
+                                <div class="p-1.5"><div class="w-4 h-4 skeleton rounded-sm"></div></div>
+                                <div class="p-1.5"><div class="w-4 h-4 skeleton rounded-sm"></div></div>
+                                <div class="p-1.5"><div class="w-4 h-4 skeleton rounded-sm"></div></div>
+                                <div class="p-1.5"><div class="w-4 h-4 skeleton rounded-sm"></div></div>
+                                <div class="p-1.5"><div class="w-4 h-4 skeleton rounded-sm"></div></div>
                             </div>
                         </div>
                     </li>
