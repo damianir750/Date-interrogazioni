@@ -76,19 +76,26 @@ const app = {
 
     // Optimized Init: Parallel loading with a minimum delay for satisfying UX
     async loadData() {
-        // Quick fetch subjects first to know exact skeleton count
-        await this.loadSubjects();
+        // Quick fetch subjects and students first to know exact skeleton count
+        await Promise.all([
+            this.loadSubjects(),
+            this.loadStudents(false, true)
+        ]);
 
-        // Render exact number of skeletons matching subjects, fallback to 1 if empty to show loading state
-        ui.renderSkeletons(this.state.subjects.length > 0 ? this.state.subjects.length : 1);
+        // Calculate exact student counts per subject
+        const studentCounts = {};
+        this.state.subjects.forEach(s => studentCounts[s.name] = 0);
+        this.state.students.forEach(s => {
+            if (studentCounts[s.subject] !== undefined) studentCounts[s.subject]++;
+            else studentCounts[s.subject] = 1;
+        });
+
+        // Render EXACT number of subjects and exactly the correct number of student rows per subject
+        ui.renderSkeletons(this.state.subjects, studentCounts);
 
         // Ensure skeletons show for at least 800ms to avoid jarring flashes on fast network
         const minimumWait = new Promise(resolve => setTimeout(resolve, 800));
-
-        await Promise.all([
-            this.loadStudents(false, true),
-            minimumWait
-        ]);
+        await minimumWait;
 
         ui.updateStats(this.state.students);
         this.render();
