@@ -229,8 +229,36 @@ export const ui = {
                     </div>
                     
                     <ul class="space-y-2 list-none p-0 m-0">
-                        <li class="flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20 skeleton h-[68px]"></li>
-                        <li class="flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20 skeleton h-[68px] opacity-70"></li>
+                        <li class="flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20">
+                            <div class="flex w-full gap-3">
+                                <div class="flex-1 min-w-0 py-0.5">
+                                    <div class="h-5 w-3/4 skeleton rounded mb-2 pt-0.5"></div>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <div class="h-5 w-12 skeleton rounded-full"></div>
+                                        <div class="h-5 w-24 skeleton rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
+                                    <div class="h-7 w-7 skeleton rounded"></div>
+                                    <div class="h-7 w-7 skeleton rounded"></div>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20 opacity-70">
+                            <div class="flex w-full gap-3">
+                                <div class="flex-1 min-w-0 py-0.5">
+                                    <div class="h-5 w-1/2 skeleton rounded mb-2 pt-0.5"></div>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <div class="h-5 w-12 skeleton rounded-full"></div>
+                                        <div class="h-5 w-20 skeleton rounded-full"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
+                                    <div class="h-7 w-7 skeleton rounded"></div>
+                                    <div class="h-7 w-7 skeleton rounded"></div>
+                                </div>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             `;
