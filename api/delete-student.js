@@ -6,7 +6,7 @@ export default async function handler(request, response) {
         return response.status(405).json({ error: 'Method Not Allowed' });
     }
 
-    if (!requireAuth(request, response)) return;
+    if (!await requireAuth(request, response)) return;
 
     try {
         let body = request.body;
