@@ -204,7 +204,7 @@ export const ui = {
             fragment.appendChild(div);
         });
         container.appendChild(fragment);
-        requestAnimationFrame(() => createIcons({ icons }));
+        requestAnimationFrame(() => createIcons({ icons, nameAttr: 'data-lucide' }));
     },
 
     // Renderizza i loader (skeleton screens)
@@ -440,6 +440,7 @@ export const ui = {
         container.appendChild(fragment);
 
         // Optimization: Single call to createIcons for the whole container
-        requestAnimationFrame(() => createIcons({ icons }));
+        // Provide root option if lucide supports it (doesn't hurt if ignored), and provide attrs to prevent full DOM reflow
+        requestAnimationFrame(() => createIcons({ icons, nameAttr: 'data-lucide' }));
     }
 };
