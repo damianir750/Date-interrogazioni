@@ -208,15 +208,15 @@ export const ui = {
     },
 
     // Renderizza i loader (skeleton screens)
-    renderSkeletons() {
+    renderSkeletons(count = 3) {
         const container = document.getElementById('subjectsContainer');
         if (!container) return;
 
         container.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
-        // Mostra 3 card skeleton di placeholder per riempire la griglia
-        for (let i = 0; i < 3; i++) {
+        // Mostra placeholder per riempire la griglia
+        for (let i = 0; i < count; i++) {
             const div = document.createElement('div');
             // Use same container classes as real cards
             div.className = 'fade-in';
@@ -286,8 +286,12 @@ export const ui = {
             const safeSubject = utils.escapeHtml(subject);
 
             const div = document.createElement('div');
-            div.className = 'fade-in';
-            div.style.animationDelay = `${groupIndex * 0.1}s`;
+            // Check if this is a first render (container was empty) to apply animation, otherwise keep it static to prevent "shock"
+            if (container.children.length === 0) {
+                div.className = 'fade-in';
+                div.style.animationDelay = `${groupIndex * 0.1}s`;
+            }
+
             div.innerHTML = `
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col justify-start">
                     <div class="flex items-center justify-between mb-3">
@@ -312,8 +316,14 @@ export const ui = {
                 const days = utils.daysSince(s.last_interrogation);
                 const safeName = utils.escapeHtml(s.name);
                 const li = document.createElement('li');
-                li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm slide-in dark:text-gray-200';
-                li.style.animationDelay = `${(groupIndex * 0.1) + (i * 0.05)}s`;
+
+                // Only slide in if it's initial render
+                if (container.children.length === 0) {
+                    li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm slide-in dark:text-gray-200';
+                    li.style.animationDelay = `${(groupIndex * 0.1) + (i * 0.05)}s`;
+                } else {
+                    li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm dark:text-gray-200';
+                }
 
                 // Badge Voti - matches subject color
                 const gradesCount = s.grades_count || 0;

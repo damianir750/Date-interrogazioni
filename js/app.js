@@ -76,7 +76,7 @@ const app = {
 
     // Optimized Init: Parallel loading
     async loadData() {
-        ui.renderSkeletons();
+        ui.renderSkeletons(this.state.subjects.length > 0 ? this.state.subjects.length : 3);
         await Promise.all([this.loadSubjects(), this.loadStudents(false, true)]);
         ui.updateStats(this.state.students);
         this.render();
