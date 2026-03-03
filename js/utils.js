@@ -139,10 +139,14 @@ export const utils = {
     // Escape for HTML attributes (like onclick)
     escapeAttribute(unsafe) {
         if (unsafe === null || unsafe === undefined) return '';
-        // For attributes, we mainly need to worry about quotes breaking out
         return String(unsafe)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;")
-            .replace(/'/g, "\\'") // Escaping for JS string inside attribute
-            .replace(/\n/g, " "); // No newlines in attributes
+            .replace(/'/g, "&#039;")
+            .replace(/`/g, "&#96;")
+            .replace(/\\/g, "&#92;")
+            .replace(/\n/g, " ");
     }
 };

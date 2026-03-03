@@ -368,6 +368,70 @@ const app = {
     },
 
     // =====================================================
+    // AUTH
+    // =====================================================
+    showLogin() {
+        const loginScreen = document.getElementById('loginScreen');
+        if (loginScreen) {
+            loginScreen.classList.remove('hidden');
+            loginScreen.classList.add('flex');
+            const input = document.getElementById('authCodeInput');
+            if (input) {
+                input.focus();
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.submitLogin();
+                });
+            }
+        }
+    },
+
+    hideLogin() {
+        const loginScreen = document.getElementById('loginScreen');
+        if (loginScreen) {
+            loginScreen.classList.add('hidden');
+            loginScreen.classList.remove('flex');
+        }
+    },
+
+    async submitLogin() {
+        const input = document.getElementById('authCodeInput');
+        const errorEl = document.getElementById('authError');
+        const btn = document.getElementById('authSubmitBtn');
+        if (!input) return;
+
+        const code = input.value.trim();
+        if (!code) {
+            errorEl?.classList.remove('hidden');
+            return;
+        }
+
+        // Disable button during request
+        if (btn) btn.disabled = true;
+
+        try {
+            // Temporarily set the code so the API request includes it
+            localStorage.setItem('auth_code', code);
+            await api.verifyCode(code);
+
+            // Success
+            errorEl?.classList.add('hidden');
+            this.hideLogin();
+            await this.loadData();
+        } catch (error) {
+            localStorage.removeItem('auth_code');
+            errorEl?.classList.remove('hidden');
+            input.value = '';
+            input.focus();
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    },
+
+    checkAuth() {
+        return !!localStorage.getItem('auth_code');
+    },
+
+    // =====================================================
     // INIT
     // =====================================================
     async init() {
@@ -393,6 +457,15 @@ const app = {
             modal.addEventListener('click', (e) => {
                 if (e.target.id === 'subjectsModal') this.closeSubjectsModal();
             });
+        }
+
+        // Listen for auth expiration (fired by api.js on 401)
+        window.addEventListener('auth-expired', () => this.showLogin());
+
+        // Check if user is authenticated
+        if (!this.checkAuth()) {
+            this.showLogin();
+            return; // Don't load data until authenticated
         }
 
         try {
@@ -421,10 +494,26 @@ const app = {
     }
 };
 
-// Expose app to window for inline HTML handlers
-window.app = app;
+// Expose only the methods needed by inline HTML handlers
+window.app = Object.freeze({
+    addStudent: () => app.addStudent(),
+    deleteStudent: (id) => app.deleteStudent(id),
+    incrementGrade: (id, g) => app.incrementGrade(id, g),
+    updateStudentName: (id, name) => app.updateStudentName(id, name),
+    updateStudentGrades: (id, g) => app.updateStudentGrades(id, g),
+    registerInterrogation: (id, g) => app.registerInterrogation(id, g),
+    addNewSubject: () => app.addNewSubject(),
+    deleteSubject: (name) => app.deleteSubject(name),
+    setToday: () => app.setToday(),
+    setYesterday: () => app.setYesterday(),
+    setLastWeek: () => app.setLastWeek(),
+    openSubjectsModal: () => app.openSubjectsModal(),
+    closeSubjectsModal: () => app.closeSubjectsModal(),
+    submitLogin: () => app.submitLogin(),
+});
 
 // Start app when resources are fully loaded to avoid layout warnings
 window.addEventListener('load', () => {
     app.init();
 });
+

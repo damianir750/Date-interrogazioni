@@ -4,10 +4,15 @@
 
 const BASE_URL = '/api';
 
+const getAuthCode = () => localStorage.getItem('auth_code') || '';
+
 const request = async (endpoint, method = 'GET', body = null, signal = null) => {
     const options = {
         method,
-        headers: { 'Content-Type': 'application/json' }
+        headers: {
+            'Content-Type': 'application/json',
+            'x-auth-code': getAuthCode()
+        }
     };
 
     if (body) {
@@ -19,6 +24,13 @@ const request = async (endpoint, method = 'GET', body = null, signal = null) => 
     }
 
     const res = await fetch(`${BASE_URL}${endpoint}`, options);
+
+    // Handle unauthorized — redirect to login
+    if (res.status === 401) {
+        localStorage.removeItem('auth_code');
+        window.dispatchEvent(new Event('auth-expired'));
+        throw new Error('Non autorizzato');
+    }
 
     // For delete-subject which might return 400 with message
     if (!res.ok) {
@@ -56,5 +68,7 @@ export const api = {
 
     addSubject: (subject) => request('/add-subject', 'POST', subject),
 
-    deleteSubject: (name) => request('/delete-subject', 'POST', { name })
+    deleteSubject: (name) => request('/delete-subject', 'POST', { name }),
+
+    verifyCode: (code) => request('/verify-code', 'POST', { code })
 };

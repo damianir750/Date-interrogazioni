@@ -3,6 +3,9 @@ import { utils } from './utils.js';
 
 const icons = { Trash2, Pencil, AlertTriangle, BookOpen, GraduationCap, Plus, ArrowLeft, Moon, PlusCircle, Search, Settings, X, Check };
 
+// Validates hex color to prevent CSS injection
+const safeColor = (color) => /^#[0-9A-Fa-f]{6}$/.test(color) ? color : '#6b7280';
+
 export const ui = {
     // Componente Toast per notifiche moderne
     showToast(message, type = 'info') {
@@ -188,7 +191,7 @@ export const ui = {
             div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition shadow-sm';
             div.innerHTML = `
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full shadow-inner border border-black/5" style="background: ${subject.color}"></div>
+                    <div class="w-8 h-8 rounded-full shadow-inner border border-black/5" style="background: ${safeColor(subject.color)}"></div>
                     <div>
                         <div class="font-semibold text-gray-800 dark:text-white">${safeName}</div>
                         <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">${count} studenti</div>
@@ -307,7 +310,7 @@ export const ui = {
         const fragment = document.createDocumentFragment();
 
         Object.keys(bySubject).sort().forEach((subject, groupIndex) => {
-            const color = subjectColors[subject] || '#6b7280';
+            const color = safeColor(subjectColors[subject] || '#6b7280');
             const rgb = utils.hexToRgb(color);
             const lightColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
             const subjectStudents = bySubject[subject];
