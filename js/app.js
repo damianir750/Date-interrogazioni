@@ -58,14 +58,19 @@ const app = {
 
     async loadStudents(forceRefresh = false, skipRender = false) {
         try {
-            this.state.students = await api.getStudents(forceRefresh) || [];
+            const oldDataStr = JSON.stringify(this.state.students || []);
+            const newData = await api.getStudents(forceRefresh) || [];
 
-            // Normalize date formats from database
-            this.state.students.forEach(student => {
+            // Normalize date formats from database immediately
+            newData.forEach(student => {
                 student.last_interrogation = utils.normalizeDate(student.last_interrogation);
             });
 
-            if (!skipRender) {
+            const newDataStr = JSON.stringify(newData);
+            this.state.students = newData;
+
+            // Only trigger a full DOM refresh if the data ACTUALLY changed or if forced
+            if (!skipRender && (forceRefresh || oldDataStr !== newDataStr)) {
                 ui.updateStats(this.state.students);
                 this.render();
             }
@@ -196,10 +201,7 @@ const app = {
                 const s = this.state.students.find(s => s.id === id);
                 if (s) s.name = newName;
             },
-            async () => {
-                await api.updateStudent({ id, name: newName });
-                this.loadStudents(true); // Reload to ensure sync
-            },
+            () => api.updateStudent({ id, name: newName }),
             "Errore durante l'aggiornamento del nome"
         );
     },
@@ -216,10 +218,7 @@ const app = {
                 const s = this.state.students.find(s => s.id === id);
                 if (s) s.grades_count = newGrades;
             },
-            async () => {
-                await api.updateStudent({ id, grades_count: newGrades });
-                this.loadStudents(true);
-            },
+            () => api.updateStudent({ id, grades_count: newGrades }),
             "Errore durante l'aggiornamento voti"
         );
     },
@@ -243,14 +242,11 @@ const app = {
                     s.grades_count = (currentGrades || 0) + 1;
                 }
             },
-            async () => {
-                await api.updateStudent({
-                    id,
-                    last_interrogation: newDate,
-                    grades_count: (currentGrades || 0) + 1
-                });
-                this.loadStudents(true);
-            },
+            () => api.updateStudent({
+                id,
+                last_interrogation: newDate,
+                grades_count: (currentGrades || 0) + 1
+            }),
             "Errore durante la registrazione dell'interrogazione"
         );
     },
