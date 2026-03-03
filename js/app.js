@@ -76,13 +76,16 @@ const app = {
 
     // Optimized Init: Parallel loading with a minimum delay for satisfying UX
     async loadData() {
-        ui.renderSkeletons(this.state.subjects.length > 0 ? this.state.subjects.length : 3);
+        // Quick fetch subjects first to know exact skeleton count
+        await this.loadSubjects();
+
+        // Render exact number of skeletons matching subjects, fallback to 1 if empty to show loading state
+        ui.renderSkeletons(this.state.subjects.length > 0 ? this.state.subjects.length : 1);
 
         // Ensure skeletons show for at least 800ms to avoid jarring flashes on fast network
         const minimumWait = new Promise(resolve => setTimeout(resolve, 800));
 
         await Promise.all([
-            this.loadSubjects(),
             this.loadStudents(false, true),
             minimumWait
         ]);

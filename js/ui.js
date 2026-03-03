@@ -224,14 +224,14 @@ export const ui = {
             div.innerHTML = `
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col justify-start">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="h-8 w-40 skeleton rounded-lg"></div>
-                        <div class="h-6 w-10 skeleton rounded-full"></div>
+                        <div class="h-8 w-1/2 skeleton rounded-lg"></div>
+                        <div class="h-6 w-8 skeleton rounded-full"></div>
                     </div>
-                    <div class="space-y-2">
-                        <div class="h-14 w-full skeleton rounded-lg opacity-80"></div>
-                        <div class="h-14 w-full skeleton rounded-lg opacity-60"></div>
-                        <div class="h-14 w-full skeleton rounded-lg opacity-40"></div>
-                    </div>
+                    
+                    <ul class="space-y-2 list-none p-0 m-0">
+                        <li class="flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20 skeleton h-[68px]"></li>
+                        <li class="flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20 skeleton h-[68px] opacity-70"></li>
+                    </ul>
                 </div>
             `;
             fragment.appendChild(div);
