@@ -208,62 +208,59 @@ export const ui = {
     },
 
     // Renderizza i loader (skeleton screens)
-    renderSkeletons(count = 3) {
+    renderSkeletons(subjects = [], studentCounts = {}) {
         const container = document.getElementById('subjectsContainer');
         if (!container) return;
 
         container.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
-        // Mostra placeholder per riempire la griglia
-        for (let i = 0; i < count; i++) {
+        // Fallback safety if no subjects exist yet (e.g. fresh DB)
+        const subjectsToRender = subjects.length > 0 ? subjects : [{ name: 'Caricamento...', color: '#e5e7eb' }, { name: '...', color: '#e5e7eb' }];
+
+        subjectsToRender.forEach((subject, i) => {
+            const count = (studentCounts && studentCounts[subject.name]) ? studentCounts[subject.name] : 1;
+
             const div = document.createElement('div');
             // Use same container classes as real cards
             div.className = 'fade-in';
             div.style.animationDelay = `${i * 0.1}s`;
+
+            // Build exact inner list
+            let listHTML = '<ul class="space-y-2 list-none p-0 m-0">';
+            for (let j = 0; j < count; j++) {
+                listHTML += `
+                    <li class="flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20 ${j > 0 ? 'opacity-70' : ''}">
+                        <div class="flex w-full gap-3">
+                            <div class="flex-1 min-w-0 py-0.5">
+                                <div class="h-5 ${j % 2 === 0 ? 'w-3/4' : 'w-1/2'} skeleton rounded mb-2 pt-0.5"></div>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <div class="h-5 w-12 skeleton rounded-full"></div>
+                                    <div class="h-5 ${j % 2 === 0 ? 'w-24' : 'w-20'} skeleton rounded-full"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
+                                <div class="h-7 w-7 skeleton rounded"></div>
+                                <div class="h-7 w-7 skeleton rounded"></div>
+                            </div>
+                        </div>
+                    </li>
+                `;
+            }
+            listHTML += '</ul>';
+
             div.innerHTML = `
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col justify-start">
                     <div class="flex items-center justify-between mb-3">
                         <div class="h-8 w-1/2 skeleton rounded-lg"></div>
                         <div class="h-6 w-8 skeleton rounded-full"></div>
                     </div>
-                    
-                    <ul class="space-y-2 list-none p-0 m-0">
-                        <li class="flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20">
-                            <div class="flex w-full gap-3">
-                                <div class="flex-1 min-w-0 py-0.5">
-                                    <div class="h-5 w-3/4 skeleton rounded mb-2 pt-0.5"></div>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <div class="h-5 w-12 skeleton rounded-full"></div>
-                                        <div class="h-5 w-24 skeleton rounded-full"></div>
-                                    </div>
-                                </div>
-                                <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
-                                    <div class="h-7 w-7 skeleton rounded"></div>
-                                    <div class="h-7 w-7 skeleton rounded"></div>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20 opacity-70">
-                            <div class="flex w-full gap-3">
-                                <div class="flex-1 min-w-0 py-0.5">
-                                    <div class="h-5 w-1/2 skeleton rounded mb-2 pt-0.5"></div>
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <div class="h-5 w-12 skeleton rounded-full"></div>
-                                        <div class="h-5 w-20 skeleton rounded-full"></div>
-                                    </div>
-                                </div>
-                                <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
-                                    <div class="h-7 w-7 skeleton rounded"></div>
-                                    <div class="h-7 w-7 skeleton rounded"></div>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
+                    ${listHTML}
                 </div>
             `;
             fragment.appendChild(div);
-        }
+        });
+
         container.appendChild(fragment);
     },
 
