@@ -248,12 +248,12 @@ i[data-lucide].w-12 {
 @keyframes slideIn {
     from {
         opacity: 0;
-        transform: translateX(-20px);
+        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
-        transform: translateX(0);
+        transform: translateY(0);
     }
 }
 
