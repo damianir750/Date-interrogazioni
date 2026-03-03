@@ -3,6 +3,18 @@
  */
 
 export const utils = {
+    // Normalizza data da DB a YYYY-MM-DD
+    normalizeDate(dateString) {
+        if (!dateString || dateString === '9999-12-31') return dateString;
+        const d = new Date(dateString);
+        if (isNaN(d.getTime())) return dateString;
+
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    },
+
     // Formatta data (YYYY-MM-DD -> DD/MM/YYYY)
     formatDate(dateString) {
         if (!dateString || dateString === '9999-12-31') return 'DATA MANCANTE';

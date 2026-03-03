@@ -62,15 +62,7 @@ const app = {
 
             // Normalize date formats from database
             this.state.students.forEach(student => {
-                if (student.last_interrogation && student.last_interrogation !== '9999-12-31') {
-                    const d = new Date(student.last_interrogation);
-                    if (!isNaN(d.getTime())) {
-                        const year = d.getFullYear();
-                        const month = String(d.getMonth() + 1).padStart(2, '0');
-                        const day = String(d.getDate()).padStart(2, '0');
-                        student.last_interrogation = `${year}-${month}-${day}`;
-                    }
-                }
+                student.last_interrogation = utils.normalizeDate(student.last_interrogation);
             });
 
             if (!skipRender) {
@@ -78,7 +70,7 @@ const app = {
                 this.render();
             }
         } catch (error) {
-            console.error('Errore caricamento studenti:', error);
+            console.error('Errore caricamento constuenti:', error);
         }
     },
 
@@ -109,7 +101,7 @@ const app = {
             console.error(error);
             // 3. Re-sync on error (safer than reverting to potentially stale state)
             this.loadStudents(true);
-            alert(errorMsg);
+            ui.showToast(errorMsg, 'error');
         }
     },
 
@@ -125,12 +117,12 @@ const app = {
         const grades_count = parseInt(gradesCountInput.value) || 0;
 
         if (!name) {
-            alert("Inserisci il nome dello studente!");
+            ui.showToast("Inserisci il nome dello studente!", 'error');
             nameInput.focus();
             return;
         }
         if (!subject) {
-            alert("Seleziona una materia!");
+            ui.showToast("Seleziona una materia!", 'error');
             return;
         }
 
@@ -140,13 +132,7 @@ const app = {
             const newStudent = await api.addStudent({ name, last_interrogation: finalDate, subject, grades_count });
 
             // Normalize date format from database
-            if (newStudent.last_interrogation && newStudent.last_interrogation !== '9999-12-31') {
-                const d = new Date(newStudent.last_interrogation);
-                const year = d.getFullYear();
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                newStudent.last_interrogation = `${year}-${month}-${day}`;
-            }
+            newStudent.last_interrogation = utils.normalizeDate(newStudent.last_interrogation);
 
             nameInput.value = '';
             dateInput.value = '';
@@ -154,15 +140,16 @@ const app = {
 
             this.state.students.push(newStudent);
             ui.updateStats(this.state.students);
+            ui.showToast('Studente salvato con successo!', 'success');
             this.render();
         } catch (error) {
-            alert('Errore durante il salvataggio!');
+            ui.showToast('Errore durante il salvataggio!', 'error');
             console.error(error);
         }
     },
 
     async deleteStudent(id) {
-        if (!confirm('Sei sicuro di voler eliminare questo studente?')) return;
+        if (!await ui.confirmDialog('Sei sicuro di voler eliminare questo studente?')) return;
 
         await this.optimisticUpdate(
             () => { this.state.students = this.state.students.filter(s => s.id !== id); },
@@ -182,7 +169,7 @@ const app = {
     },
 
     async updateStudentName(id, currentName) {
-        const newName = prompt("Inserisci il nuovo nome:", currentName);
+        const newName = await ui.promptDialog("Inserisci il nuovo nome:", currentName);
         if (!newName || newName === currentName) return;
 
         await this.optimisticUpdate(
@@ -199,7 +186,7 @@ const app = {
     },
 
     async updateStudentGrades(id, currentGrades) {
-        const newGradesStr = prompt("Modifica numero voti:", currentGrades);
+        const newGradesStr = await ui.promptDialog("Modifica numero voti:", currentGrades);
         if (newGradesStr === null) return;
         const newGrades = parseInt(newGradesStr);
 
@@ -220,12 +207,12 @@ const app = {
 
     async registerInterrogation(id, currentGrades) {
         const today = new Date().toISOString().split('T')[0];
-        const newDate = prompt("Inserisci data interrogazione (AAAA-MM-GG):", today);
+        const newDate = await ui.promptDialog("Inserisci data interrogazione (AAAA-MM-GG):", today);
         if (!newDate) return;
 
         // Simple Regex Validation YYYY-MM-DD
         if (!/^\d{4}-\d{2}-\d{2}$/.test(newDate)) {
-            alert("Formato data non valido! Usa AAAA-MM-GG");
+            ui.showToast("Formato data non valido! Usa AAAA-MM-GG", 'error');
             return;
         }
 
@@ -256,7 +243,7 @@ const app = {
         const name = nameInput.value.trim();
         const color = colorInput.value;
 
-        if (!name) return alert('Inserisci il nome della materia');
+        if (!name) return ui.showToast('Inserisci il nome della materia', 'error');
 
         try {
             const newSubject = await api.addSubject({ name, color });
@@ -282,12 +269,13 @@ const app = {
                 ui.renderSubjectsList(this.state.subjects, this.state.students);
             }
         } catch (error) {
+            ui.showToast("Errore aggiunta materia", 'error');
             console.error('Errore aggiunta materia:', error);
         }
     },
 
     async deleteSubject(name) {
-        if (!confirm(`Eliminare la materia "${name}"?`)) return;
+        if (!await ui.confirmDialog(`Eliminare la materia "${name}"?`)) return;
 
         try {
             await api.deleteSubject(name);
@@ -308,8 +296,9 @@ const app = {
             if (modal && !modal.classList.contains('hidden')) {
                 ui.renderSubjectsList(this.state.subjects, this.state.students);
             }
+            ui.showToast(`Materia "${name}" eliminata`, 'success');
         } catch (error) {
-            alert(error.message);
+            ui.showToast(error.message || "Errore eliminazione", 'error');
         }
     },
 
@@ -383,15 +372,12 @@ const app = {
         } catch (error) {
             console.error("Critical Init Error:", error);
             document.body.innerHTML = `
-                <div class="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-                    <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md">
-                        <i data-lucide="alert-triangle" class="w-12 h-12 text-red-500 mx-auto mb-4"></i>
-                        <h2 class="text-2xl font-bold mb-2">Errore di Caricamento</h2>
-                        <p class="mb-4">Non è stato possibile caricare i dati. Verifica la connessione o riprova più tardi.</p>
-                        <button onclick="window.location.reload()" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Riprova</button>
+                <div class="min-h-screen flex items-center justify-center text-gray-800 dark:text-gray-200">
+                    <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-xl max-w-md">
+                        <h2 class="text-xl font-bold mb-2">Errore di Caricamento</h2>
+                        <button onclick="window.location.reload()" class="bg-purple-600 px-4 py-2 rounded text-white mt-4">Riprova</button>
                     </div>
-                </div>
-            `;
+                </div>`;
             // Re-run icons just in case
             import('lucide').then(({ createIcons, AlertTriangle }) => {
                 createIcons({ icons: { AlertTriangle } });

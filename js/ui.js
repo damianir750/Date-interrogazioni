@@ -4,6 +4,137 @@ import { utils } from './utils.js';
 const icons = { Trash2, Pencil, AlertTriangle, BookOpen, GraduationCap, Plus, ArrowLeft, Moon, PlusCircle, Search, Settings, X, Check };
 
 export const ui = {
+    // Componente Toast per notifiche moderne
+    showToast(message, type = 'info') {
+        const colors = {
+            success: 'bg-green-500',
+            error: 'bg-red-500',
+            info: 'bg-purple-500'
+        };
+        const icons = {
+            success: 'check-circle',
+            error: 'alert-triangle',
+            info: 'info'
+        };
+
+        const toast = document.createElement('div');
+        toast.className = `fixed bottom-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-xl flex items-center gap-3 z-[100] transform transition-all duration-300 translate-y-10 opacity-0`;
+
+        toast.innerHTML = `
+            <i data-lucide="${icons[type]}" class="w-5 h-5"></i>
+            <span class="font-medium">${utils.escapeHtml(message)}</span>
+        `;
+
+        document.body.appendChild(toast);
+
+        // Render lucide icon for the toast
+        import('lucide').then(({ createIcons, CheckCircle, AlertTriangle, Info }) => {
+            createIcons({
+                nameAttr: 'data-lucide',
+                attrs: { class: "lucide" },
+                icons: { CheckCircle, AlertTriangle, Info }
+            });
+        });
+
+        // Intro animation
+        requestAnimationFrame(() => {
+            toast.classList.remove('translate-y-10', 'opacity-0');
+        });
+
+        // Outro animation & removal
+        setTimeout(() => {
+            toast.classList.add('translate-y-10', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    },
+
+    // Dialoghi Asincroni Moderni per rimpiazzare window.confirm e window.prompt
+    async confirmDialog(message) {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-200';
+
+            const dialog = document.createElement('div');
+            dialog.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-sm w-full p-6 transform scale-95 transition-transform duration-200 border border-gray-100 dark:border-gray-700';
+            dialog.innerHTML = `
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Conferma</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">${utils.escapeHtml(message)}</p>
+                <div class="flex justify-end gap-3">
+                    <button id="cancelBtn" class="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition">Annulla</button>
+                    <button id="confirmBtn" class="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 shadow-md hover:shadow-lg transition">Conferma</button>
+                </div>
+            `;
+
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+
+            // Intro
+            requestAnimationFrame(() => {
+                overlay.classList.remove('opacity-0');
+                dialog.classList.remove('scale-95');
+            });
+
+            const close = (result) => {
+                overlay.classList.add('opacity-0');
+                dialog.classList.add('scale-95');
+                setTimeout(() => {
+                    overlay.remove();
+                    resolve(result);
+                }, 200);
+            };
+
+            overlay.querySelector('#cancelBtn').onclick = () => close(false);
+            overlay.querySelector('#confirmBtn').onclick = () => close(true);
+            overlay.onclick = (e) => { if (e.target === overlay) close(false); };
+        });
+    },
+
+    async promptDialog(title, defaultValue = '') {
+        return new Promise((resolve) => {
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-200';
+
+            const dialog = document.createElement('div');
+            dialog.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-sm w-full p-6 transform scale-95 transition-transform duration-200 border border-gray-100 dark:border-gray-700';
+            dialog.innerHTML = `
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">${utils.escapeHtml(title)}</h3>
+                <input type="text" id="promptInput" value="${utils.escapeHtml(String(defaultValue))}" 
+                    class="w-full p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none mb-6">
+                <div class="flex justify-end gap-3">
+                    <button id="cancelBtn" class="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition">Annulla</button>
+                    <button id="confirmBtn" class="px-4 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600 shadow-md hover:shadow-lg transition">Salva</button>
+                </div>
+            `;
+
+            overlay.appendChild(dialog);
+            document.body.appendChild(overlay);
+
+            const input = overlay.querySelector('#promptInput');
+
+            // Intro
+            requestAnimationFrame(() => {
+                overlay.classList.remove('opacity-0');
+                dialog.classList.remove('scale-95');
+                input.focus();
+                input.select();
+            });
+
+            const close = (result) => {
+                overlay.classList.add('opacity-0');
+                dialog.classList.add('scale-95');
+                setTimeout(() => {
+                    overlay.remove();
+                    resolve(result);
+                }, 200);
+            };
+
+            overlay.querySelector('#cancelBtn').onclick = () => close(null);
+            overlay.querySelector('#confirmBtn').onclick = () => close(input.value);
+            input.onkeypress = (e) => { if (e.key === 'Enter') close(input.value); };
+            overlay.onclick = (e) => { if (e.target === overlay) close(null); };
+        });
+    },
+
     // Aggiorna le statistiche
     updateStats(students) {
         const total = students.length;
