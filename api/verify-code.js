@@ -11,7 +11,7 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
             token: process.env.UPSTASH_REDIS_REST_TOKEN,
         }),
         limiter: Ratelimit.slidingWindow(5, '60 s'), // 5 attempts per 60 seconds
-        prefix: 'auth-ratelimit',
+        prefix: 'auth-failed-limit', // SHARED with _auth.js for brute-force protection
     });
 }
 
@@ -25,20 +25,6 @@ export default async function handler(request, response) {
     }
 
     try {
-        // Rate limiting by IP
-        if (ratelimit) {
-            let ip = request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || 'unknown';
-            if (ip.includes(',')) ip = ip.split(',')[0].trim(); // Handle multiple proxies
-
-            const { success } = await ratelimit.limit(ip);
-
-            if (!success) {
-                return response.status(429).json({
-                    error: "Troppi tentativi. Riprova tra un minuto."
-                });
-            }
-        }
-
         let body = request.body;
         if (typeof body === 'string') {
             try {
@@ -49,22 +35,33 @@ export default async function handler(request, response) {
         }
 
         const { code } = body;
-
-        if (!code || typeof code !== 'string') {
-            return response.status(400).json({ error: "Codice mancante" });
-        }
-
         const authCode = process.env.AUTH_CODE;
 
-        if (!authCode) {
-            if (process.env.NODE_ENV === 'development') {
+        // If code is wrong/missing, we apply the strict "auth-ratelimit"
+        if (!code || code !== authCode) {
+            if (ratelimit) {
+                let ip = request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || 'unknown';
+                if (ip.includes(',')) ip = ip.split(',')[0].trim();
+
+                const { success } = await ratelimit.limit(ip);
+                if (!success) {
+                    return response.status(429).json({ error: "Troppi tentativi falliti. Riprova più tardi." });
+                }
+            }
+
+            if (!code) return response.status(400).json({ error: "Codice mancante" });
+
+            // Dev mode handling
+            if (!authCode && process.env.NODE_ENV === 'development') {
                 return response.status(200).json({ success: true });
             }
-            return response.status(500).json({ error: "Configurazione server incompleta (AUTH_CODE mancante)" });
+
+            return response.status(401).json({ error: "Codice errato" });
         }
 
-        if (code !== authCode) {
-            return response.status(401).json({ error: "Codice errato" });
+        // Configuration check
+        if (!authCode && process.env.NODE_ENV !== 'development') {
+            return response.status(500).json({ error: "Server misconfigured" });
         }
 
         return response.status(200).json({ success: true });

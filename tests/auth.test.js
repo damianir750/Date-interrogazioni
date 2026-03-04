@@ -66,6 +66,7 @@ describe('requireAuth', () => {
     it('allows all requests when AUTH_CODE is not configured (dev mode)', async () => {
         vi.resetModules();
         vi.stubEnv('AUTH_CODE', '');
+        vi.stubEnv('NODE_ENV', 'development');
         const mod = await import('../api/_auth.js');
 
         const { req, res } = createMocks('GET', {});

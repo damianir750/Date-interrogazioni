@@ -269,6 +269,7 @@ describe('POST /api/verify-code', () => {
     it('accepts any code when AUTH_CODE is not set (dev mode)', async () => {
         vi.resetModules();
         vi.stubEnv('AUTH_CODE', '');
+        vi.stubEnv('NODE_ENV', 'development');
         vi.stubEnv('UPSTASH_REDIS_REST_URL', '');
         vi.stubEnv('UPSTASH_REDIS_REST_TOKEN', '');
         const mod = await import('../api/verify-code.js');
