@@ -34,48 +34,54 @@ function getClientIp(request) {
 /**
  * Shared authentication + rate limiting middleware.
  */
+/**
+ * Shared authentication + rate limiting middleware.
+ */
 export async function requireAuth(request, response) {
     const ip = getClientIp(request);
-
-    // 1. General Rate limiting (30 req/min)
-    if (ratelimit) {
-        try {
-            const { success } = await ratelimit.limit(ip);
-            if (!success) {
-                response.status(429).json({ error: "Troppe richieste. Riprova tra un minuto." });
-                return false;
-            }
-        } catch (e) {
-            console.error('Rate limiter error:', e);
-        }
-    }
-
     const authCode = process.env.AUTH_CODE;
+    const provided = request.headers['x-auth-code'];
+
+    // 1. Check if auth is configured
     if (!authCode) {
         if (process.env.NODE_ENV === 'development') return true;
         response.status(500).json({ error: "Configurazione server incompleta (AUTH_CODE mancante)" });
         return false;
     }
 
-    const provided = request.headers['x-auth-code'];
-
-    // 2. Auth check
+    // 2. Authentication Check
     if (!provided || provided !== authCode) {
-        // 3. Strict rate limiting for FAILURES (5 req/min)
+        // failed auth
         if (authFailureLimit) {
             try {
                 const { success } = await authFailureLimit.limit(ip);
                 if (!success) {
-                    response.status(429).json({ error: "Troppi tentativi falliti. Riprova tra un minuto." });
+                    response.status(429).json({
+                        error: "Troppi tentativi falliti. L'accesso è temporaneamente bloccato per questo IP."
+                    });
                     return false;
                 }
             } catch (e) {
                 console.error('Auth limiter error:', e);
             }
         }
-
         response.status(401).json({ error: "Codice di accesso non valido" });
         return false;
+    }
+
+    // 3. Authorized User: Apply General DoS Protection (30 req/min)
+    if (ratelimit) {
+        try {
+            const { success } = await ratelimit.limit(ip);
+            if (!success) {
+                response.status(429).json({
+                    error: "Limite di richieste superato. Rallenta un attimo!"
+                });
+                return false;
+            }
+        } catch (e) {
+            console.error('Rate limiter error:', e);
+        }
     }
 
     return true;
