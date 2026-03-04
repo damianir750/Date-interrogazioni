@@ -88,7 +88,8 @@ const app = {
                 // Ignore intentionally aborted requests
                 return;
             }
-            console.error('Errore caricamento constuenti:', error);
+            console.error('Errore caricamento studenti:', error);
+            ui.showToast(error.message || 'Errore di sincronizzazione', 'error');
         }
     },
 

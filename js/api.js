@@ -26,10 +26,20 @@ const request = async (endpoint, method = 'GET', body = null, signal = null) => 
     const res = await fetch(`${BASE_URL}${endpoint}`, options);
 
     // Handle unauthorized — redirect to login (but not for verify-code which is the login endpoint itself)
-    if (res.status === 401 && !endpoint.includes('verify-code')) {
+    if (res.status === 401 && !endpoint.includes('auth')) {
         localStorage.removeItem('auth_code');
         window.dispatchEvent(new Event('auth-expired'));
         throw new Error('Non autorizzato');
+    }
+
+    // Handle rate limiting specifically
+    if (res.status === 429) {
+        let message = 'Hai inviato troppe richieste. Riprova tra un minuto.';
+        try {
+            const data = await res.json();
+            if (data.error) message = data.error;
+        } catch (e) { }
+        throw new Error(message);
     }
 
     // For delete-subject which might return 400 with message
