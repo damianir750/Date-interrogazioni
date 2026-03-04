@@ -1,5 +1,5 @@
 import sql from './_db.js';
-import { validateSubject } from './_utils.js';
+import { validateSubject, parseRequestBody } from './_utils.js';
 import { requireAuth } from './_auth.js';
 
 export default async function handler(request, response) {
@@ -10,13 +10,9 @@ export default async function handler(request, response) {
     if (!await requireAuth(request, response)) return;
 
     try {
-        let body = request.body;
-        if (typeof body === 'string') {
-            try {
-                body = JSON.parse(body);
-            } catch (e) {
-                return response.status(400).json({ error: "Invalid JSON" });
-            }
+        const body = parseRequestBody(request);
+        if (!body) {
+            return response.status(400).json({ error: "Invalid JSON" });
         }
         const { name, color } = body;
 

@@ -40,6 +40,14 @@ html.dyslexic-mode * {
         animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
+    .search-highlight {
+        background-color: rgba(168, 85, 247, 0.2);
+        color: inherit;
+        font-weight: 600;
+        border-radius: 2px;
+        padding: 0 1px;
+    }
+
     .slide-in {
         opacity: 0;
         animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -593,6 +601,8 @@ html[class*="theme-"] body {
 .theme-card {
     background-color: var(--theme-card-bg, rgba(255, 255, 255, 0.4)) !important;
     border-color: var(--theme-card-border, rgba(255, 255, 255, 0.2)) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     backface-visibility: hidden;
     transform: translateZ(0);
@@ -601,7 +611,8 @@ html[class*="theme-"] body {
 
 .theme-card:hover {
     box-shadow: 0 20px 40px -10px var(--theme-accent, rgba(168, 85, 247, 0.3)), 0 0 20px var(--theme-accent, rgba(168, 85, 247, 0.1));
-    transform: translateY(-5px) scale(1.02);
+    transform: translateY(-8px) scale(1.03);
+    border-color: var(--theme-accent, rgba(168, 85, 247, 0.4)) !important;
 }
 
 /* Text Colors */
@@ -701,7 +712,7 @@ a.theme-link:hover {
 /* Focus States */
 .theme-focus:focus {
     border-color: var(--theme-accent, #a855f7);
-    ring-color: var(--theme-accent, #a855f7);
+    outline-color: var(--theme-accent, #a855f7);
 }
 
 /* Accents */

@@ -24,7 +24,9 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
 export async function requireAuth(request, response) {
     // Rate limiting by IP
     if (ratelimit) {
-        const ip = request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || 'unknown';
+        let ip = request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || 'unknown';
+        if (ip.includes(',')) ip = ip.split(',')[0].trim(); // Handle multiple proxies
+
         try {
             const { success } = await ratelimit.limit(ip);
             if (!success) {
@@ -41,8 +43,11 @@ export async function requireAuth(request, response) {
     const authCode = process.env.AUTH_CODE;
 
     if (!authCode) {
-        // If AUTH_CODE is not configured, allow all requests (dev mode)
-        return true;
+        if (process.env.NODE_ENV === 'development') {
+            return true;
+        }
+        response.status(500).json({ error: "Configurazione server incompleta (AUTH_CODE mancante)" });
+        return false;
     }
 
     const provided = request.headers['x-auth-code'];

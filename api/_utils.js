@@ -74,3 +74,35 @@ export function validateUpdateStudent(data) {
 
     return errors;
 }
+
+export function validateDeleteStudent(data) {
+    const { id } = data;
+    const errors = [];
+    if (!id) {
+        errors.push("Missing 'id'");
+    }
+    return errors;
+}
+
+export function validateDeleteSubject(data) {
+    const { name } = data;
+    const errors = [];
+    if (!name || typeof name !== 'string') {
+        errors.push("Missing or invalid 'name'");
+    } else if (name.length > 50) {
+        errors.push("'name' must be 50 characters or less");
+    }
+    return errors;
+}
+
+export function parseRequestBody(request) {
+    let body = request.body;
+    if (typeof body === 'string') {
+        try {
+            return JSON.parse(body);
+        } catch (e) {
+            return null;
+        }
+    }
+    return body;
+}

@@ -27,8 +27,10 @@ export default async function handler(request, response) {
     try {
         // Rate limiting by IP
         if (ratelimit) {
-            const ip = request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || 'unknown';
-            const { success, remaining } = await ratelimit.limit(ip);
+            let ip = request.headers['x-forwarded-for'] || request.headers['x-real-ip'] || 'unknown';
+            if (ip.includes(',')) ip = ip.split(',')[0].trim(); // Handle multiple proxies
+
+            const { success } = await ratelimit.limit(ip);
 
             if (!success) {
                 return response.status(429).json({
@@ -55,8 +57,10 @@ export default async function handler(request, response) {
         const authCode = process.env.AUTH_CODE;
 
         if (!authCode) {
-            // No AUTH_CODE configured — always accept (dev mode)
-            return response.status(200).json({ success: true });
+            if (process.env.NODE_ENV === 'development') {
+                return response.status(200).json({ success: true });
+            }
+            return response.status(500).json({ error: "Configurazione server incompleta (AUTH_CODE mancante)" });
         }
 
         if (code !== authCode) {

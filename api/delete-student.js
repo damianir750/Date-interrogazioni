@@ -1,5 +1,6 @@
 import sql from './_db.js';
 import { requireAuth } from './_auth.js';
+import { validateDeleteStudent, parseRequestBody } from './_utils.js';
 
 export default async function handler(request, response) {
     if (request.method !== 'POST') {
@@ -9,16 +10,17 @@ export default async function handler(request, response) {
     if (!await requireAuth(request, response)) return;
 
     try {
-        let body = request.body;
-        if (typeof body === 'string') {
-            try {
-                body = JSON.parse(body);
-            } catch (e) {
-                return response.status(400).json({ error: "Invalid JSON" });
-            }
+        const body = parseRequestBody(request);
+        if (!body) {
+            return response.status(400).json({ error: "Invalid JSON" });
         }
+
+        const validationErrors = validateDeleteStudent(body);
+        if (validationErrors.length > 0) {
+            return response.status(400).json({ error: validationErrors.join(", ") });
+        }
+
         const { id } = body;
-        if (!id) return response.status(400).json({ error: "ID mancante" });
 
         await sql`DELETE FROM students WHERE id = ${id}`;
         return response.status(200).json({ success: true });

@@ -1,7 +1,7 @@
-import { createIcons, Trash2, Pencil, AlertTriangle, BookOpen, GraduationCap, Plus, ArrowLeft, Moon, PlusCircle, Search, Settings, X, Check } from 'lucide';
+import { createIcons, Trash2, Pencil, AlertTriangle, BookOpen, GraduationCap, Plus, ArrowLeft, Moon, PlusCircle, Search, Settings, X, Check, CheckCircle, Info } from 'lucide';
 import { utils } from './utils.js';
 
-const icons = { Trash2, Pencil, AlertTriangle, BookOpen, GraduationCap, Plus, ArrowLeft, Moon, PlusCircle, Search, Settings, X, Check };
+const icons = { Trash2, Pencil, AlertTriangle, BookOpen, GraduationCap, Plus, ArrowLeft, Moon, PlusCircle, Search, Settings, X, Check, CheckCircle, Info };
 
 // Validates hex color to prevent CSS injection
 const safeColor = (color) => /^#[0-9A-Fa-f]{6}$/.test(color) ? color : '#6b7280';
@@ -14,29 +14,27 @@ export const ui = {
             error: 'bg-red-500',
             info: 'bg-purple-500'
         };
-        const icons = {
-            success: 'check-circle',
-            error: 'alert-triangle',
-            info: 'info'
+        const iconsMap = {
+            success: 'CheckCircle',
+            error: 'AlertTriangle',
+            info: 'Info'
         };
 
         const toast = document.createElement('div');
         toast.className = `fixed bottom-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-xl flex items-center gap-3 z-[100] transform transition-all duration-300 translate-y-10 opacity-0`;
 
         toast.innerHTML = `
-            <i data-lucide="${icons[type]}" class="w-5 h-5"></i>
+            <i data-lucide="${iconsMap[type]}" class="w-5 h-5"></i>
             <span class="font-medium">${utils.escapeHtml(message)}</span>
         `;
 
         document.body.appendChild(toast);
 
-        // Render lucide icon for the toast
-        import('lucide').then(({ createIcons, CheckCircle, AlertTriangle, Info }) => {
-            createIcons({
-                nameAttr: 'data-lucide',
-                attrs: { class: "lucide" },
-                icons: { CheckCircle, AlertTriangle, Info }
-            });
+        // Render lucide icon for the toast using already available icons or quick render
+        createIcons({
+            icons,
+            nameAttr: 'data-lucide',
+            attrs: { class: "lucide" }
         });
 
         // Intro animation
@@ -55,18 +53,21 @@ export const ui = {
     async confirmDialog(message) {
         return new Promise((resolve) => {
             const overlay = document.createElement('div');
-            overlay.className = 'fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-200';
+            overlay.className = 'fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-200';
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-modal', 'true');
+            overlay.setAttribute('aria-labelledby', 'confirmTitle');
 
             const dialog = document.createElement('div');
             dialog.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-sm w-full p-6 transform scale-95 transition-transform duration-200 border border-gray-100 dark:border-gray-700';
             dialog.innerHTML = `
-                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">Conferma</h3>
-                <p class="text-gray-600 dark:text-gray-300 mb-6">${utils.escapeHtml(message)}</p>
-                <div class="flex justify-end gap-3">
-                    <button id="cancelBtn" class="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition">Annulla</button>
-                    <button id="confirmBtn" class="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 shadow-md hover:shadow-lg transition">Conferma</button>
-                </div>
-            `;
+            <h3 id="confirmTitle" class="text-xl font-bold text-gray-800 dark:text-white mb-4">Conferma</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-6">${utils.escapeHtml(message)}</p>
+            <div class="flex justify-end gap-3">
+                <button id="cancelBtn" class="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition" aria-label="Annulla">Annulla</button>
+                <button id="confirmBtn" class="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 shadow-md hover:shadow-lg transition" aria-label="Conferma eliminazione">Conferma</button>
+            </div>
+        `;
 
             overlay.appendChild(dialog);
             document.body.appendChild(overlay);
@@ -89,25 +90,38 @@ export const ui = {
             overlay.querySelector('#cancelBtn').onclick = () => close(false);
             overlay.querySelector('#confirmBtn').onclick = () => close(true);
             overlay.onclick = (e) => { if (e.target === overlay) close(false); };
+
+            // Trap focus or handle Escape
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    close(false);
+                    window.removeEventListener('keydown', handleEsc);
+                }
+            };
+            window.addEventListener('keydown', handleEsc);
         });
     },
 
     async promptDialog(title, defaultValue = '') {
         return new Promise((resolve) => {
             const overlay = document.createElement('div');
-            overlay.className = 'fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-200';
+            overlay.className = 'fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-200';
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-modal', 'true');
+            overlay.setAttribute('aria-labelledby', 'promptTitle');
 
             const dialog = document.createElement('div');
             dialog.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-sm w-full p-6 transform scale-95 transition-transform duration-200 border border-gray-100 dark:border-gray-700';
             dialog.innerHTML = `
-                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">${utils.escapeHtml(title)}</h3>
-                <input type="text" id="promptInput" value="${utils.escapeHtml(String(defaultValue))}" 
-                    class="w-full p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none mb-6">
-                <div class="flex justify-end gap-3">
-                    <button id="cancelBtn" class="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition">Annulla</button>
-                    <button id="confirmBtn" class="px-4 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600 shadow-md hover:shadow-lg transition">Salva</button>
-                </div>
-            `;
+            <h3 id="promptTitle" class="text-xl font-bold text-gray-800 dark:text-white mb-4">${utils.escapeHtml(title)}</h3>
+            <input type="text" id="promptInput" value="${utils.escapeHtml(String(defaultValue))}" 
+                class="w-full p-3 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:outline-none mb-6"
+                aria-label="${utils.escapeHtml(title)}">
+            <div class="flex justify-end gap-3">
+                <button id="cancelBtn" class="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition" aria-label="Annulla">Annulla</button>
+                <button id="confirmBtn" class="px-4 py-2 rounded-lg bg-purple-500 text-white hover:bg-purple-600 shadow-md hover:shadow-lg transition" aria-label="Salva modifiche">Salva</button>
+            </div>
+        `;
 
             overlay.appendChild(dialog);
             document.body.appendChild(overlay);
@@ -135,6 +149,14 @@ export const ui = {
             overlay.querySelector('#confirmBtn').onclick = () => close(input.value);
             input.onkeypress = (e) => { if (e.key === 'Enter') close(input.value); };
             overlay.onclick = (e) => { if (e.target === overlay) close(null); };
+
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    close(null);
+                    window.removeEventListener('keydown', handleEsc);
+                }
+            };
+            window.addEventListener('keydown', handleEsc);
         });
     },
 
@@ -345,98 +367,7 @@ export const ui = {
 
             const list = div.querySelector('ul');
             subjectStudents.forEach((s, i) => {
-                const days = utils.daysSince(s.last_interrogation);
-                const safeName = utils.escapeHtml(s.name);
-                const li = document.createElement('li');
-
-                // Only slide in if it's initial render
-                if (container.children.length === 0) {
-                    li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm slide-in dark:text-gray-200';
-                    li.style.animationDelay = `${(groupIndex * 0.1) + (i * 0.05)}s`;
-                } else {
-                    li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm dark:text-gray-200';
-                }
-
-                // Badge Voti - matches subject color
-                const gradesCount = s.grades_count || 0;
-                const badgeBgColor = utils.darkenColor(color, 0.2);
-                const gradesBadge = `<span class="text-white text-xs px-2 py-1 rounded-full font-bold" style="background-color: ${badgeBgColor};" title="Numero voti">🎓 ${gradesCount}</span>`;
-
-                const safeNameAttr = utils.escapeAttribute(s.name); // For JS calls
-
-                if (days === -1) {
-                    li.className += ' pulse-alert';
-                    li.style.background = 'rgba(255, 193, 7, 0.2)';
-                    li.style.borderLeft = '4px solid #ffc107';
-                    li.innerHTML = `
-                        <div class="flex w-full gap-3">
-                            <div class="flex-1 min-w-0">
-                                <span class="font-medium text-sm sm:text-base break-words" title="${safeName}">${safeName}</span>
-                                <div class="flex items-center gap-2 mt-1 flex-wrap">
-                                    ${gradesBadge}
-                                    <span class="text-[10px] sm:text-xs text-amber-700 dark:text-amber-500 font-semibold whitespace-nowrap">📅 MANCANTE</span>
-                                    <span class="bg-amber-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap">⚠️ Aggiorna</span>
-                                </div>
-                            </div>
-                            <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
-                                <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition p-1.5" title="Segna come interrogato">
-                                    <i data-lucide="check" class="w-4 h-4"></i>
-                                </button>
-                                <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition p-1.5" title="Modifica numero voti">
-                                    <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-                                </button>
-                                <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition p-1.5" title="Modifica nome">
-                                    <i data-lucide="pencil" class="w-4 h-4"></i>
-                                </button>
-                                <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition p-1.5" title="Elimina">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    const isVeryOld = days > 30;
-                    const isOld = days > 14;
-
-                    if (isVeryOld) li.className += ' pulse-alert';
-                    li.style.background = lightColor;
-                    li.style.borderLeft = `4px solid ${color}`;
-
-                    let badge = '';
-                    if (isVeryOld) badge = `<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">🔥 ${days}g</span>`;
-                    else if (isOld) badge = `<span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ ${days}g</span>`;
-                    else badge = `<span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">${days}g</span>`;
-
-                    li.innerHTML = `
-                        <div class="flex w-full gap-3">
-                            <div class="flex-1 min-w-0">
-                                <span class="font-medium text-sm sm:text-base break-words" title="${safeName}">${safeName}</span>
-                                <div class="flex items-center gap-2 mt-1 flex-wrap">
-                                    ${gradesBadge}
-                                    <span class="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">${utils.formatDate(s.last_interrogation)}</span>
-                                    ${badge.replace('px-2 py-1', 'px-2 py-0.5')}
-                                </div>
-                            </div>
-                            <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
-                                <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition p-1.5" title="Segna come interrogato">
-                                    <i data-lucide="check" class="w-4 h-4"></i>
-                                </button>
-                                <button onclick="app.incrementGrade(${s.id}, ${gradesCount})" class="text-green-500 hover:text-green-700 transition p-1.5" title="Aggiungi voto (+1)">
-                                    <i data-lucide="plus" class="w-4 h-4"></i>
-                                </button>
-                                <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition p-1.5" title="Modifica numero voti">
-                                    <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-                                </button>
-                                <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition p-1.5" title="Modifica nome">
-                                    <i data-lucide="pencil" class="w-4 h-4"></i>
-                                </button>
-                                <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition p-1.5" title="Elimina">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }
+                const li = this.createStudentElement(s, i, color, lightColor, searchTerm, groupIndex, list.children.length === 0);
                 list.appendChild(li);
             });
         });
@@ -444,6 +375,105 @@ export const ui = {
 
         // Optimization: Single call to createIcons for the whole container
         // Provide root option if lucide supports it (doesn't hurt if ignored), and provide attrs to prevent full DOM reflow
+        requestAnimationFrame(() => createIcons({ icons, nameAttr: 'data-lucide' }));
+    },
+
+    createStudentElement(s, i, color, lightColor, searchTerm, groupIndex, isInitialRender) {
+        const days = utils.daysSince(s.last_interrogation);
+        const highlightedName = utils.highlightSearch(s.name, searchTerm);
+        const safeName = utils.escapeHtml(s.name);
+        const li = document.createElement('li');
+
+        // Animation logic
+        if (isInitialRender) {
+            li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm slide-in dark:text-gray-200';
+            li.style.animationDelay = `${(groupIndex * 0.1) + (i * 0.05)}s`;
+        } else {
+            li.className = 'flex justify-between items-center p-3 rounded-lg shadow-sm dark:text-gray-200 transition-all';
+        }
+
+        const gradesCount = s.grades_count || 0;
+        const badgeBgColor = utils.darkenColor(color, 0.2);
+        const gradesBadge = `<span class="text-white text-xs px-2 py-1 rounded-full font-bold" style="background-color: ${badgeBgColor};" title="Numero voti">🎓 ${gradesCount}</span>`;
+        const safeNameAttr = utils.escapeAttribute(s.name);
+
+        if (days === -1) {
+            li.className += ' pulse-alert';
+            li.style.background = 'rgba(255, 193, 7, 0.2)';
+            li.style.borderLeft = '4px solid #ffc107';
+            li.innerHTML = `
+                <div class="flex w-full gap-3">
+                    <div class="flex-1 min-w-0">
+                        <span class="font-medium text-sm sm:text-base break-words" title="${safeName}">${highlightedName}</span>
+                        <div class="flex items-center gap-2 mt-1 flex-wrap">
+                            ${gradesBadge}
+                            <span class="text-[10px] sm:text-xs text-amber-700 dark:text-amber-500 font-semibold whitespace-nowrap">📅 MANCANTE</span>
+                            <span class="bg-amber-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap">⚠️ Aggiorna</span>
+                        </div>
+                    </div>
+                    <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
+                        <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition p-1.5" title="Segna come interrogato" aria-label="Segna ${safeName} come interrogato">
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition p-1.5" title="Modifica numero voti" aria-label="Modifica voti di ${safeName}">
+                            <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition p-1.5" title="Modifica nome" aria-label="Rinomina ${safeName}">
+                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition p-1.5" title="Elimina" aria-label="Elimina ${safeName}">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            const isVeryOld = days > 30;
+            const isOld = days > 14;
+
+            if (isVeryOld) li.className += ' pulse-alert';
+            li.style.background = lightColor;
+            li.style.borderLeft = `4px solid ${color}`;
+
+            let badge = '';
+            if (isVeryOld) badge = `<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">🔥 ${days}g</span>`;
+            else if (isOld) badge = `<span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ ${days}g</span>`;
+            else badge = `<span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">${days}g</span>`;
+
+            li.innerHTML = `
+                <div class="flex w-full gap-3">
+                    <div class="flex-1 min-w-0">
+                        <span class="font-medium text-sm sm:text-base break-words" title="${safeName}">${highlightedName}</span>
+                        <div class="flex items-center gap-2 mt-1 flex-wrap">
+                            ${gradesBadge}
+                            <span class="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">${utils.formatDate(s.last_interrogation)}</span>
+                            ${badge.replace('px-2 py-1', 'px-2 py-0.5')}
+                        </div>
+                    </div>
+                    <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
+                        <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition p-1.5" title="Segna come interrogato" aria-label="Segna ${safeName} come interrogato">
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="app.incrementGrade(${s.id}, ${gradesCount})" class="text-green-500 hover:text-green-700 transition p-1.5" title="Aggiungi voto (+1)" aria-label="Aggiungi voto a ${safeName}">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition p-1.5" title="Modifica numero voti" aria-label="Modifica voti di ${safeName}">
+                            <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition p-1.5" title="Modifica nome" aria-label="Rinomina ${safeName}">
+                            <i data-lucide="pencil" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition p-1.5" title="Elimina" aria-label="Elimina ${safeName}">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        return li;
+    },
+
+    initLucide() {
         requestAnimationFrame(() => createIcons({ icons, nameAttr: 'data-lucide' }));
     }
 };

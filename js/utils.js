@@ -148,5 +148,20 @@ export const utils = {
             .replace(/`/g, "&#96;")
             .replace(/\\/g, "&#92;")
             .replace(/\n/g, " ");
+    },
+
+    // Highlight search term in text
+    highlightSearch(text, term) {
+        if (!term || !text) return this.escapeHtml(text);
+        const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escapedTerm})`, 'gi');
+        const parts = String(text).split(regex);
+
+        return parts.map(part => {
+            if (part.toLowerCase() === term.toLowerCase()) {
+                return `<mark class="search-highlight">${this.escapeHtml(part)}</mark>`;
+            }
+            return this.escapeHtml(part);
+        }).join('');
     }
 };
