@@ -19,36 +19,48 @@ const app = {
     // CONTROLLER METHODS
     // =====================================================
     async loadSubjects() {
-        // Try to load from cache first for immediate rendering
-        const cached = localStorage.getItem('cache_subjects');
+        const CACHE_KEY = 'cache_subjects';
+        const TIME_KEY = 'cache_subjects_time';
+        const CACHE_DURATION = 60 * 60 * 1000; // 1 ora
+
+        // 1. Try to load from cache first
+        const cached = localStorage.getItem(CACHE_KEY);
+        const cacheTime = localStorage.getItem(TIME_KEY);
+        const isFresh = cacheTime && (Date.now() - parseInt(cacheTime) < CACHE_DURATION);
+
         if (cached) {
             try {
                 this.state.subjects = JSON.parse(cached);
                 this.state.subjects.forEach(s => this.state.subjectColors[s.name] = s.color);
                 this.updateSubjectSelect();
             } catch (e) {
-                localStorage.removeItem('cache_subjects');
+                localStorage.removeItem(CACHE_KEY);
+                localStorage.removeItem(TIME_KEY);
             }
         }
 
-        try {
-            this.state.subjects = await api.getSubjects();
-            localStorage.setItem('cache_subjects', JSON.stringify(this.state.subjects));
-            this.state.subjectColors = {};
-            this.state.subjects.forEach(s => this.state.subjectColors[s.name] = s.color);
-            this.updateSubjectSelect();
-        } catch (error) {
-            console.error('Errore caricamento materie:', error);
-            if (!this.state.subjects.length) {
-                // Fallback only if no cache
-                const fallback = [
-                    { name: 'Italiano', color: '#9b5de5' },
-                    { name: 'Storia', color: '#ff7b00' },
-                    { name: 'Matematica', color: '#06d6a0' }
-                ];
-                this.state.subjects = fallback;
-                fallback.forEach(s => this.state.subjectColors[s.name] = s.color);
+        // 2. Fetch from server ONLY if cache is stale or missing
+        if (!isFresh || !this.state.subjects.length) {
+            try {
+                this.state.subjects = await api.getSubjects();
+                localStorage.setItem(CACHE_KEY, JSON.stringify(this.state.subjects));
+                localStorage.setItem(TIME_KEY, Date.now().toString());
+
+                this.state.subjectColors = {};
+                this.state.subjects.forEach(s => this.state.subjectColors[s.name] = s.color);
                 this.updateSubjectSelect();
+            } catch (error) {
+                console.error('Errore caricamento materie:', error);
+                if (!this.state.subjects.length) {
+                    const fallback = [
+                        { name: 'Italiano', color: '#9b5de5' },
+                        { name: 'Storia', color: '#ff7b00' },
+                        { name: 'Matematica', color: '#06d6a0' }
+                    ];
+                    this.state.subjects = fallback;
+                    fallback.forEach(s => this.state.subjectColors[s.name] = s.color);
+                    this.updateSubjectSelect();
+                }
             }
         }
     },
@@ -293,6 +305,7 @@ const app = {
             this.state.subjects.push(newSubject);
             this.state.subjectColors[newSubject.name] = newSubject.color;
             localStorage.setItem('cache_subjects', JSON.stringify(this.state.subjects));
+            localStorage.setItem('cache_subjects_time', Date.now().toString());
 
             // Update Select
             const select = document.getElementById('subjectSelect');
@@ -324,6 +337,7 @@ const app = {
             this.state.subjects = this.state.subjects.filter(s => s.name !== name);
             delete this.state.subjectColors[name];
             localStorage.setItem('cache_subjects', JSON.stringify(this.state.subjects));
+            localStorage.setItem('cache_subjects_time', Date.now().toString());
 
             // Update Select
             const select = document.getElementById('subjectSelect');
