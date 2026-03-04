@@ -81,6 +81,24 @@ const app = {
     },
 
     async loadStudents(forceRefresh = false, skipRender = false) {
+        const CACHE_KEY = 'cache_students';
+
+        // 1. Initial load from cache if state is empty
+        if (!this.state.students.length && !forceRefresh) {
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (cached) {
+                try {
+                    this.state.students = JSON.parse(cached);
+                    if (!skipRender) {
+                        ui.updateStats(this.state.students);
+                        this.render();
+                    }
+                } catch (e) {
+                    localStorage.removeItem(CACHE_KEY);
+                }
+            }
+        }
+
         // Abort previous pending request to prevent race conditions
         if (this._loadStudentsController) {
             this._loadStudentsController.abort();
@@ -100,16 +118,16 @@ const app = {
             const newDataStr = JSON.stringify(newData);
             this.state.students = newData;
 
+            // Persist to cache
+            localStorage.setItem(CACHE_KEY, newDataStr);
+
             // Only trigger a full DOM refresh if the data ACTUALLY changed or if forced
             if (!skipRender && (forceRefresh || oldDataStr !== newDataStr)) {
                 ui.updateStats(this.state.students);
                 this.render();
             }
         } catch (error) {
-            if (error.name === 'AbortError') {
-                // Ignore intentionally aborted requests
-                return;
-            }
+            if (error.name === 'AbortError') return;
             console.error('Errore caricamento studenti:', error);
             ui.showToast(error.message || 'Errore di sincronizzazione', 'error');
         }
