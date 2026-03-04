@@ -24,8 +24,10 @@ function createMocks(method = 'GET', body = null) {
         res: {
             _status: null,
             _body: null,
+            _headers: {},
             status(code) { this._status = code; return this; },
-            json(data) { this._body = data; return this; }
+            json(data) { this._body = data; return this; },
+            setHeader(name, value) { this._headers[name] = value; return this; }
         }
     };
 }

@@ -8,7 +8,7 @@ import {
 } from './_utils.js';
 
 export default async function handler(request, response) {
-    if (!await requireAuth(request, response)) return;
+    if (!await requireAuth(request, response, 'students')) return;
 
     try {
         switch (request.method) {

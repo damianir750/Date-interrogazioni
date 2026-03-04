@@ -19,42 +19,52 @@ const app = {
     // CONTROLLER METHODS
     // =====================================================
     async loadSubjects() {
+        // Try to load from cache first for immediate rendering
+        const cached = localStorage.getItem('cache_subjects');
+        if (cached) {
+            try {
+                this.state.subjects = JSON.parse(cached);
+                this.state.subjects.forEach(s => this.state.subjectColors[s.name] = s.color);
+                this.updateSubjectSelect();
+            } catch (e) {
+                localStorage.removeItem('cache_subjects');
+            }
+        }
+
         try {
             this.state.subjects = await api.getSubjects();
+            localStorage.setItem('cache_subjects', JSON.stringify(this.state.subjects));
             this.state.subjectColors = {};
-
-            const select = document.getElementById('subjectSelect');
-            if (select) {
-                select.innerHTML = '<option value="">Seleziona materia...</option>';
-                this.state.subjects.forEach(s => {
-                    this.state.subjectColors[s.name] = s.color;
-                    const option = document.createElement('option');
-                    option.value = s.name;
-                    option.textContent = s.name;
-                    select.appendChild(option);
-                });
-            }
+            this.state.subjects.forEach(s => this.state.subjectColors[s.name] = s.color);
+            this.updateSubjectSelect();
         } catch (error) {
             console.error('Errore caricamento materie:', error);
-            // Fallback
-            const fallback = [
-                { name: 'Italiano', color: '#9b5de5' },
-                { name: 'Storia', color: '#ff7b00' },
-                { name: 'Matematica', color: '#06d6a0' }
-            ];
-            this.state.subjects = fallback;
-            fallback.forEach(s => this.state.subjectColors[s.name] = s.color);
-
-            const select = document.getElementById('subjectSelect');
-            if (select) {
-                select.innerHTML = '<option value="">Seleziona materia...</option>';
-                fallback.forEach(s => {
-                    const option = document.createElement('option');
-                    option.value = s.name;
-                    option.textContent = s.name;
-                    select.appendChild(option);
-                });
+            if (!this.state.subjects.length) {
+                // Fallback only if no cache
+                const fallback = [
+                    { name: 'Italiano', color: '#9b5de5' },
+                    { name: 'Storia', color: '#ff7b00' },
+                    { name: 'Matematica', color: '#06d6a0' }
+                ];
+                this.state.subjects = fallback;
+                fallback.forEach(s => this.state.subjectColors[s.name] = s.color);
+                this.updateSubjectSelect();
             }
+        }
+    },
+
+    updateSubjectSelect() {
+        const select = document.getElementById('subjectSelect');
+        if (select) {
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">Seleziona materia...</option>';
+            this.state.subjects.forEach(s => {
+                const option = document.createElement('option');
+                option.value = s.name;
+                option.textContent = s.name;
+                select.appendChild(option);
+            });
+            select.value = currentValue;
         }
     },
 
@@ -282,6 +292,7 @@ const app = {
             // Optimization: Update local state instead of re-fetching
             this.state.subjects.push(newSubject);
             this.state.subjectColors[newSubject.name] = newSubject.color;
+            localStorage.setItem('cache_subjects', JSON.stringify(this.state.subjects));
 
             // Update Select
             const select = document.getElementById('subjectSelect');
@@ -312,6 +323,7 @@ const app = {
             // Optimization: Local update
             this.state.subjects = this.state.subjects.filter(s => s.name !== name);
             delete this.state.subjectColors[name];
+            localStorage.setItem('cache_subjects', JSON.stringify(this.state.subjects));
 
             // Update Select
             const select = document.getElementById('subjectSelect');

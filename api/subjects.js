@@ -7,7 +7,7 @@ import {
 } from './_utils.js';
 
 export default async function handler(request, response) {
-    if (!await requireAuth(request, response)) return;
+    if (!await requireAuth(request, response, 'subjects')) return;
 
     try {
         switch (request.method) {
@@ -28,6 +28,8 @@ export default async function handler(request, response) {
 
 async function handleGet(request, response) {
     const subjects = await sql`SELECT * FROM subjects ORDER BY name ASC`;
+    // Cache for 1 hour, stale-while-revalidate for 1 day
+    response.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
     return response.status(200).json(subjects);
 }
 

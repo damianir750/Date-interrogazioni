@@ -3,8 +3,11 @@ import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
 // Initialize rate limiters
-let ratelimit = null; // General API limiter
-let authFailureLimit = null; // Strict limiter for failed auth
+let studentReadLimit = null;  // GET students (60/min)
+let subjectReadLimit = null;  // GET subjects (20/min)
+let studentWriteLimit = null; // POST/PUT/DELETE students (10/min)
+let subjectWriteLimit = null; // POST/DELETE subjects (5/min)
+let authFailureLimit = null;  // Strict limiter for failed auth (5/min)
 
 if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
     const redis = new Redis({
@@ -12,16 +15,34 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
         token: process.env.UPSTASH_REDIS_REST_TOKEN,
     });
 
-    ratelimit = new Ratelimit({
+    studentReadLimit = new Ratelimit({
         redis,
-        limiter: Ratelimit.slidingWindow(30, '60 s'), // 30 requests per minute
-        prefix: 'api-ratelimit',
+        limiter: Ratelimit.slidingWindow(60, '60 s'),
+        prefix: 'api-student-read-limit',
+    });
+
+    subjectReadLimit = new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(20, '60 s'),
+        prefix: 'api-subject-read-limit',
+    });
+
+    studentWriteLimit = new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(10, '60 s'),
+        prefix: 'api-student-write-limit',
+    });
+
+    subjectWriteLimit = new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(5, '60 s'),
+        prefix: 'api-subject-write-limit',
     });
 
     authFailureLimit = new Ratelimit({
         redis,
-        limiter: Ratelimit.slidingWindow(5, '60 s'), // 5 failed attempts per minute
-        prefix: 'auth-failed-limit', // Shared across all endpoints
+        limiter: Ratelimit.slidingWindow(5, '60 s'),
+        prefix: 'auth-failed-limit',
     });
 }
 
@@ -34,10 +55,7 @@ function getClientIp(request) {
 /**
  * Shared authentication + rate limiting middleware.
  */
-/**
- * Shared authentication + rate limiting middleware.
- */
-export async function requireAuth(request, response) {
+export async function requireAuth(request, response, resource = 'general') {
     const ip = getClientIp(request);
     const authCode = process.env.AUTH_CODE;
     const provided = request.headers['x-auth-code'];
@@ -69,18 +87,37 @@ export async function requireAuth(request, response) {
         return false;
     }
 
-    // 3. Authorized User: Apply General DoS Protection (30 req/min)
-    if (ratelimit) {
+    // 3. Authorized User: Select Granular Limiter
+    let activeLimiter = null;
+    let limitType = "generale";
+
+    if (request.method === 'GET') {
+        if (resource === 'students') {
+            activeLimiter = studentReadLimit;
+            limitType = "lettura studenti";
+        } else if (resource === 'subjects') {
+            activeLimiter = subjectReadLimit;
+            limitType = "lettura materie";
+        }
+    } else if (resource === 'students') {
+        activeLimiter = studentWriteLimit;
+        limitType = "modifica studenti";
+    } else if (resource === 'subjects') {
+        activeLimiter = subjectWriteLimit;
+        limitType = "modifica materie";
+    }
+
+    if (activeLimiter) {
         try {
-            const { success } = await ratelimit.limit(ip);
+            const { success } = await activeLimiter.limit(ip);
             if (!success) {
                 response.status(429).json({
-                    error: "Limite di richieste superato. Rallenta un attimo!"
+                    error: `Limite di richieste (${limitType}) superato. Riprova tra un minuto.`
                 });
                 return false;
             }
         } catch (e) {
-            console.error('Rate limiter error:', e);
+            console.error('Granular limiter error:', e);
         }
     }
 
