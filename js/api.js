@@ -53,22 +53,22 @@ const request = async (endpoint, method = 'GET', body = null, signal = null) => 
 };
 
 export const api = {
-    getSubjects: (signal = null) => request('/get-subjects', 'GET', null, signal),
+    getSubjects: (signal = null) => request('/subjects', 'GET', null, signal),
 
     getStudents: (forceRefresh = false, signal = null) => {
         const query = forceRefresh ? `?t=${Date.now()}` : '';
-        return request(`/get-students${query}`, 'GET', null, signal);
+        return request(`/students${query}`, 'GET', null, signal);
     },
 
-    addStudent: (student) => request('/add-student', 'POST', student),
+    addStudent: (student) => request('/students', 'POST', student),
 
-    updateStudent: (data) => request('/update-student', 'POST', data),
+    updateStudent: (data) => request('/students', 'PUT', data),
 
-    deleteStudent: (id) => request('/delete-student', 'POST', { id }),
+    deleteStudent: (id) => request('/students', 'DELETE', { id }),
 
-    addSubject: (subject) => request('/add-subject', 'POST', subject),
+    addSubject: (subject) => request('/subjects', 'POST', subject),
 
-    deleteSubject: (name) => request('/delete-subject', 'POST', { name }),
+    deleteSubject: (name) => request('/subjects', 'DELETE', { name }),
 
-    verifyCode: (code) => request('/verify-code', 'POST', { code })
+    verifyCode: (code) => request('/auth', 'POST', { code })
 };
