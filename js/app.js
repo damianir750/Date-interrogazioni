@@ -5,7 +5,7 @@ import { utils } from './utils.js';
 // =====================================================
 // APP STATE
 // =====================================================
-const app = {
+export const app = {
     state: {
         students: [],
         subjects: [],
@@ -51,15 +51,9 @@ const app = {
                 this.updateSubjectSelect();
             } catch (error) {
                 console.error('Errore caricamento materie:', error);
+                // No fallback to hardcoded subjects: show error if nothing exists
                 if (!this.state.subjects.length) {
-                    const fallback = [
-                        { name: 'Italiano', color: '#9b5de5' },
-                        { name: 'Storia', color: '#ff7b00' },
-                        { name: 'Matematica', color: '#06d6a0' }
-                    ];
-                    this.state.subjects = fallback;
-                    fallback.forEach(s => this.state.subjectColors[s.name] = s.color);
-                    this.updateSubjectSelect();
+                    ui.showToast('Errore nel caricamento delle materie', 'error');
                 }
             }
         }
@@ -454,16 +448,18 @@ const app = {
         if (btn) btn.disabled = true;
 
         try {
-            // Temporarily set the code so the API request includes it
-            localStorage.setItem('auth_code', code);
+            // No longer need to store code in localStorage
             await api.verifyCode(code);
 
-            // Success
+            // Success - Set a flag that we are logged in (not the sensitive code)
+            localStorage.setItem('is_logged_in', 'true');
+            localStorage.setItem('login_time', Date.now().toString());
+
             errorEl?.classList.add('hidden');
             this.hideLogin();
             await this.loadData();
         } catch (error) {
-            localStorage.removeItem('auth_code');
+            localStorage.removeItem('is_logged_in');
             if (errorEl) {
                 errorEl.textContent = error.message || 'Codice errato, riprova';
                 errorEl.classList.remove('hidden');
@@ -476,30 +472,71 @@ const app = {
     },
 
     checkAuth() {
-        return !!localStorage.getItem('auth_code');
+        const isLoggedIn = localStorage.getItem('is_logged_in') === 'true';
+        if (!isLoggedIn) return false;
+
+        // Session expiration check (Client side defense-in-depth)
+        const loginTime = localStorage.getItem('login_time');
+        const MAX_SESSION = 7 * 24 * 60 * 60 * 1000; // 7 days (matching cookie)
+        
+        if (!loginTime || Date.now() - parseInt(loginTime) > MAX_SESSION) {
+            localStorage.removeItem('is_logged_in');
+            localStorage.removeItem('login_time');
+            return false;
+        }
+        return true;
     },
 
     // =====================================================
-    // INIT
+    // INITIALIZATION
     // =====================================================
     async init() {
-        this.setToday();
-
-        // Enter key handler
-        const nameInput = document.getElementById('nameInput');
-        if (nameInput) {
-            nameInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') this.addStudent();
-            });
+        this.setupEventListeners();
+        
+        if (!this.checkAuth()) {
+            this.showLogin();
+            return;
         }
 
-        // Search handler - Debounced
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', utils.debounce((e) => this.handleSearch(e), 300));
+        try {
+            await this.loadData();
+        } catch (error) {
+            console.error("Critical Init Error:", error);
+            ui.showToast("Errore di caricamento iniziale", "error");
         }
 
-        // Close modal on backdrop click
+        // Smart Polling
+        setInterval(() => {
+            if (!document.hidden && this.checkAuth()) {
+                this.loadStudents();
+            }
+        }, 30000);
+    },
+
+    setupEventListeners() {
+        // Auth
+        document.getElementById('authSubmitBtn')?.addEventListener('click', () => this.submitLogin());
+        document.getElementById('authCodeInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.submitLogin();
+        });
+
+        // Student Management
+        document.getElementById('addStudentBtn')?.addEventListener('click', () => this.addStudent());
+        document.getElementById('nameInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.addStudent();
+        });
+
+        // Date Shortcuts
+        document.getElementById('setTodayBtn')?.addEventListener('click', () => this.setToday());
+        document.getElementById('setYesterdayBtn')?.addEventListener('click', () => this.setYesterday());
+        document.getElementById('setLastWeekBtn')?.addEventListener('click', () => this.setLastWeek());
+
+        // Modal Management
+        document.getElementById('openSubjectsModalBtn')?.addEventListener('click', () => this.openSubjectsModal());
+        document.getElementById('closeSubjectsModalBtn')?.addEventListener('click', () => this.closeSubjectsModal());
+        document.getElementById('addNewSubjectBtn')?.addEventListener('click', () => this.addNewSubject());
+
+        // Backdrop click to close modal
         const modal = document.getElementById('subjectsModal');
         if (modal) {
             modal.addEventListener('click', (e) => {
@@ -507,60 +544,21 @@ const app = {
             });
         }
 
-        // Listen for auth expiration (fired by api.js on 401)
+        // Search
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            searchInput.addEventListener('input', utils.debounce((e) => {
+                this.state.searchTerm = e.target.value;
+                this.render();
+            }, 300));
+        }
+
+        // Global Event Listeners
         window.addEventListener('auth-expired', () => this.showLogin());
-
-        // Check if user is authenticated
-        if (!this.checkAuth()) {
-            this.showLogin();
-            return; // Don't load data until authenticated
-        }
-
-        try {
-            await this.loadData();
-        } catch (error) {
-            console.error("Critical Init Error:", error);
-            document.body.innerHTML = `
-                <div class="min-h-screen flex items-center justify-center text-gray-800 dark:text-gray-200">
-                    <div class="text-center p-6 bg-white dark:bg-gray-800 rounded-xl max-w-md">
-                        <h2 class="text-xl font-bold mb-2">Errore di Caricamento</h2>
-                        <button onclick="window.location.reload()" class="bg-purple-600 px-4 py-2 rounded text-white mt-4">Riprova</button>
-                    </div>
-                </div>`;
-            // Re-run icons just in case
-            import('lucide').then(({ createIcons, AlertTriangle }) => {
-                createIcons({ icons: { AlertTriangle } });
-            });
-        }
-
-        // Smart Polling: Auto-refresh only when tab is visible
-        setInterval(() => {
-            if (!document.hidden) {
-                this.loadStudents();
-            }
-        }, 30000);
     }
 };
 
-// Expose only the methods needed by inline HTML handlers
-window.app = Object.freeze({
-    addStudent: () => app.addStudent(),
-    deleteStudent: (id) => app.deleteStudent(id),
-    incrementGrade: (id, g) => app.incrementGrade(id, g),
-    updateStudentName: (id, name) => app.updateStudentName(id, name),
-    updateStudentGrades: (id, g) => app.updateStudentGrades(id, g),
-    registerInterrogation: (id, g) => app.registerInterrogation(id, g),
-    addNewSubject: () => app.addNewSubject(),
-    deleteSubject: (name) => app.deleteSubject(name),
-    setToday: () => app.setToday(),
-    setYesterday: () => app.setYesterday(),
-    setLastWeek: () => app.setLastWeek(),
-    openSubjectsModal: () => app.openSubjectsModal(),
-    closeSubjectsModal: () => app.closeSubjectsModal(),
-    submitLogin: () => app.submitLogin(),
-});
-
-// Start app when resources are fully loaded to avoid layout warnings
+// Start app when resources are fully loaded
 window.addEventListener('load', () => {
     app.init();
 });

@@ -60,7 +60,6 @@ export default async function handler(request, response) {
             return response.status(401).json({ error: "Codice errato" });
         }
 
-        // 4. CORRECT CODE: Apply general rate limit (DoS protection)
         if (apiLimit) {
             const { success } = await apiLimit.limit(ip);
             if (!success) {
@@ -68,9 +67,11 @@ export default async function handler(request, response) {
             }
         }
 
-        if (!authCode && process.env.NODE_ENV !== 'development') {
-            return response.status(500).json({ error: "Configurazione server incompleta" });
-        }
+        // 4. Set HttpOnly Cookie (Security)
+        const isProd = process.env.NODE_ENV === 'production';
+        // Session lasts 7 days
+        const maxAge = 60 * 60 * 24 * 7;
+        response.setHeader('Set-Cookie', `auth_code=${authCode || ''}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Strict${isProd ? '; Secure' : ''}`);
 
         return response.status(200).json({ success: true });
     } catch (error) {

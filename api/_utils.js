@@ -3,7 +3,7 @@ export function validateStudent(data) {
     const { name, last_interrogation, subject, grades_count } = data;
     const errors = [];
 
-    if (!name || typeof name !== 'string') {
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
         errors.push("Missing or invalid 'name'");
     } else if (name.length > 100) {
         errors.push("'name' must be 100 characters or less");
@@ -16,14 +16,22 @@ export function validateStudent(data) {
     }
 
     if (last_interrogation) {
-        // Simple YYYY-MM-DD check
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(last_interrogation)) {
-            errors.push("'last_interrogation' must be in YYYY-MM-DD format");
+        // Semantic date check (prevent rollover like Feb 30 -> March 2)
+        const d = new Date(last_interrogation);
+        const isValidFormat = /^\d{4}-\d{2}-\d{2}$/.test(last_interrogation);
+        const iso = (!isNaN(d.getTime()) && isValidFormat) ? d.toISOString().split('T')[0] : '';
+        
+        if (isNaN(d.getTime()) || !isValidFormat || iso !== last_interrogation) {
+            errors.push("'last_interrogation' must be a valid date in YYYY-MM-DD format");
+        } else if (d.getFullYear() < 2000 || d.getFullYear() > 2100) {
+            errors.push("'last_interrogation' year must be between 2000 and 2100");
         }
     }
 
-    if (grades_count !== undefined && (typeof grades_count !== 'number' || grades_count < 0)) {
-        errors.push("'grades_count' must be a non-negative number");
+    if (grades_count !== undefined) {
+        if (typeof grades_count !== 'number' || grades_count < 0 || grades_count > 999) {
+            errors.push("'grades_count' must be a number between 0 and 999");
+        }
     }
 
     return errors;
@@ -63,13 +71,19 @@ export function validateUpdateStudent(data) {
     }
 
     if (last_interrogation !== undefined && last_interrogation !== null) {
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(last_interrogation)) {
-            errors.push("'last_interrogation' must be in YYYY-MM-DD format");
+        const d = new Date(last_interrogation);
+        const isValidFormat = /^\d{4}-\d{2}-\d{2}$/.test(last_interrogation);
+        const iso = (!isNaN(d.getTime()) && isValidFormat) ? d.toISOString().split('T')[0] : '';
+        
+        if (isNaN(d.getTime()) || !isValidFormat || iso !== last_interrogation) {
+            errors.push("'last_interrogation' must be a valid date in YYYY-MM-DD format");
         }
     }
 
-    if (grades_count !== undefined && (typeof grades_count !== 'number' || grades_count < 0)) {
-        errors.push("'grades_count' must be a non-negative number");
+    if (grades_count !== undefined) {
+        if (typeof grades_count !== 'number' || grades_count < 0 || grades_count > 999) {
+            errors.push("'grades_count' must be a number between 0 and 999");
+        }
     }
 
     return errors;

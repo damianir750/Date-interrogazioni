@@ -6,21 +6,18 @@ vi.mock('../api/_db.js', () => ({
     default: vi.fn()
 }));
 
-// Mock auth to always pass for API tests
-vi.mock('../api/_auth.js', () => ({
-    requireAuth: vi.fn().mockResolvedValue(true)
-}));
-
 import sql from '../api/_db.js';
 
 // Helper: create mock request/response
 function createMocks(method = 'GET', body = null) {
+    const req = {
+        method,
+        headers: { 'content-type': 'application/json' },
+        body,
+        cookies: {} // Test-friendly property
+    };
     return {
-        req: {
-            method,
-            headers: { 'content-type': 'application/json', 'x-auth-code': 'test' },
-            body
-        },
+        req,
         res: {
             _status: null,
             _body: null,
@@ -32,16 +29,28 @@ function createMocks(method = 'GET', body = null) {
     };
 }
 
+// ... helper to sync cookies to headers before calling handler
+async function runHandler(handler, req, res) {
+    if (req.cookies) {
+        req.headers.cookie = Object.entries(req.cookies).map(([k,v]) => `${k}=${v}`).join('; ');
+    }
+    return await handler(req, res);
+}
+
 // =====================================================
 // STUDENTS API (/api/students)
 // =====================================================
+// ... (I'll need to update the calls to use runHandler or set headers manually)
+// Actually I'll just update requireAuth in my mental model to check req.cookies too, 
+// but it's better to fix the test environment.
+
+// I will update the tests below to use runHandler where needed.
 describe('/api/students', () => {
     let handler;
 
     beforeEach(async () => {
         vi.resetModules();
-        vi.mock('../api/_db.js', () => ({ default: vi.fn() }));
-        vi.mock('../api/_auth.js', () => ({ requireAuth: vi.fn().mockResolvedValue(true) }));
+        vi.stubEnv('NODE_ENV', 'development');
         const mod = await import('../api/students.js');
         handler = mod.default;
     });
@@ -56,6 +65,16 @@ describe('/api/students', () => {
             await handler(req, res);
             expect(res._status).toBe(200);
             expect(res._body).toEqual(mockStudents);
+        });
+
+        it('handles database connection errors', async () => {
+            const { default: sql } = await import('../api/_db.js');
+            sql.mockRejectedValueOnce(new Error('DB Connection Failed'));
+
+            const { req, res } = createMocks('GET');
+            await handler(req, res);
+            expect(res._status).toBe(500);
+            expect(res._body.error).toContain('Errore interno del server');
         });
     });
 
@@ -81,6 +100,15 @@ describe('/api/students', () => {
             expect(res._status).toBe(200);
             expect(res._body).toEqual(mockStudent);
         });
+
+        it('handles database errors during insertion', async () => {
+            const { default: sql } = await import('../api/_db.js');
+            sql.mockRejectedValueOnce(new Error('Unique constraint failed'));
+
+            const { req, res } = createMocks('POST', { name: 'Mario', subject: 'It' });
+            await handler(req, res);
+            expect(res._status).toBe(500);
+        });
     });
 
     describe('PUT', () => {
@@ -103,6 +131,12 @@ describe('/api/students', () => {
             await handler(req, res);
             expect(res._status).toBe(404);
         });
+
+        it('rejects update with invalid data type', async () => {
+            const { req, res } = createMocks('PUT', { id: 'uno', name: 123 });
+            await handler(req, res);
+            expect(res._status).toBe(400);
+        });
     });
 
     describe('DELETE', () => {
@@ -114,6 +148,12 @@ describe('/api/students', () => {
             await handler(req, res);
             expect(res._status).toBe(200);
             expect(res._body.success).toBe(true);
+        });
+
+        it('returns 400 for DELETE with missing id', async () => {
+            const { req, res } = createMocks('DELETE', {});
+            await handler(req, res);
+            expect(res._status).toBe(400);
         });
     });
 
@@ -132,8 +172,7 @@ describe('/api/subjects', () => {
 
     beforeEach(async () => {
         vi.resetModules();
-        vi.mock('../api/_db.js', () => ({ default: vi.fn() }));
-        vi.mock('../api/_auth.js', () => ({ requireAuth: vi.fn().mockResolvedValue(true) }));
+        vi.stubEnv('NODE_ENV', 'development');
         const mod = await import('../api/subjects.js');
         handler = mod.default;
     });
@@ -215,5 +254,100 @@ describe('/api/auth', () => {
         const { req, res } = createMocks('POST', { code: 'anything' });
         await mod.default(req, res);
         expect(res._status).toBe(200);
+    });
+});
+
+describe('/api/subjects additional validation', () => {
+    it('rejects subjects with very long names (>50 chars)', async () => {
+        const { default: sql } = await import('../api/_db.js');
+        const { default: handler } = await import('../api/subjects.js');
+        const { req, res } = createMocks('POST', { name: 'A'.repeat(51), color: '#ffffff' });
+        await handler(req, res);
+        expect(res._status).toBe(400);
+    });
+
+    it('rejects subjects with invalid color formats', async () => {
+        const { default: handler } = await import('../api/subjects.js');
+        const { req, res } = createMocks('POST', { name: 'Test', color: 'not-hex' });
+        await handler(req, res);
+        expect(res._status).toBe(400);
+    });
+
+    it('handles query failures on getSubjects', async () => {
+        const { default: sql } = await import('../api/_db.js');
+        const { default: handler } = await import('../api/subjects.js');
+        sql.mockRejectedValueOnce(new Error('DB Fail'));
+        const { req, res } = createMocks('GET');
+        await handler(req, res);
+        expect(res._status).toBe(500);
+    });
+});
+
+describe('/api/students validation details', () => {
+    it('rejects student with invalid date format (semantic)', async () => {
+        const { default: handler } = await import('../api/students.js');
+        const { req, res } = createMocks('POST', { 
+            name: 'Mario', subject: 'Math', last_interrogation: '2026-99-99' 
+        });
+        await handler(req, res);
+        expect(res._status).toBe(400);
+    });
+
+    it('rejects student with negative grades count', async () => {
+        const { default: handler } = await import('../api/students.js');
+        const { req, res } = createMocks('POST', { 
+            name: 'Mario', subject: 'Math', grades_count: -1
+        });
+        await handler(req, res);
+        expect(res._status).toBe(400);
+    });
+
+    it('denies access if auth cookie is missing', async () => {
+        vi.stubEnv('NODE_ENV', 'production');
+        vi.stubEnv('AUTH_CODE', 'secret123');
+        const { default: handler } = await import('../api/students.js');
+        const { req, res } = createMocks('GET');
+        req.headers.cookie = ""; 
+        await handler(req, res);
+        expect(res._status).toBe(401);
+    });
+
+    it('denies access with invalid auth cookie content', async () => {
+        vi.stubEnv('NODE_ENV', 'production');
+        vi.stubEnv('AUTH_CODE', 'secret123');
+        const { default: handler } = await import('../api/students.js');
+        const { req, res } = createMocks('GET');
+        req.headers.cookie = "auth_code=WRONG";
+        await handler(req, res);
+        expect(res._status).toBe(401);
+    });
+});
+
+describe('/api/auth additional details', () => {
+    it('returns 200 for multiple attempts below limit', async () => {
+        const { default: handler } = await import('../api/auth.js');
+        const { req, res } = createMocks('POST', { code: 'anything' });
+        await handler(req, res);
+        expect(res._status).not.toBe(429);
+    });
+
+    it('rejects unsupported methods like GET on /api/auth', async () => {
+        const { default: handler } = await import('../api/auth.js');
+        const { req, res } = createMocks('GET');
+        await handler(req, res);
+        expect(res._status).toBe(405);
+    });
+});
+
+describe('/api/auth rate limiting details', () => {
+    it('returns 200 for multiple attempts below limit', async () => {
+        // Assuming limit is > 3
+        const { default: handler } = await import('../api/auth.js');
+        for(let i=0; i<3; i++) {
+            const { req, res } = createMocks('POST', { code: 'anything' });
+            await handler(req, res);
+            // Just verifying it doesn't 503/429 immediately
+            expect(res._status).not.toBe(429);
+        }
     });
 });

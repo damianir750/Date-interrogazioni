@@ -9,7 +9,7 @@ export const utils = {
         const d = new Date(dateString);
         if (isNaN(d.getTime())) return dateString;
 
-        const year = d.getFullYear();
+        const year = String(d.getFullYear()).padStart(4, '0');
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const day = String(d.getDate()).padStart(2, '0');
         return `${year}-${month}-${day}`;
@@ -35,39 +35,26 @@ export const utils = {
     _daysSinceCache: {},
     // Calcola giorni trascorsi da una data (Memoized)
     daysSince(dateString) {
-        // Handle null, undefined, empty string
         if (!dateString || dateString === '9999-12-31') return -1;
+        
+        const normalized = this.normalizeDate(dateString);
+        if (!normalized || normalized === '9999-12-31') return -1;
 
-        // Convert Date object to string if needed
-        let cacheKey = dateString;
-        if (dateString instanceof Date) {
-            const year = dateString.getFullYear();
-            const month = String(dateString.getMonth() + 1).padStart(2, '0');
-            const day = String(dateString.getDate()).padStart(2, '0');
-            cacheKey = `${year}-${month}-${day}`;
-        } else {
-            cacheKey = String(dateString);
-        }
-
-        // Cache the result for today (clears at midnight naturally if page refreshed, else it's slightly stale till refresh but OK for an active tab)
-        // For a more precise logic we could salt the cacheKey with today's date
         const todayKey = new Date().toDateString();
-        const fullKey = `${cacheKey}_${todayKey}`;
+        const fullKey = `${normalized}_${todayKey}`;
 
         if (this._daysSinceCache[fullKey] !== undefined) {
             return this._daysSinceCache[fullKey];
         }
 
-        // Parse "YYYY-MM-DD" manually to treat it as local time
-        const parts = cacheKey.split('-');
+        const parts = normalized.split('-');
         if (parts.length !== 3) return -1;
 
-        const [objYear, objMonth, objDay] = parts.map(Number);
-        if (isNaN(objYear) || isNaN(objMonth) || isNaN(objDay)) return -1;
+        const [y, m, d] = parts.map(Number);
+        if (isNaN(y) || isNaN(m) || isNaN(d)) return -1;
 
-        const then = new Date(objYear, objMonth - 1, objDay);
+        const then = new Date(y, m - 1, d);
         const now = new Date();
-
         then.setHours(0, 0, 0, 0);
         now.setHours(0, 0, 0, 0);
 
@@ -79,9 +66,13 @@ export const utils = {
     // Convert Hex to RGB object (Memoized)
     _hexToRgbCache: {},
     hexToRgb(hex) {
+        if (!hex) return null;
         if (this._hexToRgbCache[hex]) return this._hexToRgbCache[hex];
 
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        let h = hex.replace('#', '');
+        if (h.length === 3) h = h.split('').map(c => c + c).join('');
+        
+        const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
         const rgb = result ? {
             r: parseInt(result[1], 16),
             g: parseInt(result[2], 16),

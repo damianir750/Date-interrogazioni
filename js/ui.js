@@ -192,11 +192,13 @@ export const ui = {
         container.innerHTML = '';
 
         if (subjects.length === 0) {
-            container.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center py-4">Nessuna materia disponibile</p>';
+            const p = document.createElement('p');
+            p.className = 'text-gray-500 dark:text-gray-400 text-center py-4';
+            p.textContent = 'Nessuna materia disponibile';
+            container.appendChild(p);
             return;
         }
 
-        // Pre-calculate student counts for O(1) lookup inside loop
         const studentCounts = {};
         students.forEach(s => {
             studentCounts[s.subject] = (studentCounts[s.subject] || 0) + 1;
@@ -206,28 +208,51 @@ export const ui = {
 
         subjects.forEach(subject => {
             const count = studentCounts[subject.name] || 0;
-            const safeName = utils.escapeHtml(subject.name);
-            const safeNameAttr = utils.escapeAttribute(subject.name);
-
+            
             const div = document.createElement('div');
             div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition shadow-sm';
-            div.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full shadow-inner border border-black/5" style="background: ${safeColor(subject.color)}"></div>
-                    <div>
-                        <div class="font-semibold text-gray-800 dark:text-white">${safeName}</div>
-                        <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">${count} studenti</div>
-                    </div>
-                </div>
-                <button onclick="app.deleteSubject('${safeNameAttr}')" 
-                    class="text-red-500 hover:text-red-700 transition ${count > 0 ? 'opacity-30 cursor-not-allowed' : 'hover:scale-110'}"
-                    ${count > 0 ? 'disabled' : ''}
-                    title="${count > 0 ? 'Materia in uso' : 'Elimina materia'}">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                </button>
-            `;
+            
+            const infoWrapper = document.createElement('div');
+            infoWrapper.className = 'flex items-center gap-3';
+            
+            const colorDot = document.createElement('div');
+            colorDot.className = 'w-8 h-8 rounded-full shadow-inner border border-black/5';
+            colorDot.style.backgroundColor = safeColor(subject.color);
+            
+            const textContent = document.createElement('div');
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'font-semibold text-gray-800 dark:text-white';
+            nameDiv.textContent = subject.name;
+            
+            const countDiv = document.createElement('div');
+            countDiv.className = 'text-xs text-gray-500 dark:text-gray-400 font-medium';
+            countDiv.textContent = `${count} studenti`;
+            
+            textContent.appendChild(nameDiv);
+            textContent.appendChild(countDiv);
+            infoWrapper.appendChild(colorDot);
+            infoWrapper.appendChild(textContent);
+            
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = `text-red-500 hover:text-red-700 transition ${count > 0 ? 'opacity-30 cursor-not-allowed' : 'hover:scale-110'}`;
+            if (count > 0) {
+                deleteBtn.disabled = true;
+                deleteBtn.title = 'Materia in uso';
+            } else {
+                deleteBtn.title = 'Elimina materia';
+                deleteBtn.addEventListener('click', () => app.deleteSubject(subject.name));
+            }
+            
+            const trashIcon = document.createElement('i');
+            trashIcon.setAttribute('data-lucide', 'trash-2');
+            trashIcon.className = 'w-4 h-4';
+            deleteBtn.appendChild(trashIcon);
+            
+            div.appendChild(infoWrapper);
+            div.appendChild(deleteBtn);
             fragment.appendChild(div);
         });
+
         container.appendChild(fragment);
         requestAnimationFrame(() => createIcons({ icons, nameAttr: 'data-lucide' }));
     },
@@ -241,53 +266,78 @@ export const ui = {
         const fragment = document.createDocumentFragment();
 
         // Fallback safety if no subjects exist yet (e.g. fresh DB)
-        const subjectsToRender = subjects.length > 0 ? subjects : [{ name: 'Caricamento...', color: '#e5e7eb' }, { name: '...', color: '#e5e7eb' }];
+        const subjectsToRender = subjects.length > 0 ? subjects : [
+            { name: 'Caricamento...', color: '#e5e7eb' }, 
+            { name: '...', color: '#e5e7eb' }
+        ];
 
         subjectsToRender.forEach((subject, i) => {
             const count = (studentCounts && studentCounts[subject.name]) ? studentCounts[subject.name] : 1;
 
-            const div = document.createElement('div');
-            // Use same container classes as real cards
-            div.className = 'fade-in';
-            div.style.animationDelay = `${i * 0.1}s`;
+            const card = document.createElement('div');
+            card.className = 'fade-in';
+            card.style.animationDelay = `${i * 0.1}s`;
 
-            // Build exact inner list
-            let listHTML = '<ul class="space-y-2 list-none p-0 m-0">';
+            const cardInner = document.createElement('div');
+            cardInner.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col justify-start';
+
+            const header = document.createElement('div');
+            header.className = 'flex items-center justify-between mb-3';
+            const skeletonTitle = document.createElement('div');
+            skeletonTitle.className = 'h-8 w-1/2 skeleton rounded-lg';
+            const skeletonBadge = document.createElement('div');
+            skeletonBadge.className = 'h-6 w-8 skeleton rounded-full';
+            header.appendChild(skeletonTitle);
+            header.appendChild(skeletonBadge);
+            cardInner.appendChild(header);
+
+            const list = document.createElement('ul');
+            list.className = 'space-y-2 list-none p-0 m-0';
+
             for (let j = 0; j < count; j++) {
-                listHTML += `
-                    <li class="flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20 ${j > 0 ? 'opacity-70' : ''}">
-                        <div class="flex w-full gap-3">
-                            <div class="flex-1 min-w-0">
-                                <span class="font-medium text-sm sm:text-base break-words skeleton text-transparent rounded ${j % 2 === 0 ? 'w-1/2' : 'w-3/4'} inline-block">Nome Studente</span>
-                                <div class="flex items-center gap-2 mt-1 flex-wrap">
-                                    <span class="text-transparent text-xs px-2 py-1 rounded-full font-bold skeleton">🎓 0</span>
-                                    <span class="text-transparent text-[10px] sm:text-xs whitespace-nowrap skeleton rounded">00/00/0000</span>
-                                    <span class="text-transparent text-xs px-2 py-0.5 rounded-full font-bold skeleton">00g</span>
-                                </div>
-                            </div>
-                            <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1 opacity-50">
-                                <button class="p-1.5 invisible"><i data-lucide="check" class="w-4 h-4 skeleton rounded-sm"></i></button>
-                                <button class="p-1.5 invisible"><i data-lucide="plus" class="w-4 h-4 skeleton rounded-sm"></i></button>
-                                <button class="p-1.5 invisible"><i data-lucide="graduation-cap" class="w-4 h-4 skeleton rounded-sm"></i></button>
-                                <button class="p-1.5 invisible"><i data-lucide="pencil" class="w-4 h-4 skeleton rounded-sm"></i></button>
-                                <button class="p-1.5 invisible"><i data-lucide="trash-2" class="w-4 h-4 skeleton rounded-sm"></i></button>
-                            </div>
-                        </div>
-                    </li>
-                `;
-            }
-            listHTML += '</ul>';
+                const li = document.createElement('li');
+                li.className = `flex justify-between items-center p-3 rounded-lg shadow-sm dark:bg-gray-700/20 ${j > 0 ? 'opacity-70' : ''}`;
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = 'flex w-full gap-3';
+                
+                const content = document.createElement('div');
+                content.className = 'flex-1 min-w-0';
+                
+                const sName = document.createElement('span');
+                sName.className = `font-medium text-sm sm:text-base break-words skeleton text-transparent rounded ${j % 2 === 0 ? 'w-1/2' : 'w-3/4'} inline-block`;
+                sName.textContent = 'Nome Studente';
+                
+                const sMeta = document.createElement('div');
+                sMeta.className = 'flex items-center gap-2 mt-1 flex-wrap';
+                
+                ['🎓 0', '00/00/0000', '00g'].forEach((text, k) => {
+                    const span = document.createElement('span');
+                    span.className = 'text-transparent text-xs px-2 py-0.5 rounded-full skeleton';
+                    span.textContent = text;
+                    sMeta.appendChild(span);
+                });
+                
+                content.appendChild(sName);
+                content.appendChild(sMeta);
+                wrapper.appendChild(content);
 
-            div.innerHTML = `
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col justify-start">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="h-8 w-1/2 skeleton rounded-lg"></div>
-                        <div class="h-6 w-8 skeleton rounded-full"></div>
-                    </div>
-                    ${listHTML}
-                </div>
-            `;
-            fragment.appendChild(div);
+                const actions = document.createElement('div');
+                actions.className = 'flex items-start flex-shrink-0 gap-0.5 -mt-1 opacity-50';
+                for(let k=0; k<5; k++) {
+                   const b = document.createElement('div');
+                   b.className = 'w-8 h-8 skeleton rounded-sm m-0.5';
+                   actions.appendChild(b);
+                }
+                wrapper.appendChild(actions);
+                
+                li.appendChild(wrapper);
+                list.appendChild(li);
+            }
+
+            cardInner.appendChild(list);
+            card.appendChild(cardInner);
+            fragment.appendChild(card);
         });
 
         container.appendChild(fragment);
@@ -328,6 +378,7 @@ export const ui = {
             });
         });
 
+        const wasEmpty = container.children.length === 0;
         container.innerHTML = '';
         const fragment = document.createDocumentFragment();
 
@@ -337,51 +388,75 @@ export const ui = {
             const lightColor = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.15)`;
             const subjectStudents = bySubject[subject];
             const urgentCount = subjectStudents.filter(s => utils.daysSince(s.last_interrogation) > 30).length;
-            const safeSubject = utils.escapeHtml(subject);
 
-            const div = document.createElement('div');
-            // Check if this is a first render (container was empty) to apply animation, otherwise keep it static to prevent "shock"
-            if (container.children.length === 0) {
-                div.className = 'fade-in';
-                div.style.animationDelay = `${groupIndex * 0.1}s`;
+            const card = document.createElement('div');
+            if (wasEmpty) {
+                card.className = 'fade-in';
+                card.style.animationDelay = `${groupIndex * 0.1}s`;
+            }
+            
+            const cardInner = document.createElement('div');
+            cardInner.className = 'bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col justify-start';
+            
+            const header = document.createElement('div');
+            header.className = 'flex items-center justify-between mb-3';
+            
+            const title = document.createElement('h2');
+            title.className = 'text-xl sm:text-2xl font-semibold flex items-center gap-2';
+            title.style.color = color;
+            
+            const icon = document.createElement('i');
+            icon.setAttribute('data-lucide', 'book-open');
+            icon.className = 'w-5 h-5';
+            
+            const nameText = document.createElement('span');
+            nameText.textContent = subject; // textContent is safe
+            
+            title.appendChild(icon);
+            title.appendChild(nameText);
+            
+            const badge = document.createElement('span');
+            badge.className = 'text-sm font-medium px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
+            badge.textContent = subjectStudents.length;
+            
+            header.appendChild(title);
+            header.appendChild(badge);
+            cardInner.appendChild(header);
+
+            if (urgentCount > 0) {
+                const alert = document.createElement('div');
+                alert.className = 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-xs px-3 py-1 rounded-lg mb-3 flex items-center gap-1';
+                
+                const warnIcon = document.createElement('i');
+                warnIcon.setAttribute('data-lucide', 'alert-triangle');
+                warnIcon.className = 'w-3 h-3';
+                
+                const alertText = document.createTextNode(` ${urgentCount} da interrogare urgentemente`);
+                
+                alert.appendChild(warnIcon);
+                alert.appendChild(alertText);
+                cardInner.appendChild(alert);
             }
 
-            div.innerHTML = `
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 h-full border border-gray-100 dark:border-gray-700 flex flex-col justify-start">
-                    <div class="flex items-center justify-between mb-3">
-                        <h2 class="text-xl sm:text-2xl font-semibold flex items-center gap-2" style="color: ${color}">
-                            <i data-lucide="book-open" class="w-5 h-5"></i>
-                            <span>${safeSubject}</span>
-                        </h2>
-                        <span class="text-sm font-medium px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300">${subjectStudents.length}</span>
-                    </div>
-                    ${urgentCount > 0 ? `
-                    <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-xs px-3 py-1 rounded-lg mb-3 flex items-center gap-1">
-                        <i data-lucide="alert-triangle" class="w-3 h-3"></i> ${urgentCount} da interrogare urgentemente
-                    </div>` : ''}
-
-                    <ul class="space-y-2 list-none p-0 m-0"></ul>
-                </div>
-            `;
-            fragment.appendChild(div);
-
-            const list = div.querySelector('ul');
+            const list = document.createElement('ul');
+            list.className = 'space-y-2 list-none p-0 m-0';
+            
             subjectStudents.forEach((s, i) => {
                 const li = this.createStudentElement(s, i, color, lightColor, searchTerm, groupIndex, list.children.length === 0);
                 list.appendChild(li);
             });
+            
+            cardInner.appendChild(list);
+            card.appendChild(cardInner);
+            fragment.appendChild(card);
         });
         container.appendChild(fragment);
 
-        // Optimization: Single call to createIcons for the whole container
-        // Provide root option if lucide supports it (doesn't hurt if ignored), and provide attrs to prevent full DOM reflow
         requestAnimationFrame(() => createIcons({ icons, nameAttr: 'data-lucide' }));
     },
 
     createStudentElement(s, i, color, lightColor, searchTerm, groupIndex, isInitialRender) {
         const days = utils.daysSince(s.last_interrogation);
-        const highlightedName = utils.highlightSearch(s.name, searchTerm);
-        const safeName = utils.escapeHtml(s.name);
         const li = document.createElement('li');
 
         // Animation logic
@@ -394,82 +469,109 @@ export const ui = {
 
         const gradesCount = s.grades_count || 0;
         const badgeBgColor = utils.darkenColor(color, 0.2);
-        const gradesBadge = `<span class="text-white text-xs px-2 py-1 rounded-full font-bold" style="background-color: ${badgeBgColor};" title="Numero voti">🎓 ${gradesCount}</span>`;
-        const safeNameAttr = utils.escapeAttribute(s.name);
 
+        // Styling for state
         if (days === -1) {
             li.className += ' pulse-alert';
             li.style.background = 'rgba(255, 193, 7, 0.2)';
             li.style.borderLeft = '4px solid #ffc107';
-            li.innerHTML = `
-                <div class="flex w-full gap-3">
-                    <div class="flex-1 min-w-0">
-                        <span class="font-medium text-sm sm:text-base break-words" title="${safeName}">${highlightedName}</span>
-                        <div class="flex items-center gap-2 mt-1 flex-wrap">
-                            ${gradesBadge}
-                            <span class="text-[10px] sm:text-xs text-amber-700 dark:text-amber-500 font-semibold whitespace-nowrap">📅 MANCANTE</span>
-                            <span class="bg-amber-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap">⚠️ Aggiorna</span>
-                        </div>
-                    </div>
-                    <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
-                        <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition p-1.5" title="Segna come interrogato" aria-label="Segna ${safeName} come interrogato">
-                            <i data-lucide="check" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition p-1.5" title="Modifica numero voti" aria-label="Modifica voti di ${safeName}">
-                            <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition p-1.5" title="Modifica nome" aria-label="Rinomina ${safeName}">
-                            <i data-lucide="pencil" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition p-1.5" title="Elimina" aria-label="Elimina ${safeName}">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
         } else {
-            const isVeryOld = days > 30;
-            const isOld = days > 14;
-
-            if (isVeryOld) li.className += ' pulse-alert';
+            if (days > 30) li.className += ' pulse-alert';
             li.style.background = lightColor;
             li.style.borderLeft = `4px solid ${color}`;
-
-            let badge = '';
-            if (isVeryOld) badge = `<span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">🔥 ${days}g</span>`;
-            else if (isOld) badge = `<span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold">⚠️ ${days}g</span>`;
-            else badge = `<span class="bg-green-500 text-white text-xs px-2 py-1 rounded-full">${days}g</span>`;
-
-            li.innerHTML = `
-                <div class="flex w-full gap-3">
-                    <div class="flex-1 min-w-0">
-                        <span class="font-medium text-sm sm:text-base break-words" title="${safeName}">${highlightedName}</span>
-                        <div class="flex items-center gap-2 mt-1 flex-wrap">
-                            ${gradesBadge}
-                            <span class="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap">${utils.formatDate(s.last_interrogation)}</span>
-                            ${badge.replace('px-2 py-1', 'px-2 py-0.5')}
-                        </div>
-                    </div>
-                    <div class="flex items-start flex-shrink-0 gap-0.5 -mt-1">
-                        <button onclick="app.registerInterrogation(${s.id}, ${gradesCount})" class="text-teal-600 hover:text-teal-800 transition p-1.5" title="Segna come interrogato" aria-label="Segna ${safeName} come interrogato">
-                            <i data-lucide="check" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="app.incrementGrade(${s.id}, ${gradesCount})" class="text-green-500 hover:text-green-700 transition p-1.5" title="Aggiungi voto (+1)" aria-label="Aggiungi voto a ${safeName}">
-                            <i data-lucide="plus" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="app.updateStudentGrades(${s.id}, ${gradesCount})" class="text-purple-500 hover:text-purple-700 transition p-1.5" title="Modifica numero voti" aria-label="Modifica voti di ${safeName}">
-                            <i data-lucide="graduation-cap" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="app.updateStudentName(${s.id}, '${safeNameAttr}')" class="text-blue-500 hover:text-blue-700 transition p-1.5" title="Modifica nome" aria-label="Rinomina ${safeName}">
-                            <i data-lucide="pencil" class="w-4 h-4"></i>
-                        </button>
-                        <button onclick="app.deleteStudent(${s.id})" class="text-red-500 hover:text-red-700 transition p-1.5" title="Elimina" aria-label="Elimina ${safeName}">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-            `;
         }
+
+        // Structure
+        const mainWraper = document.createElement('div');
+        mainWraper.className = 'flex w-full gap-3';
+
+        // Content
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'flex-1 min-w-0';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'font-medium text-sm sm:text-base break-words';
+        nameSpan.title = s.name;
+        // Use highlightSearch only if searchTerm exists, it returns HTML so we use innerHTML for HIGHLIGHTING only
+        // Search term is already escaped inside highlightSearch.
+        nameSpan.innerHTML = utils.highlightSearch(s.name, searchTerm);
+        
+        const metaDiv = document.createElement('div');
+        metaDiv.className = 'flex items-center gap-2 mt-1 flex-wrap';
+
+        // Grades Badge
+        const gBadge = document.createElement('span');
+        gBadge.className = 'text-white text-xs px-2 py-1 rounded-full font-bold';
+        gBadge.style.backgroundColor = badgeBgColor;
+        gBadge.title = 'Numero voti';
+        gBadge.textContent = `🎓 ${gradesCount}`;
+
+        // Date Info
+        const dateInfo = document.createElement('span');
+        if (days === -1) {
+            dateInfo.className = 'text-[10px] sm:text-xs text-amber-700 dark:text-amber-500 font-semibold whitespace-nowrap';
+            dateInfo.textContent = '📅 MANCANTE';
+        } else {
+            dateInfo.className = 'text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 whitespace-nowrap';
+            dateInfo.textContent = utils.formatDate(s.last_interrogation);
+        }
+
+        // Status Badge
+        const statusBadge = document.createElement('span');
+        statusBadge.className = 'text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold whitespace-nowrap';
+        if (days === -1) {
+            statusBadge.className += ' bg-amber-500 text-white';
+            statusBadge.textContent = '⚠️ Aggiorna';
+        } else if (days > 30) {
+            statusBadge.className += ' bg-red-500 text-white';
+            statusBadge.textContent = `🔥 ${days}g`;
+        } else if (days > 14) {
+            statusBadge.className += ' bg-orange-500 text-white';
+            statusBadge.textContent = `⚠️ ${days}g`;
+        } else {
+            statusBadge.className += ' bg-green-500 text-white';
+            statusBadge.textContent = `${days}g`;
+        }
+
+        metaDiv.appendChild(gBadge);
+        metaDiv.appendChild(dateInfo);
+        metaDiv.appendChild(statusBadge);
+        
+        contentDiv.appendChild(nameSpan);
+        contentDiv.appendChild(metaDiv);
+
+        // Actions
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'flex items-start flex-shrink-0 gap-0.5 -mt-1';
+
+        const createBtn = (iconName, colorClass, title, onClick) => {
+            const btn = document.createElement('button');
+            btn.className = `${colorClass} transition p-1.5`;
+            btn.title = title;
+            btn.setAttribute('aria-label', `${title} ${s.name}`);
+            btn.addEventListener('click', onClick);
+            
+            const icon = document.createElement('i');
+            icon.setAttribute('data-lucide', iconName);
+            icon.className = 'w-4 h-4';
+            btn.appendChild(icon);
+            return btn;
+        };
+
+        actionsDiv.appendChild(createBtn('check', 'text-teal-600 hover:text-teal-800', 'Segna come interrogato', () => app.registerInterrogation(s.id, gradesCount)));
+        
+        if (days !== -1) {
+            actionsDiv.appendChild(createBtn('plus', 'text-green-500 hover:text-green-700', 'Aggiungi voto (+1)', () => app.incrementGrade(s.id, gradesCount)));
+        }
+        
+        actionsDiv.appendChild(createBtn('graduation-cap', 'text-purple-500 hover:text-purple-700', 'Modifica numero voti', () => app.updateStudentGrades(s.id, gradesCount)));
+        actionsDiv.appendChild(createBtn('pencil', 'text-blue-500 hover:text-blue-700', 'Modifica nome', () => app.updateStudentName(s.id, s.name)));
+        actionsDiv.appendChild(createBtn('trash-2', 'text-red-500 hover:text-red-700', 'Elimina', () => app.deleteStudent(s.id)));
+
+        mainWraper.appendChild(contentDiv);
+        mainWraper.appendChild(actionsDiv);
+        li.appendChild(mainWraper);
+
         return li;
     },
 

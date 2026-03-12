@@ -36,8 +36,8 @@ self.addEventListener('activate', event => {
 
 // Fetch: Stale-while-revalidate strategy
 self.addEventListener('fetch', event => {
-    // Only handle GET requests
-    if (event.request.method !== 'GET') return;
+    // Only handle GET requests and skip API calls
+    if (event.request.method !== 'GET' || event.request.url.includes('/api/')) return;
 
     event.respondWith(
         caches.match(event.request).then(cachedResponse => {

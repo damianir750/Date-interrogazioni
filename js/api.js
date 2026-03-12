@@ -4,14 +4,11 @@
 
 const BASE_URL = '/api';
 
-const getAuthCode = () => localStorage.getItem('auth_code') || '';
-
 const request = async (endpoint, method = 'GET', body = null, signal = null) => {
     const options = {
         method,
         headers: {
-            'Content-Type': 'application/json',
-            'x-auth-code': getAuthCode()
+            'Content-Type': 'application/json'
         }
     };
 

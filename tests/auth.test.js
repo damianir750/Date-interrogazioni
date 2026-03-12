@@ -43,14 +43,14 @@ describe('requireAuth', () => {
     });
 
     it('allows request with correct auth code', async () => {
-        const { req, res } = createMocks('GET', { 'x-auth-code': 'test-secret-code' });
+        const { req, res } = createMocks('GET', { 'cookie': 'auth_code=test-secret-code' });
         const result = await requireAuth(req, res);
         expect(result).toBe(true);
         expect(res._status).toBeNull();
     });
 
     it('blocks request with wrong auth code', async () => {
-        const { req, res } = createMocks('GET', { 'x-auth-code': 'wrong-code' });
+        const { req, res } = createMocks('GET', { 'cookie': 'auth_code=wrong-code' });
         const result = await requireAuth(req, res);
         expect(result).toBe(false);
         expect(res._status).toBe(401);

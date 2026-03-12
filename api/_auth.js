@@ -58,7 +58,6 @@ function getClientIp(request) {
 export async function requireAuth(request, response, resource = 'general') {
     const ip = getClientIp(request);
     const authCode = process.env.AUTH_CODE;
-    const provided = request.headers['x-auth-code'];
 
     // 1. Check if auth is configured
     if (!authCode) {
@@ -67,7 +66,10 @@ export async function requireAuth(request, response, resource = 'general') {
         return false;
     }
 
-    // 2. Authentication Check
+    // 2. Authentication Check (now via Cookie for security)
+    const cookies = request.headers.cookie ? Object.fromEntries(request.headers.cookie.split('; ').map(c => c.split('='))) : {};
+    const provided = cookies.auth_code;
+
     if (!provided || provided !== authCode) {
         // failed auth
         if (authFailureLimit) {
@@ -75,15 +77,18 @@ export async function requireAuth(request, response, resource = 'general') {
                 const { success } = await authFailureLimit.limit(ip);
                 if (!success) {
                     response.status(429).json({
-                        error: "Troppi tentativi falliti. L'accesso è temporaneamente bloccato per questo IP."
+                        error: "Troppi tentativi falliti. L'accesso è temporaneamente bloccato."
                     });
                     return false;
                 }
             } catch (e) {
                 console.error('Auth limiter error:', e);
+                // FAIL-CLOSED: If Redis is down, block auth attempts for safety
+                response.status(503).json({ error: "Servizio temporaneamente non disponibile (Limitatore)" });
+                return false;
             }
         }
-        response.status(401).json({ error: "Codice di accesso non valido" });
+        response.status(401).json({ error: "Codice di accesso non valido o sessione scaduta" });
         return false;
     }
 
@@ -118,6 +123,10 @@ export async function requireAuth(request, response, resource = 'general') {
             }
         } catch (e) {
             console.error('Granular limiter error:', e);
+            // FAIL-CLOSED for write operations, maybe allow read? 
+            // For maximum security in a security audit, we fail closed for everything.
+            response.status(503).json({ error: "Servizio temporaneamente non disponibile (Limitatore)" });
+            return false;
         }
     }
 
