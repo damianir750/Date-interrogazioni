@@ -442,7 +442,7 @@ export const ui = {
             list.className = 'space-y-2 list-none p-0 m-0';
             
             subjectStudents.forEach((s, i) => {
-                const li = this.createStudentElement(s, i, color, lightColor, searchTerm, groupIndex, list.children.length === 0);
+                const li = this.createStudentElement(s, i, color, lightColor, searchTerm, groupIndex, wasEmpty);
                 list.appendChild(li);
             });
             

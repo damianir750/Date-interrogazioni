@@ -55,7 +55,17 @@ html.dyslexic-mode * {
 
 
     .pulse-alert {
+        position: relative;
+    }
+    
+    .pulse-alert::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        pointer-events: none;
         animation: pulseAlert 2s infinite;
+        z-index: -1;
     }
 
     /* Mobile Performance: Remove heavy backdrop blur */
