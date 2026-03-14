@@ -7,9 +7,11 @@
 ## Italiano <a name="italiano"></a>
 
 ### 📝 Descrizione
+
 **Interrogazioni Classe** è una dashboard web moderna progettata per aiutare gli studenti e i rappresentanti di classe a tenere traccia delle interrogazioni scolastiche. L'applicazione permette di registrare le date delle interrogazioni, monitorare chi non viene interrogato da molto tempo e gestire le materie scolastiche.
 
 ### ✨ Funzionalità Principali
+
 - **Gestione Studenti**: Aggiungi, modifica e rimuovi studenti dalla lista.
 - **Tracciamento Date**: Calcolo automatico dei giorni trascorsi dall'ultima interrogazione.
 - **Conteggio Voti**: 🎓 Traccia il numero di interrogazioni già sostenute per ogni studente.
@@ -28,6 +30,7 @@
 - **Responsive**: Funziona perfettamente su desktop, tablet e smartphone.
 
 ### 🛠️ Tecnologie Utilizzate
+
 - **Frontend**: HTML5, JavaScript (Modulare), Tailwind CSS (Build locale).
 - **Build Tool**: Vite.
 - **Icone**: Lucide Icons (Ottimizzate).
@@ -35,7 +38,9 @@
 - **Database**: Neon (PostgreSQL).
 
 ### 🚀 Installazione e Avvio Locale
+
 1. **Clona la repository**:
+
    ```bash
    git clone https://github.com/damianir750/Date-interrogazioni.git
    cd Date-interrogazioni
@@ -43,6 +48,7 @@
 
 2. **Configura le variabili d'ambiente**:
    Crea un file `.env` nella root del progetto con la stringa di connessione al database:
+
    ```env
    DATABASE_URL=postgres://user:password@host/dbname?sslmode=require
    ```
@@ -52,15 +58,18 @@
    npm install
    npm start
    ```
-(se non fosse abbastanza chiaro questo codice è generato dall'ai)
+   (se non fosse abbastanza chiaro questo codice è generato dall'ai)
+
 ---
 
 ## English <a name="english"></a>
 
 ### 📝 Description
+
 **Interrogazioni Classe** (Class Interrogations) is a modern web dashboard designed to help students and class representatives track oral exams and interrogations. The application allows you to record dates, monitor students who haven't been tested in a while, and manage school subjects.
 
 ### ✨ Key Features
+
 - **Student Management**: Add, edit, and remove students from the list.
 - **Date Tracking**: Automatically calculates days since the last interrogation.
 - **Grade Counting**: 🎓 Tracks the number of interrogations for each student.
@@ -79,6 +88,7 @@
 - **Responsive**: Works perfectly on desktop, tablets, and smartphones.
 
 ### 🛠️ Tech Stack
+
 - **Frontend**: HTML5, JavaScript (Modular), Tailwind CSS (Local Build).
 - **Build Tool**: Vite.
 - **Icons**: Lucide Icons (Optimized).
@@ -86,7 +96,9 @@
 - **Database**: Neon (PostgreSQL).
 
 ### 🚀 Setup and Local Development
+
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/damianir750/Date-interrogazioni.git
    cd Date-interrogazioni
@@ -94,6 +106,7 @@
 
 2. **Configure environment variables**:
    Create a `.env` file in the project root with your database connection string:
+
    ```env
    DATABASE_URL=postgres://user:password@host/dbname?sslmode=require
    ```
@@ -103,4 +116,4 @@
    npm install
    npm start
    ```
-(if this wasn't clear enough this code is ai generated)
+   (if this wasn't clear enough this code is ai generated)

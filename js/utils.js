@@ -3,156 +3,169 @@
  */
 
 export const utils = {
-    // Normalizza data da DB a YYYY-MM-DD
-    normalizeDate(dateString) {
-        if (!dateString || dateString === '9999-12-31') return dateString;
-        const d = new Date(dateString);
-        if (isNaN(d.getTime())) return dateString;
+  // Normalizza data da DB a YYYY-MM-DD
+  normalizeDate(dateString) {
+    if (!dateString || dateString === "9999-12-31") return dateString;
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return dateString;
 
-        const year = String(d.getFullYear()).padStart(4, '0');
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    },
+    const year = String(d.getFullYear()).padStart(4, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  },
 
-    // Formatta data (YYYY-MM-DD -> DD/MM/YYYY)
-    formatDate(dateString) {
-        if (!dateString || dateString === '9999-12-31') return 'DATA MANCANTE';
+  // Formatta data (YYYY-MM-DD -> DD/MM/YYYY)
+  formatDate(dateString) {
+    if (!dateString || dateString === "9999-12-31") return "DATA MANCANTE";
 
-        // Handle Date objects
-        let d;
-        if (dateString instanceof Date) {
-            d = dateString;
-        } else {
-            d = new Date(dateString);
-        }
-
-        if (isNaN(d.getTime())) return 'DATA NON VALIDA';
-        return d.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    },
-
-    // Cache for dates
-    _daysSinceCache: {},
-    // Calcola giorni trascorsi da una data (Memoized)
-    daysSince(dateString) {
-        if (!dateString || dateString === '9999-12-31') return -1;
-        
-        const normalized = this.normalizeDate(dateString);
-        if (!normalized || normalized === '9999-12-31') return -1;
-
-        const todayKey = new Date().toDateString();
-        const fullKey = `${normalized}_${todayKey}`;
-
-        if (this._daysSinceCache[fullKey] !== undefined) {
-            return this._daysSinceCache[fullKey];
-        }
-
-        const parts = normalized.split('-');
-        if (parts.length !== 3) return -1;
-
-        const [y, m, d] = parts.map(Number);
-        if (isNaN(y) || isNaN(m) || isNaN(d)) return -1;
-
-        const then = new Date(y, m - 1, d);
-        const now = new Date();
-        then.setHours(0, 0, 0, 0);
-        now.setHours(0, 0, 0, 0);
-
-        const diff = Math.floor((now - then) / (1000 * 60 * 60 * 24));
-        this._daysSinceCache[fullKey] = diff;
-        return diff;
-    },
-
-    // Convert Hex to RGB object (Memoized)
-    _hexToRgbCache: {},
-    hexToRgb(hex) {
-        if (!hex) return null;
-        if (this._hexToRgbCache[hex]) return this._hexToRgbCache[hex];
-
-        let h = hex.replace('#', '');
-        if (h.length === 3) h = h.split('').map(c => c + c).join('');
-        
-        const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
-        const rgb = result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-
-        this._hexToRgbCache[hex] = rgb;
-        return rgb;
-    },
-
-    // Debounce function
-    debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    },
-
-    // Cache per DarkenColor
-    _darkenColorCache: {},
-    // Darkens a hex color by a percentage (0-1) (Memoized)
-    darkenColor(hex, percent = 0.3) {
-        const cacheKey = `${hex}_${percent}`;
-        if (this._darkenColorCache[cacheKey]) return this._darkenColorCache[cacheKey];
-
-        const rgb = this.hexToRgb(hex);
-        if (!rgb) return hex;
-
-        const r = Math.max(0, Math.floor(rgb.r * (1 - percent)));
-        const g = Math.max(0, Math.floor(rgb.g * (1 - percent)));
-        const b = Math.max(0, Math.floor(rgb.b * (1 - percent)));
-
-        const result = `rgb(${r}, ${g}, ${b})`;
-        this._darkenColorCache[cacheKey] = result;
-        return result;
-    },
-
-    // Escape HTML to prevent XSS
-    escapeHtml(unsafe) {
-        if (unsafe === null || unsafe === undefined) return '';
-        return String(unsafe)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;")
-            .replace(/`/g, "&#96;"); // Backticks can sometimes be used for XSS
-    },
-
-    // Escape for HTML attributes (like onclick)
-    escapeAttribute(unsafe) {
-        if (unsafe === null || unsafe === undefined) return '';
-        return String(unsafe)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;")
-            .replace(/`/g, "&#96;")
-            .replace(/\\/g, "&#92;")
-            .replace(/\n/g, " ");
-    },
-
-    // Highlight search term in text
-    highlightSearch(text, term) {
-        if (!term || !text) return this.escapeHtml(text);
-        const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        const regex = new RegExp(`(${escapedTerm})`, 'gi');
-        const parts = String(text).split(regex);
-
-        return parts.map(part => {
-            if (part.toLowerCase() === term.toLowerCase()) {
-                return `<mark class="search-highlight">${this.escapeHtml(part)}</mark>`;
-            }
-            return this.escapeHtml(part);
-        }).join('');
+    // Handle Date objects
+    let d;
+    if (dateString instanceof Date) {
+      d = dateString;
+    } else {
+      d = new Date(dateString);
     }
+
+    if (isNaN(d.getTime())) return "DATA NON VALIDA";
+    return d.toLocaleDateString("it-IT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  },
+
+  // Cache for dates
+  _daysSinceCache: {},
+  // Calcola giorni trascorsi da una data (Memoized)
+  daysSince(dateString) {
+    if (!dateString || dateString === "9999-12-31") return -1;
+
+    const normalized = this.normalizeDate(dateString);
+    if (!normalized || normalized === "9999-12-31") return -1;
+
+    const todayKey = new Date().toDateString();
+    const fullKey = `${normalized}_${todayKey}`;
+
+    if (this._daysSinceCache[fullKey] !== undefined) {
+      return this._daysSinceCache[fullKey];
+    }
+
+    const parts = normalized.split("-");
+    if (parts.length !== 3) return -1;
+
+    const [y, m, d] = parts.map(Number);
+    if (isNaN(y) || isNaN(m) || isNaN(d)) return -1;
+
+    const then = new Date(y, m - 1, d);
+    const now = new Date();
+    then.setHours(0, 0, 0, 0);
+    now.setHours(0, 0, 0, 0);
+
+    const diff = Math.floor((now - then) / (1000 * 60 * 60 * 24));
+    this._daysSinceCache[fullKey] = diff;
+    return diff;
+  },
+
+  // Convert Hex to RGB object (Memoized)
+  _hexToRgbCache: {},
+  hexToRgb(hex) {
+    if (!hex) return null;
+    if (this._hexToRgbCache[hex]) return this._hexToRgbCache[hex];
+
+    let h = hex.replace("#", "");
+    if (h.length === 3)
+      h = h
+        .split("")
+        .map((c) => c + c)
+        .join("");
+
+    const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(h);
+    const rgb = result
+      ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16),
+        }
+      : null;
+
+    this._hexToRgbCache[hex] = rgb;
+    return rgb;
+  },
+
+  // Debounce function
+  debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout);
+        func(...args);
+      };
+      clearTimeout(timeout);
+      timeout = setTimeout(later, wait);
+    };
+  },
+
+  // Cache per DarkenColor
+  _darkenColorCache: {},
+  // Darkens a hex color by a percentage (0-1) (Memoized)
+  darkenColor(hex, percent = 0.3) {
+    const cacheKey = `${hex}_${percent}`;
+    if (this._darkenColorCache[cacheKey])
+      return this._darkenColorCache[cacheKey];
+
+    const rgb = this.hexToRgb(hex);
+    if (!rgb) return hex;
+
+    const r = Math.max(0, Math.floor(rgb.r * (1 - percent)));
+    const g = Math.max(0, Math.floor(rgb.g * (1 - percent)));
+    const b = Math.max(0, Math.floor(rgb.b * (1 - percent)));
+
+    const result = `rgb(${r}, ${g}, ${b})`;
+    this._darkenColorCache[cacheKey] = result;
+    return result;
+  },
+
+  // Escape HTML to prevent XSS
+  escapeHtml(unsafe) {
+    if (unsafe === null || unsafe === undefined) return "";
+    return String(unsafe)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;")
+      .replace(/`/g, "&#96;"); // Backticks can sometimes be used for XSS
+  },
+
+  // Escape for HTML attributes (like onclick)
+  escapeAttribute(unsafe) {
+    if (unsafe === null || unsafe === undefined) return "";
+    return String(unsafe)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;")
+      .replace(/`/g, "&#96;")
+      .replace(/\\/g, "&#92;")
+      .replace(/\n/g, " ");
+  },
+
+  // Highlight search term in text
+  highlightSearch(text, term) {
+    if (!term || !text) return this.escapeHtml(text);
+    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`(${escapedTerm})`, "gi");
+    const parts = String(text).split(regex);
+
+    return parts
+      .map((part) => {
+        if (part.toLowerCase() === term.toLowerCase()) {
+          return `<mark class="search-highlight">${this.escapeHtml(part)}</mark>`;
+        }
+        return this.escapeHtml(part);
+      })
+      .join("");
+  },
 };

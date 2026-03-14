@@ -1,20 +1,20 @@
-import { defineConfig } from 'vite';
-import { resolve } from 'path';
+import { defineConfig } from "vite";
+import { resolve } from "path";
 
 export default defineConfig({
-    build: {
-        rollupOptions: {
-            input: {
-                main: resolve(__dirname, 'index.html'),
-                interrogazioni: resolve(__dirname, 'interrogazioni.html'),
-                archivio: resolve(__dirname, 'archivio.html'),
-                calendar: resolve(__dirname, 'calendar.html'),
-            },
-        },
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+        interrogazioni: resolve(__dirname, "interrogazioni.html"),
+        archivio: resolve(__dirname, "archivio.html"),
+        calendar: resolve(__dirname, "calendar.html"),
+      },
     },
-    test: {
-        environment: 'jsdom',
-        globals: true,
-        setupFiles: ['./tests/setup.js'],
-    },
+  },
+  test: {
+    environment: "jsdom",
+    globals: true,
+    setupFiles: ["./tests/setup.js"],
+  },
 });
