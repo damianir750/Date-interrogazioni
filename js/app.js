@@ -622,6 +622,9 @@ export const app = {
   },
 };
 
+// Export globally for UI callbacks
+window.app = app;
+
 // Start app when resources are fully loaded
 window.addEventListener("load", () => {
   app.init();
