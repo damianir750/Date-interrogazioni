@@ -11,7 +11,7 @@ const ASSETS = [
   "/js/api.js",
   "/js/ui.js",
   "/js/utils.js",
-  "/public/icon.png",
+  "/icon.png",
 ];
 
 // Install: precache assets
