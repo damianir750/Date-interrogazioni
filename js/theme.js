@@ -47,6 +47,7 @@ const icons = {
   calendar: Calendar,
   "graduation-cap": GraduationCap,
   "plus-circle": PlusCircle,
+  plus: PlusCircle, // Aliasing plus to plus-circle just in case
   search: Search,
   settings: Settings,
   x: X,

@@ -19,21 +19,24 @@ import {
 import { utils } from "./utils.js";
 
 const icons = {
-  Trash2,
-  Pencil,
-  AlertTriangle,
-  BookOpen,
-  GraduationCap,
-  Plus,
-  ArrowLeft,
-  Moon,
-  PlusCircle,
-  Search,
-  Settings,
-  X,
-  Check,
-  CheckCircle,
-  Info,
+  "trash-2": Trash2,
+  pencil: Pencil,
+  "alert-triangle": AlertTriangle,
+  "book-open": BookOpen,
+  "graduation-cap": GraduationCap,
+  plus: Plus,
+  "arrow-left": ArrowLeft,
+  moon: Moon,
+  "plus-circle": PlusCircle,
+  search: Search,
+  settings: Settings,
+  x: X,
+  check: Check,
+  "check-circle": CheckCircle,
+  info: Info,
+  sun: Moon, // Fallback for theme switcher in case it's called from here
+  eye: BookOpen, // Fallback
+  palette: Settings, // Fallback
 };
 
 // Validates hex color to prevent CSS injection
@@ -49,9 +52,9 @@ export const ui = {
       info: "bg-purple-500",
     };
     const iconsMap = {
-      success: "CheckCircle",
-      error: "AlertTriangle",
-      info: "Info",
+      success: "check-circle",
+      error: "alert-triangle",
+      info: "info",
     };
 
     const toast = document.createElement("div");
