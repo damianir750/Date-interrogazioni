@@ -85,6 +85,61 @@ describe("UI Layer (jsdom)", () => {
       const nameSpan = li.querySelector("span.font-medium");
       expect(nameSpan.textContent).toBe("Mario Rossi");
     });
+
+    it("triggers window.app actions on button clicks without errors", () => {
+      window.app = {
+        registerInterrogation: vi.fn(),
+        incrementGrade: vi.fn(),
+        updateStudentGrades: vi.fn(),
+        updateStudentName: vi.fn(),
+        deleteStudent: vi.fn(),
+      };
+
+      const student = {
+        id: 456,
+        name: "Luigi Verdi",
+        grades_count: 2,
+        last_interrogation: "2026-03-01",
+      };
+
+      const li = ui.createStudentElement(student, 5);
+      const buttons = li.querySelectorAll("button");
+      // buttons: check, plus, graduation-cap, pencil, trash-2
+      expect(buttons.length).toBe(5);
+
+      buttons[0].click();
+      expect(window.app.registerInterrogation).toHaveBeenCalledWith(456, 2);
+
+      buttons[1].click();
+      expect(window.app.incrementGrade).toHaveBeenCalledWith(456, 2);
+
+      buttons[2].click();
+      expect(window.app.updateStudentGrades).toHaveBeenCalledWith(456, 2);
+
+      buttons[3].click();
+      expect(window.app.updateStudentName).toHaveBeenCalledWith(456, "Luigi Verdi");
+
+      buttons[4].click();
+      expect(window.app.deleteStudent).toHaveBeenCalledWith(456);
+
+      delete window.app;
+    });
+
+    it("does not throw ReferenceError when buttons clicked without window.app", () => {
+      delete window.app;
+      const student = {
+        id: 789,
+        name: "Anna Bianchi",
+        grades_count: 0,
+        last_interrogation: "2026-03-01",
+      };
+
+      const li = ui.createStudentElement(student, 0);
+      const buttons = li.querySelectorAll("button");
+      expect(() => {
+        buttons.forEach((btn) => btn.click());
+      }).not.toThrow();
+    });
   });
 
   describe("updateStats details", () => {

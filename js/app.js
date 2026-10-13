@@ -622,7 +622,18 @@ export const app = {
   },
 };
 
+// Export globally for UI callbacks
+if (typeof window !== "undefined") {
+  window.app = app;
+}
+
 // Start app when resources are fully loaded
-window.addEventListener("load", () => {
-  app.init();
-});
+if (typeof window !== "undefined") {
+  if (document.readyState === "complete") {
+    app.init();
+  } else {
+    window.addEventListener("load", () => {
+      app.init();
+    });
+  }
+}

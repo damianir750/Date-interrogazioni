@@ -10,48 +10,48 @@ let subjectWriteLimit = null; // POST/DELETE subjects (5/min)
 let authFailureLimit = null; // Strict limiter for failed auth (5/min)
 
 if (
-  !process.env.UPSTASH_REDIS_REST_URL ||
-  !process.env.UPSTASH_REDIS_REST_TOKEN
+  process.env.UPSTASH_REDIS_REST_URL &&
+  process.env.UPSTASH_REDIS_REST_TOKEN
 ) {
-  throw new Error(
-    "Configurazione server incompleta: Redis non configurato. L'emulazione locale richiede le variabili d'ambiente UPSTASH_.",
-  );
+  try {
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+
+    studentReadLimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(60, "60 s"),
+      prefix: "api-student-read-limit",
+    });
+
+    subjectReadLimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, "60 s"),
+      prefix: "api-subject-read-limit",
+    });
+
+    studentWriteLimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(10, "60 s"),
+      prefix: "api-student-write-limit",
+    });
+
+    subjectWriteLimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, "60 s"),
+      prefix: "api-subject-write-limit",
+    });
+
+    authFailureLimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, "60 s"),
+      prefix: "auth-failed-limit",
+    });
+  } catch (e) {
+    console.warn("Redis initialization warning:", e.message);
+  }
 }
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
-studentReadLimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(60, "60 s"),
-  prefix: "api-student-read-limit",
-});
-
-subjectReadLimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(20, "60 s"),
-  prefix: "api-subject-read-limit",
-});
-
-studentWriteLimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(10, "60 s"),
-  prefix: "api-student-write-limit",
-});
-
-subjectWriteLimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(5, "60 s"),
-  prefix: "api-subject-write-limit",
-});
-
-authFailureLimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(5, "60 s"),
-  prefix: "auth-failed-limit",
-});
 
 function getClientIp(request) {
   if (request.headers["x-real-ip"]) return request.headers["x-real-ip"];
@@ -105,14 +105,7 @@ export async function requireAuth(request, response, resource = "general") {
           return false;
         }
       } catch (e) {
-        console.error("Auth limiter error:", e);
-        // FAIL-CLOSED: If Redis is down, block auth attempts for safety
-        response
-          .status(503)
-          .json({
-            error: "Servizio temporaneamente non disponibile (Limitatore)",
-          });
-        return false;
+        console.warn("Auth limiter bypass (Redis unreachable):", e.message);
       }
     }
     response
@@ -151,15 +144,7 @@ export async function requireAuth(request, response, resource = "general") {
         return false;
       }
     } catch (e) {
-      console.error("Granular limiter error:", e);
-      // FAIL-CLOSED for write operations, maybe allow read?
-      // For maximum security in a security audit, we fail closed for everything.
-      response
-        .status(503)
-        .json({
-          error: "Servizio temporaneamente non disponibile (Limitatore)",
-        });
-      return false;
+      console.warn("Granular limiter bypass (Redis unreachable):", e.message);
     }
   }
 

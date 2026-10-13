@@ -37,23 +37,41 @@ if ("serviceWorker" in navigator) {
 
 const icons = {
   Sun,
+  sun: Sun,
   Moon,
+  moon: Moon,
   Home,
+  home: Home,
   ArrowRight,
+  "arrow-right": ArrowRight,
   ArrowLeft,
+  "arrow-left": ArrowLeft,
   FolderArchive,
+  "folder-archive": FolderArchive,
   HardDrive,
+  "hard-drive": HardDrive,
   ExternalLink,
+  "external-link": ExternalLink,
   Calendar,
+  calendar: Calendar,
   GraduationCap,
+  "graduation-cap": GraduationCap,
   PlusCircle,
+  "plus-circle": PlusCircle,
   Search,
+  search: Search,
   Settings,
+  settings: Settings,
   X,
+  x: X,
   BookOpen,
+  "book-open": BookOpen,
   Eye,
+  eye: Eye,
   Palette,
+  palette: Palette,
   Check,
+  check: Check,
 };
 
 // Theme Toggle Logic
@@ -364,7 +382,7 @@ const bgToggle = {
 };
 
 // Init as soon as DOM is ready to avoid flickering
-document.addEventListener("DOMContentLoaded", () => {
+function initThemeApp() {
   // 1. Initialize logic (without redundant icon calls)
   themeToggle.init();
   a11yToggle.init();
@@ -376,7 +394,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // 3. Remove the anti-FOUC style synchronously to ensure icons are painted immediately
   const foucStyle = document.getElementById("fouc-style");
   if (foucStyle) foucStyle.remove();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initThemeApp);
+} else {
+  initThemeApp();
+}
 
 // Expose bgToggle globally for onclick handlers
 window.bgToggle = bgToggle;

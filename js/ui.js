@@ -20,20 +20,37 @@ import { utils } from "./utils.js";
 
 const icons = {
   Trash2,
+  "trash-2": Trash2,
   Pencil,
+  pencil: Pencil,
   AlertTriangle,
+  "alert-triangle": AlertTriangle,
+  Alerttriangle: AlertTriangle,
   BookOpen,
+  "book-open": BookOpen,
   GraduationCap,
+  "graduation-cap": GraduationCap,
   Plus,
+  plus: Plus,
   ArrowLeft,
+  "arrow-left": ArrowLeft,
   Moon,
+  moon: Moon,
   PlusCircle,
+  "plus-circle": PlusCircle,
   Search,
+  search: Search,
   Settings,
+  settings: Settings,
   X,
+  x: X,
   Check,
+  check: Check,
   CheckCircle,
+  "check-circle": CheckCircle,
+  Checkcircle: CheckCircle,
   Info,
+  info: Info,
 };
 
 // Validates hex color to prevent CSS injection
@@ -49,9 +66,9 @@ export const ui = {
       info: "bg-purple-500",
     };
     const iconsMap = {
-      success: "CheckCircle",
-      error: "AlertTriangle",
-      info: "Info",
+      success: "check-circle",
+      error: "alert-triangle",
+      info: "info",
     };
 
     const toast = document.createElement("div");
@@ -293,7 +310,7 @@ export const ui = {
       } else {
         deleteBtn.title = "Elimina materia";
         deleteBtn.addEventListener("click", () =>
-          app.deleteSubject(subject.name),
+          window.app?.deleteSubject(subject.name),
         );
       }
 
@@ -664,7 +681,7 @@ export const ui = {
         "check",
         "text-teal-600 hover:text-teal-800",
         "Segna come interrogato",
-        () => app.registerInterrogation(s.id, gradesCount),
+        () => window.app?.registerInterrogation(s.id, gradesCount),
       ),
     );
 
@@ -674,7 +691,7 @@ export const ui = {
           "plus",
           "text-green-500 hover:text-green-700",
           "Aggiungi voto (+1)",
-          () => app.incrementGrade(s.id, gradesCount),
+          () => window.app?.incrementGrade(s.id, gradesCount),
         ),
       );
     }
@@ -684,7 +701,7 @@ export const ui = {
         "graduation-cap",
         "text-purple-500 hover:text-purple-700",
         "Modifica numero voti",
-        () => app.updateStudentGrades(s.id, gradesCount),
+        () => window.app?.updateStudentGrades(s.id, gradesCount),
       ),
     );
     actionsDiv.appendChild(
@@ -692,12 +709,12 @@ export const ui = {
         "pencil",
         "text-blue-500 hover:text-blue-700",
         "Modifica nome",
-        () => app.updateStudentName(s.id, s.name),
+        () => window.app?.updateStudentName(s.id, s.name),
       ),
     );
     actionsDiv.appendChild(
       createBtn("trash-2", "text-red-500 hover:text-red-700", "Elimina", () =>
-        app.deleteStudent(s.id),
+        window.app?.deleteStudent(s.id),
       ),
     );
 

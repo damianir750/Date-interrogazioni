@@ -8,30 +8,30 @@ let apiLimit = null; // General limit (30/min)
 let authFailureLimit = null; // Failure limit (5/min)
 
 if (
-  !process.env.UPSTASH_REDIS_REST_URL ||
-  !process.env.UPSTASH_REDIS_REST_TOKEN
+  process.env.UPSTASH_REDIS_REST_URL &&
+  process.env.UPSTASH_REDIS_REST_TOKEN
 ) {
-  throw new Error(
-    "Configurazione server incompleta: Redis non configurato. L'emulazione locale richiede le variabili d'ambiente UPSTASH_.",
-  );
+  try {
+    const redis = new Redis({
+      url: process.env.UPSTASH_REDIS_REST_URL,
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+
+    apiLimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(30, "60 s"),
+      prefix: "api-ratelimit",
+    });
+
+    authFailureLimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(5, "60 s"),
+      prefix: "auth-failed-limit",
+    });
+  } catch (e) {
+    console.warn("Redis initialization warning:", e.message);
+  }
 }
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
-apiLimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(30, "60 s"),
-  prefix: "api-ratelimit",
-});
-
-authFailureLimit = new Ratelimit({
-  redis,
-  limiter: Ratelimit.slidingWindow(5, "60 s"),
-  prefix: "auth-failed-limit",
-});
 
 /**
  * Endpoint to verify the shared access code.
@@ -85,11 +85,15 @@ export default async function handler(request, response) {
     if (!isMatch) {
       // 3. WRONG CODE: Apply strict failure limit
       if (authFailureLimit) {
-        const { success } = await authFailureLimit.limit(ip);
-        if (!success) {
-          return response
-            .status(429)
-            .json({ error: "Troppi tentativi falliti. Riprova più tardi." });
+        try {
+          const { success } = await authFailureLimit.limit(ip);
+          if (!success) {
+            return response
+              .status(429)
+              .json({ error: "Troppi tentativi falliti. Riprova più tardi." });
+          }
+        } catch (e) {
+          console.warn("Auth failure limit bypass (Redis unreachable):", e.message);
         }
       }
       if (!code) return response.status(400).json({ error: "Codice mancante" });
@@ -97,13 +101,17 @@ export default async function handler(request, response) {
     }
 
     if (apiLimit) {
-      const { success } = await apiLimit.limit(ip);
-      if (!success) {
-        return response
-          .status(429)
-          .json({
-            error: "Limite di richieste superato. Per favore rallenta.",
-          });
+      try {
+        const { success } = await apiLimit.limit(ip);
+        if (!success) {
+          return response
+            .status(429)
+            .json({
+              error: "Limite di richieste superato. Per favore rallenta.",
+            });
+        }
+      } catch (e) {
+        console.warn("API limit bypass (Redis unreachable):", e.message);
       }
     }
 

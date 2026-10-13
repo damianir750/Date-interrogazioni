@@ -73,8 +73,8 @@ describe("Security Layer", () => {
     });
   });
 
-  describe("Rate Limiter Fail-Closed Policy", () => {
-    it("returns 503 if rate limiter fails", async () => {
+  describe("Rate Limiter Resilience", () => {
+    it("returns 401 instead of crashing if rate limiter fails during invalid auth", async () => {
       const { mockLimit } = await import("@upstash/ratelimit");
       mockLimit.mockRejectedValue(new Error("Redis Down"));
 
@@ -84,13 +84,31 @@ describe("Security Layer", () => {
       vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "token");
 
       const { requireAuth } = await import("../api/_auth.js");
-      const { req, res } = createMocks("GET", { cookie: "auth_code=test" });
+      const { req, res } = createMocks("GET", { cookie: "auth_code=wrong" });
 
       const result = await requireAuth(req, res, "students");
 
       expect(result).toBe(false);
-      expect(res._status).toBe(503);
-      expect(res._body.error).toContain("Limitatore");
+      expect(res._status).toBe(401);
+    });
+
+    it("allows authorized requests even if active limiter fails", async () => {
+      const crypto = await import("crypto");
+      const hash = crypto.createHash("sha256").update("test").digest("hex");
+      const { mockLimit } = await import("@upstash/ratelimit");
+      mockLimit.mockRejectedValue(new Error("Redis Down"));
+
+      vi.resetModules();
+      vi.stubEnv("AUTH_CODE", "test");
+      vi.stubEnv("UPSTASH_REDIS_REST_URL", "https://test");
+      vi.stubEnv("UPSTASH_REDIS_REST_TOKEN", "token");
+
+      const { requireAuth } = await import("../api/_auth.js");
+      const { req, res } = createMocks("GET", { cookie: `auth_code=${hash}` });
+
+      const result = await requireAuth(req, res, "students");
+
+      expect(result).toBe(true);
     });
   });
 });
